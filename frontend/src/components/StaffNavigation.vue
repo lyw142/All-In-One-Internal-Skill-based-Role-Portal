@@ -1,0 +1,167 @@
+<template>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#"><img src="../assets/logo.png" height="50" width="50"></a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#1">Role listings</a>
+          </li>
+
+        </ul>
+        <button type="button" class="btn btn-secondary">Logout</button>
+      </div>
+    </div>
+  </nav>
+  <!-- search bar heres -->
+  <div class="row g-3 align-items-center" style="padding-top: 30px;padding-left: 50px;">
+    <div class="col-auto">
+      <label for="inputPassword6" class="col-form-label">Search</label>
+    </div>
+    <!-- dummy column  -->
+    <div class="col-auto">
+      <input type="text" class="form-control">
+    </div>
+    <!-- dummy column  -->
+    <div class="col-auto">
+    </div>
+  </div>
+  <!-- body (role listings) starts here -->
+  <div class="container" style="padding-top: 50px;">
+    <div class="row align-items-start">
+      <!-- left role listing column -->
+      <div class="col-5">
+        <!-- card 1 -->
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="row">
+              <h5 class="card-title">Human Resources Officer</h5>
+            </div>
+            <p class="card-text">Skills required:</p>
+            <!-- skills container  -->
+            <div class="container">
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-success">Success</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-success">Success</span>
+            </div>
+            <!-- short job description container  -->
+            <div class="container" style="padding-top: 10px;">
+              <ul>
+                <li>Process day-to-day Talent & Culture administration in an accurate and timely manner</li>
+                <li>Create and update employee data records in the Timesoft system</li>
+                <li>Test job description 3</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="row">
+              <h5 class="card-title">Human Resources Officer</h5>
+            </div>
+            <p class="card-text">Skills required:</p>
+            <!-- skills container  -->
+            <div class="container">
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-success">Success</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-success">Success</span>
+            </div>
+            <!-- short job description container  -->
+            <div class="container" style="padding-top: 10px;">
+              <ul>
+                <li>Process day-to-day Talent & Culture administration in an accurate and timely manner</li>
+                <li>Create and update employee data records in the Timesoft system</li>
+                <li>Test job description 3</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <!-- card 2  -->
+        <div class="card mb-3">
+          <div class="card-body">
+            <div class="row">
+              <h5 class="card-title">Human Resources Officer</h5>
+            </div>
+            <p class="card-text">Skills required:</p>
+            <!-- skills container  -->
+            <div class="container">
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-success">Success</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-secondary">Secondary</span>
+              <span class="badge text-bg-success">Success</span>
+            </div>
+            <!-- short job description container  -->
+            <div class="container" style="padding-top: 10px;">
+              <ul>
+                <li>Process day-to-day Talent & Culture administration in an accurate and timely manner</li>
+                <li>Create and update employee data records in the Timesoft system</li>
+                <li>Test job description 3</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-7">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Special title treatment</h5>
+            <p class="card-text">With supporting text below as a natural lead-in to additional content. Lorem ipsum dolor
+              sit amet consectetur adipisicing elit. Quibusdam ullam nam tenetur ducimus optio earum repellat aut quos
+              nesciunt, soluta qui odio aperiam. Illum tempore eum corrupti accusamus a sapiente? Lorem ipsum dolor sit
+              amet consectetur adipisicing elit. Reprehenderit explicabo, perferendis ut nisi molestias excepturi? Quia
+              ipsum quos earum illum tenetur expedita impedit! Debitis quia nesciunt commodi dignissimos eaque beatae!
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit. Numquam libero necessitatibus sint impedit, ipsa
+              itaque similique ratione molestiae! Rerum corporis, nobis itaque facilis vitae minima amet dicta! Vitae,
+              suscipit non!</p>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+
+<script>
+
+export default {
+  name: "StaffNavigation",
+}
+</script>
+
+<style scoped>
+.btn {
+  margin: 10px;
+}
+
+p {
+  font-size: smaller;
+}
+
+span {
+  margin: 2px;
+}
+
+ul {
+  font-size: smaller;
+}
+</style>
