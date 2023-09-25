@@ -2,7 +2,7 @@
 
 import StaffNavigation from "./components/StaffNavigation.vue";
 import HRNavigation from "./components/HRNavigation.vue";
-import testform from "./components/testform.vue"
+import testform from "./views/testform.vue"
 
 export default {
   name: 'App',
