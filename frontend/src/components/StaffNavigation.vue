@@ -17,12 +17,12 @@
       </div>
     </div>
   </nav>
-  <!-- search bar heres -->
+  <!-- search bar here -->
   <div class="row g-3 align-items-center" style="padding-top: 30px;padding-left: 50px;">
     <div class="col-auto">
-      <label for="inputPassword6" class="col-form-label">Search</label>
+      <label class="col-form-label">Search</label>
     </div>
-    <!-- dummy column  -->
+    <!-- search box  -->
     <div class="col-auto">
       <input type="text" class="form-control">
     </div>
@@ -30,7 +30,7 @@
     <div class="col-auto">
     </div>
   </div>
-  <!-- body (role listings) starts here -->
+  <!-- body starts here -->
   <div class="container" style="padding-top: 50px;">
     <div class="row align-items-start">
       <!-- left role listing column -->
@@ -121,7 +121,7 @@
         </div>
       </div>
       <div class="col-7">
-        <div class="card">
+        <div class="card" style="position: fixed;">
           <div class="card-body">
             <h5 class="card-title">Special title treatment</h5>
             <p class="card-text">With supporting text below as a natural lead-in to additional content. Lorem ipsum dolor

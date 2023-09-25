@@ -9,12 +9,12 @@ export default {
   components: { StaffNavigation, HRNavigation, testform },
   data() {
     return {
-      title: 'SPM Sprint 1 :('
+      title: 'SPM Sprint 1'
     }
   },
   computed: {
     show() {
-      return 1
+      return 3
     }
   }
 }
@@ -23,6 +23,7 @@ export default {
 <template>
   <HRNavigation v-if="show == 1" />
   <StaffNavigation v-if="show == 2" />
+  <testform v-if="show == 3" />
 </template>
 
 
