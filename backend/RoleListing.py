@@ -43,25 +43,9 @@ class RoleListing(db.Model):
             "Hiring_Manager": self.Hiring_Manager,
             "Role_ID": self.Role_ID
         }
-
+    
 @app.route("/joblistings")
 def findAllJobListings():
-    job_listings = RoleListing.query.order_by(desc(RoleListing.Date_Posted)).all()
-
-     # Check if there are any job listings
-    if job_listings:
-        # Convert the job listings to a list of dictionaries
-        job_listings_list = [listing.to_json() for listing in job_listings]
-        return jsonify({
-            "data": job_listings_list
-        }), 200
-    else:
-        return jsonify({
-            "message": "No job listings found."
-        }), 404
-    
-@app.route("/joblistings2")
-def findAllJobListings2():
     # Perform joins to retrieve role listings with Hiring Manager and Role Name
     query = (
         db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name)
@@ -86,6 +70,22 @@ def findAllJobListings2():
         role_listings_json.append(role_listing_data)
 
     return role_listings_json;
+
+# @app.route("/joblistings")
+# def findAllJobListings():
+#     job_listings = RoleListing.query.order_by(desc(RoleListing.Date_Posted)).all()
+
+#      # Check if there are any job listings
+#     if job_listings:
+#         # Convert the job listings to a list of dictionaries
+#         job_listings_list = [listing.to_json() for listing in job_listings]
+#         return jsonify({
+#             "data": job_listings_list
+#         }), 200
+#     else:
+#         return jsonify({
+#             "message": "No job listings found."
+#         }), 404
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
