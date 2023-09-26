@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy import desc
-from models import Role, Staff;
+from models import RoleListing,Role, Staff, RoleSkillMapping, Skill;
 
 app = Flask(__name__)
 
@@ -17,38 +17,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 CORS(app)
-
-class RoleListing(db.Model):
-    __tablename__ = 'role_listing'
-    __table_args__ = {'mysql_engine': 'InnoDB'}  # Specify InnoDB engine for this table
-
-    Listing_ID = db.Column(db.Integer, primary_key=True)
-    Deadline = db.Column(db.Date, nullable=False)
-    Date_Posted = db.Column(db.Date, nullable=False)
-    Hiring_Manager = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'), nullable=False)
-    Role_ID = db.Column(db.Integer, db.ForeignKey('role.Role_ID', ondelete='CASCADE'), nullable=False)
-    
-    def __init__(self, Listing_ID, Deadline, Date_Posted, Hiring_Manager, Role_ID):
-        self.Listing_ID = Listing_ID
-        self.Deadline = Deadline
-        self.Date_Posted = Date_Posted
-        self.Hiring_Manager = Hiring_Manager
-        self.Role_ID = Role_ID
-
-    def to_json(self):
-        return {
-            "Listing_ID": self.Listing_ID,
-            "Deadline": self.Deadline, 
-            "Date_Posted": self.Date_Posted,
-            "Hiring_Manager": self.Hiring_Manager,
-            "Role_ID": self.Role_ID
-        }
     
 @app.route("/joblistings")
 def findAllJobListings():
     # Perform joins to retrieve role listings with Hiring Manager and Role Name
     query = (
-        db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name)
+        db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name, Role.Role_Description, Role.Salary)
         .join(Staff, RoleListing.Hiring_Manager == Staff.Staff_ID)
         .join(Role, RoleListing.Role_ID == Role.Role_ID)
         .order_by(desc(RoleListing.Date_Posted))
@@ -59,17 +33,40 @@ def findAllJobListings():
 
     # Convert the results into a JSON format
     role_listings_json = []
-    for role_listing, hiring_manager_fname, hiring_manager_lname, role_name in results:
+    for role_listing, hiring_manager_fname, hiring_manager_lname, role_name, role_description, salary in results:
         role_listing_data = {
             "Listing_ID": role_listing.Listing_ID,
             "Deadline": str(role_listing.Deadline),
             "Date_Posted": str(role_listing.Date_Posted),
             "Hiring_Manager": hiring_manager_fname + " " + hiring_manager_lname,
-            "Role_Name": role_name
+            "Role_Name": role_name,
+            "Role_Description": role_description,
+            "Salary": salary,
+            "Skills": retrieveAllSkillsFromRoleListing(role_listing.Role_ID)
         }
         role_listings_json.append(role_listing_data)
 
     return role_listings_json;
+
+def retrieveAllSkillsFromRoleListing(Role_ID):
+    # Perform joins to retrieve role listings with Hiring Manager and Role Name
+    query = (
+        db.session.query(RoleSkillMapping, Skill.Skill_Name)
+        .join(Role, RoleSkillMapping.Role_ID == Role.Role_ID)
+        .join(Skill, RoleSkillMapping.Skill_ID == Skill.Skill_ID)
+        .filter(Role.Role_ID == Role_ID)
+    )
+
+    # Execute the query and retrieve the results
+    results = query.all()
+    print(results)
+
+    # Convert the results into a JSON format
+    skills_json = []
+    for skills_name in results:
+        skills_json.append(skills_name.Skill_Name)
+
+    return skills_json;
 
 # @app.route("/joblistings")
 # def findAllJobListings():
