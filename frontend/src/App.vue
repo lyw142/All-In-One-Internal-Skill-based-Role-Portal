@@ -14,7 +14,7 @@ export default {
   },
   computed: {
     show() {
-      return 3
+      return 2
     }
   }
 }

@@ -7,7 +7,7 @@ from models import RoleListing,Role, Staff, RoleSkillMapping, Skill;
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://' + \
-                                            'root' + \
+                                            'root:root' + \
                                             '@localhost:3306/SPM'
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_size': 100,
                                                'pool_recycle': 280}

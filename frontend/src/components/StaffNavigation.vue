@@ -36,10 +36,10 @@
       <!-- left role listing column -->
       <div class="col-5">
         <!-- card 1 -->
-        <div class="card mb-3">
+        <div class="card mb-3" v-for="job in joblistings">
           <div class="card-body">
             <div class="row">
-              <h5 class="card-title">Human Resources Officer</h5>
+              <h5 class="card-title">{{ job.Role_Name }}</h5>
             </div>
             <p class="card-text">Skills required:</p>
             <!-- skills container  -->
@@ -53,72 +53,10 @@
               <span class="badge text-bg-secondary">Secondary</span>
               <span class="badge text-bg-success">Success</span>
             </div>
-            <!-- short job description container  -->
-            <div class="container" style="padding-top: 10px;">
-              <ul>
-                <li>Process day-to-day Talent & Culture administration in an accurate and timely manner</li>
-                <li>Create and update employee data records in the Timesoft system</li>
-                <li>Test job description 3</li>
-              </ul>
-            </div>
+            <p style="padding-top: 10px;">Application deadline: {{ job.Deadline }}</p>
           </div>
         </div>
-
-        <div class="card mb-3">
-          <div class="card-body">
-            <div class="row">
-              <h5 class="card-title">Human Resources Officer</h5>
-            </div>
-            <p class="card-text">Skills required:</p>
-            <!-- skills container  -->
-            <div class="container">
-              <span class="badge text-bg-secondary">Secondary</span>
-              <span class="badge text-bg-secondary">Secondary</span>
-              <span class="badge text-bg-success">Success</span>
-              <span class="badge text-bg-secondary">Secondary</span>
-              <span class="badge text-bg-secondary">Secondary</span>
-              <span class="badge text-bg-secondary">Secondary</span>
-              <span class="badge text-bg-secondary">Secondary</span>
-              <span class="badge text-bg-success">Success</span>
-            </div>
-            <!-- short job description container  -->
-            <div class="container" style="padding-top: 10px;">
-              <ul>
-                <li>Process day-to-day Talent & Culture administration in an accurate and timely manner</li>
-                <li>Create and update employee data records in the Timesoft system</li>
-                <li>Test job description 3</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-        <!-- card 2  -->
-        <div class="card mb-3">
-          <div class="card-body">
-            <div class="row">
-              <h5 class="card-title">Human Resources Officer</h5>
-            </div>
-            <p class="card-text">Skills required:</p>
-            <!-- skills container  -->
-            <div class="container">
-              <span class="badge text-bg-secondary">Secondary</span>
-              <span class="badge text-bg-secondary">Secondary</span>
-              <span class="badge text-bg-success">Success</span>
-              <span class="badge text-bg-secondary">Secondary</span>
-              <span class="badge text-bg-secondary">Secondary</span>
-              <span class="badge text-bg-secondary">Secondary</span>
-              <span class="badge text-bg-secondary">Secondary</span>
-              <span class="badge text-bg-success">Success</span>
-            </div>
-            <!-- short job description container  -->
-            <div class="container" style="padding-top: 10px;">
-              <ul>
-                <li>Process day-to-day Talent & Culture administration in an accurate and timely manner</li>
-                <li>Create and update employee data records in the Timesoft system</li>
-                <li>Test job description 3</li>
-              </ul>
-            </div>
-          </div>
-        </div>
+        {{ joblistings }}
       </div>
       <div class="col-7">
         <div class="card" style="position: fixed;">
@@ -142,8 +80,18 @@
 
 
 <script>
+import axios from 'axios';
+
 
 export default {
+  data() {
+    return {
+      joblistings: []
+    }
+  },
+  mounted() {
+    axios.get('http://127.0.0.1:5000/joblistings').then(response => this.joblistings = response.data)
+  },
   name: "StaffNavigation",
 }
 </script>
