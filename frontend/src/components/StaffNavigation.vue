@@ -18,24 +18,20 @@
       </div>
       <div :style="{ display: 'flex' }">
         <div :style="{ width: '40%' }">
-          <div v-for="(role, index) in roles" :key="index">
+          <div v-for="role in roles" @click="selectedRole = role">
             <div class="card mb-3">
               <div class="card-body">
-                <h5 class="card-title">{{ role.title }}</h5>
-                <p class="card-text">
+                <h5 class="card-title">{{ role.Role_Name }}</h5>
+                <!-- <p class="card-text">
                   <strong>Skills Required:</strong>
                   <span v-for="(skill, index) in role.skills.split(',')" :key="index" class="skill-box">
                     {{ skill.trim() }}
                   </span>
-                </p>
-                <ul>
-                  <li v-for="(line, index) in role.description.split('\n')" :key="index">
-                    {{ line }}
-                  </li>
-                </ul>
+                </p> -->
+
                 <p class="card-text">
-                  <strong>Application Deadline:</strong> Closed in
-                  {{ role.deadline }} days
+                  <strong>Application Deadline:</strong>
+                  {{ role.Deadline }}
                 </p>
               </div>
             </div>
@@ -45,51 +41,22 @@
           <div class="card">
             <div>
               <div class="divider">
-                <h3 class="card-title">{{ selectedRole.title }}</h3>
-                <p>$2000-$2500 a month, Full time</p>
+                <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
+                <p>${{ selectedRole.Salary }} a month, Full time</p>
               </div>
               <div class="divider">
                 <h3 class="card-title">Role description</h3>
                 <div class="role-description">
-                  <strong>Job responsabilities</strong>
-                  <ol>
-                    <li>
-                      Bachelor's degree in Human Resources, Business
-                      Administration, or a related field (or equivalent
-                      experience).
-                    </li>
-                    <li>
-                      Strong communication skills, both written and verbal.
-                    </li>
-                    <li>Basic understanding of HR policies and procedures.</li>
-                    <!-- Add more description items as needed -->
-                  </ol>
-                </div>
-
-                <!-- Role Requirements -->
-                <div class="role-requirements">
-                  <strong>Role Requirements</strong>
-                  <ol>
-                    <li>
-                      Bachelor's degree in Human Resources, Business
-                      Administration, or a related field (or equivalent
-                      experience).
-                    </li>
-                    <li>
-                      Strong communication skills, both written and verbal.
-                    </li>
-                    <li>Basic understanding of HR policies and procedures.</li>
-                    <!-- Add more requirements as needed -->
-                  </ol>
+                  {{ selectedRole.Role_Description }}
                 </div>
               </div>
               <div class="skills">
                 <p>
                   <strong>Skills Required:</strong>
                 </p>
-                <span v-for="(skill, index) in selectedRole.skills.split(',')" :key="index" class="skill-box">
+                <!-- <span v-for="(skill, index) in selectedRole.skills.split(',')" :key="index" class="skill-box">
                   {{ skill.trim() }}
-                </span>
+                </span> -->
               </div>
               <div>
                 <button class="btn btn-secondary" style="margin: 10px;">Apply for role</button>
@@ -100,39 +67,17 @@
       </div>
     </div>
   </div>
+  {{ roles }}
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   data() {
     return {
-      openCount: 0,
-      closedCount: 0,
       searchQuery: "",
-      roles: [
-        {
-          title: "Human Resource (Entry Level)",
-          skills: "Communication, Recruitment, HR Policies",
-          description:
-            "We are seeking an Entry Level Human Resource professional to join our team. This role involves assisting with recruitment, onboarding, and HR policy compliance.\n Ideal candidates should have strong communication skills and a desire to grow in the field of HR.",
-          deadline: 7, // Number of days until the application deadline
-        },
-        {
-          title: "Human Resource Officer",
-          skills: "Employee Relations, Benefits Administration, HR Compliance",
-          description:
-            "We are looking for an experienced Human Resource Officer to manage HR functions, including employee relations, benefits administration, and ensuring HR compliance.\n The ideal candidate should have a strong background in HR and excellent problem-solving skills.",
-          deadline: 14, // Number of days until the application deadline
-        },
-        {
-          title: "Real Estate Sale Coordinator",
-          skills: "Real Estate Sales, Customer Service, Negotiation",
-          description:
-            "Join our real estate team as a Sale Coordinator!\n This role involves coordinating real estate transactions, providing excellent customer service to clients, and assisting with negotiations.\n If you have a passion for real estate and a customer-centric approach, we want to hear from you.",
-          deadline: 5, // Number of days until the application deadline
-        },
-        // Add more role objects as needed
-      ],
+      roles: [],
       selectedRole: {
         title: "Human Resource (Entry Level)",
         skills: "Communication, Recruitment, HR Policies",
@@ -142,6 +87,9 @@ export default {
       },
     };
   },
+  mounted() {
+    axios.get('http://127.0.0.1:5000/joblistings').then(response => this.roles = response.data)
+  }
 };
 </script>
 
