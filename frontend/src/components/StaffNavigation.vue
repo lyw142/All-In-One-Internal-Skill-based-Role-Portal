@@ -18,8 +18,8 @@
       </div>
       <div :style="{ display: 'flex' }">
         <div :style="{ width: '40%' }">
-          <div v-for="role in roles" @click="selectRole(role)">
-            <div class="card mb-3">
+          <div v-for="role in roles" @click="selectRole(role)" :class="{ 'selectedCard': role === selectedRole }">
+            <div class="card mb-3" :class="{ 'active-card': role === selectedRole }">
               <div class="card-body">
                 <h5 class="card-title">{{ role.Role_Name }}</h5>
                 <p class="card-text">
@@ -38,7 +38,7 @@
           </div>
         </div>
         <div :style="{ width: '60%', marginLeft: '16px' }">
-          <div class="card" v-if="isCardClicked" style="position: fixed;">
+          <div class="card" v-if="isCardClicked" style="position: fixed;" :style="{ borderColor: borderColor }">
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
@@ -78,7 +78,8 @@ export default {
       searchQuery: "",
       roles: [],
       selectedRole: {},
-      isCardClicked: false
+      isCardClicked: false,
+      borderColor: 'green'
     };
   },
   methods: {
@@ -88,12 +89,17 @@ export default {
     },
   },
   mounted() {
-    axios.get('http://127.0.0.1:5000/joblistings').then(response => this.roles = response.data)
+    axios.get('http://127.0.0.1:5000/api/joblistings').then(response => this.roles = response.data)
   }
 };
 </script>
 
 <style scoped>
+.active-card {
+  border: 2px solid green;
+  /* Set the border color for the active card */
+}
+
 /* Existing navbar styles */
 .navbar {
   display: flex;
