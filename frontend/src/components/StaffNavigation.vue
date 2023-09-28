@@ -38,7 +38,7 @@
           </div>
         </div>
         <div :style="{ width: '60%', marginLeft: '16px' }">
-          <div class="card" v-if="isCardClicked">
+          <div class="card" v-if="isCardClicked" style="position: fixed;">
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>

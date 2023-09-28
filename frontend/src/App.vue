@@ -13,15 +13,15 @@ export default {
   },
   computed: {
     show() {
-      return 2
+      return 1
     }
   }
 }
 </script>
 
 <template>
-  <StaffNavigation v-if="show == 2" />
-  <testform v-if="show == 3" />
+  <StaffNavigation v-if="show == 1" />
+  <testform v-if="show == 2" />
 </template>
 
 <style>
