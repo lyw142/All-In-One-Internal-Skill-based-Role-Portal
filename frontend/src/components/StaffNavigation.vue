@@ -18,16 +18,16 @@
       </div>
       <div :style="{ display: 'flex' }">
         <div :style="{ width: '40%' }">
-          <div v-for="role in roles" @click="selectedRole = role">
+          <div v-for="role in roles" @click="selectRole(role)">
             <div class="card mb-3">
               <div class="card-body">
                 <h5 class="card-title">{{ role.Role_Name }}</h5>
-                <!-- <p class="card-text">
+                <p class="card-text">
                   <strong>Skills Required:</strong>
-                  <span v-for="(skill, index) in role.skills.split(',')" :key="index" class="skill-box">
+                  <span v-for="skill in role.Skills" class="skill-box">
                     {{ skill.trim() }}
                   </span>
-                </p> -->
+                </p>
 
                 <p class="card-text">
                   <strong>Application Deadline:</strong>
@@ -38,7 +38,7 @@
           </div>
         </div>
         <div :style="{ width: '60%', marginLeft: '16px' }">
-          <div class="card">
+          <div class="card" v-if="isCardClicked">
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
@@ -54,9 +54,9 @@
                 <p>
                   <strong>Skills Required:</strong>
                 </p>
-                <!-- <span v-for="(skill, index) in selectedRole.skills.split(',')" :key="index" class="skill-box">
+                <span v-for="skill in selectedRole.Skills" class="skill-box">
                   {{ skill.trim() }}
-                </span> -->
+                </span>
               </div>
               <div>
                 <button class="btn btn-secondary" style="margin: 10px;">Apply for role</button>
@@ -67,7 +67,6 @@
       </div>
     </div>
   </div>
-  {{ roles }}
 </template>
 
 <script>
@@ -78,14 +77,15 @@ export default {
     return {
       searchQuery: "",
       roles: [],
-      selectedRole: {
-        title: "Human Resource (Entry Level)",
-        skills: "Communication, Recruitment, HR Policies",
-        description:
-          "We are seeking an Entry Level Human Resource professional to join our team. This role involves assisting with recruitment, onboarding, and HR policy compliance.\n Ideal candidates should have strong communication skills and a desire to grow in the field of HR.",
-        deadline: 7, // Number of days until the application deadline
-      },
+      selectedRole: {},
+      isCardClicked: false
     };
+  },
+  methods: {
+    selectRole(role) {
+      this.selectedRole = role;
+      this.isCardClicked = true;
+    },
   },
   mounted() {
     axios.get('http://127.0.0.1:5000/joblistings').then(response => this.roles = response.data)
