@@ -18,8 +18,8 @@
       </div>
       <div :style="{ display: 'flex' }">
         <div :style="{ width: '40%' }">
-          <div v-for="role in roles" @click="selectRole(role)" :class="{ 'selectedCard': role === selectedRole }">
-            <div class="card mb-3" :class="{ 'active-card': role === selectedRole }">
+          <div v-for="role in roles" @click="selectRole(role)">
+            <div class="card mb-3">
               <div class="card-body">
                 <h5 class="card-title">{{ role.Role_Name }}</h5>
                 <p class="card-text">
@@ -38,7 +38,7 @@
           </div>
         </div>
         <div :style="{ width: '60%', marginLeft: '16px' }">
-          <div class="card" v-if="isCardClicked" style="position: fixed;" :style="{ borderColor: borderColor }">
+          <div class="card" v-if="isCardClicked" style="position: fixed;">
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
@@ -79,7 +79,6 @@ export default {
       roles: [],
       selectedRole: {},
       isCardClicked: false,
-      borderColor: 'green'
     };
   },
   methods: {
@@ -95,11 +94,6 @@ export default {
 </script>
 
 <style scoped>
-.active-card {
-  border: 2px solid green;
-  /* Set the border color for the active card */
-}
-
 /* Existing navbar styles */
 .navbar {
   display: flex;
