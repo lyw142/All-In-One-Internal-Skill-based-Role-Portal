@@ -94,15 +94,17 @@ class Role(db.Model):
 
     Role_ID = db.Column(db.Integer, primary_key=True)
     Role_Name = db.Column(db.String(20), nullable=False)
-    Role_Description = db.Column(db.String(1000), nullable=False)
+    Role_Responsibilities = db.Column(db.String(1000), nullable=False)
+    Role_Requirements = db.Column(db.String(1000), nullable=False)
     Salary = db.Column(db.String(20), nullable=False)
     Dept = db.Column(db.String(50), nullable=False)
     
     
 
-    def __init__(self, Role_Name, Role_Description, Salary, Dept):
+    def __init__(self, Role_Name, Role_Responsibilities, Role_Requirements, Salary, Dept):
         self.Role_Name = Role_Name
-        self.Role_Description = Role_Description
+        self.Role_Responsibilities = Role_Responsibilities
+        self.Role_Requirements = Role_Requirements
         self.Salary = Salary
         self.Dept = Dept
         
@@ -111,7 +113,8 @@ class Role(db.Model):
         return {
             "Role_ID": self.Role_ID,
             "Role_Name": self.Role_Name,
-            "Role_Description": self.Role_Description,
+            "Role_Responsibilties": self.Role_Responsibilities,
+            "Role_Requirements": self.Role_Requirements,
             "Salary": self.Salary,
             "Dept": self.Dept
         }
