@@ -101,15 +101,15 @@ def retrieveAllSkillsFromRoleListing(Role_ID):
 
     return skills_json
 
-@api.route("/getRoleListing/<int:role_id>")
-def getRoleListing(role_id):
+@api.route("/getRoleListing/<int:listing_id>")
+def getRoleListing(listing_id):
     try:
-        # Perform joins to retrieve role listings with Hiring Manager and Role Name for the specified Role_ID
+        # Perform joins to retrieve role listings with Hiring Manager and Role Name for the specified Listing_ID
         query = (
             db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name, Role.Role_Responsibilities, Role.Role_Requirements, Role.Salary)
             .join(Staff, RoleListing.Hiring_Manager == Staff.Staff_ID)
             .join(Role, RoleListing.Role_ID == Role.Role_ID)
-            .filter(RoleListing.Role_ID == role_id)  # Filter by the specified Role_ID
+            .filter(RoleListing.Listing_ID == listing_id)  # Filter by the specified Listing_ID
             .order_by(desc(RoleListing.Date_Posted))
         )
 
@@ -136,3 +136,37 @@ def getRoleListing(role_id):
 
     except Exception as e:
         return jsonify({"message": "Error retrieving role listings", "error": str(e)}), 500
+
+@api.route("/updateRoleListing/<int:listing_id>", methods=["POST"])
+def updateRoleListing(listing_id):
+    try:
+        # Retrieve the role listing based on listing_id
+        role_listing = RoleListing.query.get(listing_id)
+
+        if not role_listing:
+            return jsonify({"message": "Role listing not found"}), 404
+
+        # Get the JSON data from the request
+        data = request.get_json()
+
+        # Update the role listing attributes
+        role_listing.Deadline = data["Deadline"]
+
+        # Fetch the corresponding Role object
+        role = Role.query.get(role_listing.Role_ID)
+
+        # Update the Role attributes
+        if role:
+            role.Role_Responsibilities = data["Role_Responsibilities"]
+            role.Role_Requirements = data["Role_Requirements"]
+        else:
+            # Handle the case where the corresponding Role is not found
+            return jsonify({"message": "Role not found"}), 404
+
+        # Commit changes to the database
+        db.session.commit()
+
+        return jsonify({"message": "Role listing updated successfully"})
+
+    except Exception as e:
+        return jsonify({"message": "Error updating role listing", "error": str(e)}), 500
