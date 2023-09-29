@@ -3,6 +3,7 @@ api.py
 - provides the API endpoints for consuming and producing
   REST requests and responses
 """
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 # from models import db, 
 from models import db, Staff, Role, Staff, Skill, RoleSkillMapping, RoleListing
@@ -170,3 +171,38 @@ def updateRoleListing(listing_id):
 
     except Exception as e:
         return jsonify({"message": "Error updating role listing", "error": str(e)}), 500
+
+# filter and show closed listings
+@api.route("/closedjoblistings")
+def findClosedJobListings():
+    current_date = datetime.now()
+
+    # Perform joins to retrieve role listings with Hiring Manager and Role Name
+    query = (
+        db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name, Role.Role_Responsibilities, Role.Role_Requirements, Role.Salary)
+        .join(Staff, RoleListing.Hiring_Manager == Staff.Staff_ID)
+        .join(Role, RoleListing.Role_ID == Role.Role_ID)
+        .filter(RoleListing.Deadline < current_date)  # Filter by Deadline smaller than current date
+        .order_by(desc(RoleListing.Date_Posted))
+    )
+
+    # Execute the query and retrieve the results
+    results = query.all()
+
+    # Convert the results into a JSON format
+    role_listings_json = []
+    for role_listing, hiring_manager_fname, hiring_manager_lname, role_name, role_responsibilities, role_requirements, salary in results:
+        role_listing_data = {
+            "Listing_ID": role_listing.Listing_ID,
+            "Deadline": str(role_listing.Deadline),
+            "Date_Posted": str(role_listing.Date_Posted),
+            "Hiring_Manager": hiring_manager_fname + " " + hiring_manager_lname,
+            "Role_Name": role_name,
+            "Role_Responsibilities": role_responsibilities,
+            "Role_Requirements": role_requirements,
+            "Salary": salary,
+            "Skills": retrieveAllSkillsFromRoleListing(role_listing.Role_ID)
+        }
+        role_listings_json.append(role_listing_data)
+
+    return jsonify(role_listings_json)
