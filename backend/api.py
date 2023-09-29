@@ -14,40 +14,111 @@ api = Blueprint('api', __name__)
 
 @api.route("/createjoblisting", methods=['POST'])
 def createListing():
-    try:
-        # Parse the JSON data from the request
-        data = request.get_json()
-
-        # Extract data from the JSON request
-        deadline = data['Deadline']
-        date_posted = data['Date_Posted']
-        hiring_manager_id = data['Hiring_Manager']
-        role_id = data['Role_ID']
-
-        # Check if the Role and Hiring Manager exist
-        role = Role.query.get(role_id)
-        if not role:
-            return jsonify({"message": "Role not found"}), 404
-
-        # Create a new RoleListing object
-        listing = RoleListing(
-            Deadline=deadline,
-            Date_Posted=date_posted,
-            Hiring_Manager=hiring_manager_id,
-            Role_ID=role_id
+    data = request.get_json()
+    
+    # Check if the Role_Name already exists in the database
+    existing_role = Role.query.filter_by(Role_Name=data['Role_Name']).first()
+    
+    if existing_role:
+        # Create a new RoleListing entry for the existing role
+        role_listing = RoleListing(
+            Deadline=data['Deadline'],
+            Date_Posted=data['Date_Posted'],
+            Hiring_Manager=data['Hiring_Manager'],
+            Role_ID=existing_role.Role_ID  # Use the existing role's ID
         )
-
-        # Add the new listing to the database session and commit
-        db.session.add(listing)
+        db.session.add(role_listing)
+        db.session.commit()
+        
+        return jsonify({"message": "Role already exists, new listing created."}), 200  # HTTP 200 OK status code
+    else:
+        new_role = Role(
+            Role_Name=data['Role_Name'],
+            Role_Responsibilities=data['Role_Responsibilities'],
+            Role_Requirements=data['Role_Requirements'],
+            Salary=data['Salary'],
+            Dept=data['Dept']
+        )
+        
+        db.session.add(new_role)
         db.session.commit()
 
-        # Return a success message
-        return jsonify({"message": "Role listing created successfully"}), 201
+        new_role = Role.query.filter_by(Role_Name=data['Role_Name']).first()
+        
+        # Query the Skill table to get the Skill_ID for the given Skill_Name
+        skill = Skill.query.filter_by(Skill_Name=data['Skill']).first()
 
-    except Exception as e:
-        # Handle any exceptions that may occur during the process
-        db.session.rollback()  # Rollback the transaction in case of an error
-        return jsonify({"message": "Error creating role listing", "error": str(e)}), 500
+        if skill:
+            skill_id = skill.Skill_ID
+        else:
+            # Create a new Skill object if the Skill_Name does not exist in the database
+            new_skill = Skill(
+                Skill_Name=data['Skill'],
+                Skill_Status = "Active"
+            )
+            db.session.add(new_skill)
+            db.session.commit()
+
+            # Retrieve the new Skill_ID
+            skill_id = Skill.query.filter_by(Skill_Name=data['Skill']).first().Skill_ID
+
+        new_role_skill = RoleSkillMapping(
+            Skill_ID=skill_id,
+            Role_ID=new_role.Role_ID
+        )
+        db.session.add(new_role_skill)
+        db.session.commit()
+
+        # Create a new RoleListing entry
+        role_listing = RoleListing(
+            Deadline=data['Deadline'],
+            Date_Posted=data['Date_Posted'],
+            Hiring_Manager=data['Hiring_Manager'],
+            Role_ID=new_role.Role_ID
+        )
+        db.session.add(role_listing)
+        db.session.commit()
+
+        
+        return jsonify({"message": "Role created successfully, Role_SKill mapped and New Listing created."}), 201  # HTTP 201 Created status code
+
+
+    #  OLD CODE   
+    # ----------------------------------------------
+    # try:
+    #     # Parse the JSON data from the request
+    #     data = request.get_json()
+
+    #     # Extract data from the JSON request
+    #     deadline = data['Deadline']
+    #     date_posted = data['Date_Posted']
+    #     hiring_manager_id = data['Hiring_Manager']
+    #     role_id = data['Role_ID']
+
+    #     # Check if the Role and Hiring Manager exist
+    #     role = Role.query.get(role_id)
+    #     if not role:
+    #         return jsonify({"message": "Role not found"}), 404
+
+    #     # Create a new RoleListing object
+    #     listing = RoleListing(
+    #         Deadline=deadline,
+    #         Date_Posted=date_posted,
+    #         Hiring_Manager=hiring_manager_id,
+    #         Role_ID=role_id
+    #     )
+
+    #     # Add the new listing to the database session and commit
+    #     db.session.add(listing)
+    #     db.session.commit()
+
+    #     # Return a success message
+    #     return jsonify({"message": "Role listing created successfully"}), 201
+
+    # except Exception as e:
+    #     # Handle any exceptions that may occur during the process
+    #     db.session.rollback()  # Rollback the transaction in case of an error
+    #     return jsonify({"message": "Error creating role listing", "error": str(e)}), 500
 
 
 
