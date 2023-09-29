@@ -16,9 +16,9 @@
           <input type="text" class="form-control" placeholder="Search for a role..." v-model="searchQuery" />
         </div>
       </div>
-      <div :style="{ display: 'flex' }">
+      <div :style="{ display: 'flex' }" v-if="roles.length > 0">
         <div :style="{ width: '40%' }">
-          <div v-for="role in roles" @click="selectRole(role)">
+          <div v-for="role in roles" @click="selectRole(role), countMatchingSkills(role)">
             <div :class="{ 'card': true, 'green-border': role === selectedRole, 'mb-3': true }">
               <div class="card-body">
                 <h5 class="card-title">{{ role.Role_Name }}</h5>
@@ -70,8 +70,10 @@
               </div>
               <div class="skills">
                 <p>
-                  <strong>Skills Required:</strong>
+                  <strong>How you match</strong>
                 </p>
+                <p>{{ countMatchingSkills(selectedRole) }} skill(s) on your profile, {{ selectedRole.Skills.length -
+                  countMatchingSkills(selectedRole) }} skill(s) missing from your profile</p>
                 <span v-for="skill in selectedRole.Skills" class="skill-box" :style="{
                   backgroundColor: userSkills.includes(skill.trim()) ? '#50A050' : 'rgba(25, 135, 84, 0.1)',
                   color: userSkills.includes(skill.trim()) ? 'white' : 'inherit'
@@ -85,6 +87,9 @@
             </div>
           </div>
         </div>
+      </div>
+      <div v-if="roles.length == 0">
+        There are no available roles at the moment
       </div>
     </div>
   </div>
@@ -111,10 +116,16 @@ export default {
     },
     toggleActive() {
       this.isActive = !this.isActive;
-    }
+    },
+    countMatchingSkills(role) {
+      // Filter the role.Skills array to include only skills that are in userSkills
+      const matchingSkills = role.Skills.filter(skill => this.userSkills.includes(skill.trim()));
+      // Return the count of matching skills
+      return matchingSkills.length;
+    },
   },
   mounted() {
-    axios.get('http://127.0.0.1:5000/api/openjoblistings').then(response => this.roles = response.data)
+    axios.get('http://127.0.0.1:5000/api/openjoblistings').then(response => this.roles = response.data);
   }
 };
 </script>
