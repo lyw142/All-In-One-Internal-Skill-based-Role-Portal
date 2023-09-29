@@ -225,3 +225,61 @@ def getSkills():
 
     except Exception as e:
         return jsonify({"message": "Error retrieving skills", "error": str(e)}), 500
+    
+@api.route("/filterRoleListingBySkill/<list_of_skill_id>")
+def filterRoleListingBySkill(list_of_skill_id):
+    selected_skill_ids = []
+
+    # List of selected skill IDs
+    for x in range(len(list_of_skill_id)):
+        selected_skill_ids.append(list_of_skill_id[x])
+
+    # Create a subquery to find role IDs that meet all selected skills
+    subquery = (
+        db.session.query(RoleSkillMapping.Role_ID)
+        .filter(RoleSkillMapping.Skill_ID.in_(selected_skill_ids))
+        .group_by(RoleSkillMapping.Role_ID)
+        .having(db.func.count(RoleSkillMapping.Skill_ID.distinct()) == len(selected_skill_ids))
+        .subquery()
+    )
+
+    # Query the RoleListing table to find role listings based on the subquery
+    role_listings = (
+        db.session.query(
+            RoleListing.Listing_ID,
+            RoleListing.Deadline,
+            RoleListing.Date_Posted,
+            RoleListing.Role_ID,
+            db.func.concat(Staff.Staff_FName, " ", Staff.Staff_LName).label("Hiring_Manager_Name"),
+            Role.Role_Name,
+            Role.Role_Responsibilities,
+            Role.Role_Requirements,
+            Role.Salary,
+        )
+        .join(Staff, RoleListing.Hiring_Manager == Staff.Staff_ID)
+        .join(Role, RoleListing.Role_ID == Role.Role_ID)
+        .join(subquery, RoleListing.Role_ID == subquery.c.Role_ID)
+        .order_by(db.desc(RoleListing.Date_Posted))
+        .all()
+    )
+
+
+    # Convert the query results into JSON format
+    role_listings_json = []
+
+    for role_listing, deadline, date_posted, role_id, hiring_manager_name, role_name, role_responsibilites, role_requirements, salary in role_listings:
+        role_listing_data = {
+            "Listing_ID": role_listing,
+            "Deadline": str(deadline),
+            "Date_Posted": str(date_posted),
+            "Hiring_Manager": hiring_manager_name,
+            "Role_Name": role_name,
+            "Role_Responsibilities": role_responsibilites,
+            "Role_Requirements" : role_requirements,
+            "Salary": salary,
+            "Skills": retrieveAllSkillsFromRoleListing(role_id)
+        }
+        role_listings_json.append(role_listing_data)
+
+    # Return the JSON response
+    return jsonify(role_listings_json)
