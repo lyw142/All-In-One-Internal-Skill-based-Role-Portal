@@ -51,13 +51,16 @@ def createListing():
 
 
 
-@api.route("/joblistings")
-def findAllJobListings():
+@api.route("/openjoblistings")
+def findAllOpenJobListings():
+    current_date = datetime.now()
+
     # Perform joins to retrieve role listings with Hiring Manager and Role Name
     query = (
         db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name, Role.Role_Responsibilities, Role.Role_Requirements, Role.Salary)
         .join(Staff, RoleListing.Hiring_Manager == Staff.Staff_ID)
         .join(Role, RoleListing.Role_ID == Role.Role_ID)
+        .filter(RoleListing.Deadline >= current_date)  # Filter by Deadline
         .order_by(desc(RoleListing.Date_Posted))
     )
 
@@ -80,7 +83,7 @@ def findAllJobListings():
         }
         role_listings_json.append(role_listing_data)
 
-    return role_listings_json
+    return jsonify(role_listings_json)
 
 def retrieveAllSkillsFromRoleListing(Role_ID):
     # Perform joins to retrieve role listings with Hiring Manager and Role Name
