@@ -19,12 +19,15 @@
       <div :style="{ display: 'flex' }">
         <div :style="{ width: '40%' }">
           <div v-for="role in roles" @click="selectRole(role)">
-            <div class="card mb-3">
+            <div :class="{ 'card': true, 'green-border': role === selectedRole, 'mb-3': true }">
               <div class="card-body">
                 <h5 class="card-title">{{ role.Role_Name }}</h5>
                 <p class="card-text">
                   <strong>Skills Required:</strong>
-                  <span v-for="skill in role.Skills" class="skill-box">
+                  <span v-for="skill in role.Skills" class="skill-box" :style="{
+                    backgroundColor: userSkills.includes(skill.trim()) ? '#50A050' : 'rgba(25, 135, 84, 0.1)',
+                    color: userSkills.includes(skill.trim()) ? 'white' : 'inherit'
+                  }">
                     {{ skill.trim() }}
                   </span>
                 </p>
@@ -38,7 +41,7 @@
           </div>
         </div>
         <div :style="{ width: '60%', marginLeft: '16px' }">
-          <div class="card" v-if="isCardClicked" style="position: fixed;">
+          <div class="card overflow-y-auto" v-if="isCardClicked" id="roledescription">
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
@@ -47,14 +50,32 @@
               <div class="divider">
                 <h3 class="card-title">Role description</h3>
                 <div class="role-description">
-                  {{ selectedRole.Role_Description }}
+                  <strong>Job responsibilities</strong>
+                  <ul>
+                    <li v-for="line in selectedRole.Role_Responsibilities.split('\n')">
+                      {{ line }}
+                    </li>
+                  </ul>
+                </div>
+
+                <!-- Role Requirements -->
+                <div class="role-requirements">
+                  <strong>Role Requirements</strong>
+                  <ul>
+                    <li v-for="line in selectedRole.Role_Requirements.split('\n')">
+                      {{ line }}
+                    </li>
+                  </ul>
                 </div>
               </div>
               <div class="skills">
                 <p>
                   <strong>Skills Required:</strong>
                 </p>
-                <span v-for="skill in selectedRole.Skills" class="skill-box">
+                <span v-for="skill in selectedRole.Skills" class="skill-box" :style="{
+                  backgroundColor: userSkills.includes(skill.trim()) ? '#50A050' : 'rgba(25, 135, 84, 0.1)',
+                  color: userSkills.includes(skill.trim()) ? 'white' : 'inherit'
+                }">
                   {{ skill.trim() }}
                 </span>
               </div>
@@ -79,6 +100,8 @@ export default {
       roles: [],
       selectedRole: {},
       isCardClicked: false,
+      isActive: false,
+      userSkills: ["Java", "Programming", "English"],
     };
   },
   methods: {
@@ -86,6 +109,9 @@ export default {
       this.selectedRole = role;
       this.isCardClicked = true;
     },
+    toggleActive() {
+      this.isActive = !this.isActive;
+    }
   },
   mounted() {
     axios.get('http://127.0.0.1:5000/api/joblistings').then(response => this.roles = response.data)
@@ -164,7 +190,16 @@ export default {
   margin-bottom: 10px;
 }
 
-.card,
+.card {
+  text-align: left;
+}
+
+.green-border {
+  border-color: #4e855a;
+  border-width: 2px;
+  border-style: solid;
+}
+
 .card-body {
   text-align: left;
 }
@@ -192,4 +227,12 @@ export default {
 .skills {
   padding: 12px 36px;
 }
+
+#roledescription {
+  height: 75%;
+  position: fixed;
+  border-color: #4e855a;
+  border-width: 2px;
+}
 </style>
+
