@@ -114,7 +114,7 @@ export default {
     }
   },
   mounted() {
-    axios.get('http://127.0.0.1:5000/api/joblistings').then(response => this.roles = response.data)
+    axios.get('http://127.0.0.1:5000/api/openjoblistings').then(response => this.roles = response.data)
   }
 };
 </script>
