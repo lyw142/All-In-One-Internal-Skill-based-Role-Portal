@@ -99,3 +99,19 @@ def retrieveAllSkillsFromRoleListing(Role_ID):
         skills_json.append(skills_name.Skill_Name)
 
     return skills_json;
+
+#skills api endpoint (clement)
+@api.route("/skills", methods=['GET'])  # Define a new endpoint for retrieving skills
+def getSkills():
+    try:
+        # Query the database to retrieve all skills
+        skills = Skill.query.all()
+
+        # Convert the skills to a list of dictionaries
+        skills_data = [{"Skill_ID": skill.Skill_ID, "Skill_Name": skill.Skill_Name, "Skill_Status": skill.Skill_Status} for skill in skills]
+
+        # Return the skills as JSON response
+        return jsonify(skills_data), 200
+
+    except Exception as e:
+        return jsonify({"message": "Error retrieving skills", "error": str(e)}), 500

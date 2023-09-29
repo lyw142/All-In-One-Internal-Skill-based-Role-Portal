@@ -12,8 +12,31 @@
 
     <div class="container mt-4">
       <div class="row mb-4">
-        <div class="col-md-8">
+        <div class="col-md-10">
           <input type="text" class="form-control" placeholder="Search for a role..." v-model="searchQuery" />
+        </div>
+        <div class="col-md-2">
+          <!-- Filter dropdown for skills selection -->
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Filter by Skills
+            </button>
+            <div class="dropdown-menu" aria-labelledby="skillsDropdown">
+              <!-- Checklist of skills with checkboxes -->
+              <div v-for="skill in skills" :key="skill.Skill_ID">
+                <label class="checkbox-label">
+                  <input type="checkbox" v-model="selectedSkills" :value="skill.Skill_Name" class="checkbox-input" />
+                  <span class="checkbox-text">{{ skill.Skill_Name }}</span>
+                </label>
+              </div>
+              <!-- Action buttons -->
+              <button class="dismiss-button" @click="cancelFilter">×</button>
+              <div class="filter-buttons">
+                <button class="btn btn-secondary" @click="clearFilter">Clear Filter</button>
+                <button class="btn btn-primary" @click="applyFilter">Show Results</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
       <div :style="{ display: 'flex' }">
@@ -38,7 +61,7 @@
           </div>
         </div>
         <div :style="{ width: '60%', marginLeft: '16px' }">
-          <div class="card" v-if="isCardClicked" style="position: fixed;">
+          <div class="card" v-if="isCardClicked" style="width: 100%; position: auto;">
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
@@ -70,7 +93,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import axios from 'axios';
 
 export default {
   data() {
@@ -79,6 +102,8 @@ export default {
       roles: [],
       selectedRole: {},
       isCardClicked: false,
+      skills: [], // Add an empty array to store skills
+      selectedSkills: [], // Add an empty array for selected skills
     };
   },
   methods: {
@@ -86,12 +111,39 @@ export default {
       this.selectedRole = role;
       this.isCardClicked = true;
     },
+    // Function to fetch skills from the API
+    fetchSkills() {
+      axios.get('http://127.0.0.1:5000/api/skills') // Replace with your API endpoint URL
+        .then(response => {
+          this.skills = response.data; // Store skills in the 'skills' data property
+        })
+        .catch(error => {
+          console.error('Error fetching skills:', error);
+        });
+    },
+    clearFilter() {
+      // Uncheck all selected skills without closing the dropdown
+      this.selectedSkills = [];
+    },
   },
   mounted() {
-    axios.get('http://127.0.0.1:5000/api/joblistings').then(response => this.roles = response.data)
-  }
+    // Call the method to fetch skills when the component is mounted
+    this.fetchSkills();
+
+    axios.get('http://127.0.0.1:5000/api/joblistings')
+      .then(response => {
+        this.roles = response.data;
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  },
 };
 </script>
+
+
+
+
 
 <style scoped>
 /* Existing navbar styles */
@@ -130,6 +182,7 @@ export default {
   margin-top: 20px;
 }
 
+/* Buttons */
 .btn-success {
   background-color: #28a745;
 }
@@ -139,14 +192,18 @@ export default {
 }
 
 .btn-primary {
-  background-color: #007bff;
+  background-color: rgba(25, 135, 84, 0.1); /* Start with green color */
+  color: #000; /* Black text */
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 
 /* Adjust button text color */
-.btn-success,
-.btn-secondary,
-.btn-primary {
-  color: #fff;
+.btn-primary:hover {
+  background-color: rgba(25, 135, 84, 0.8); /* Darker green on hover */
+  color: #fff; /* White text on hover */
 }
 
 /* Style the search input */
@@ -158,6 +215,7 @@ export default {
   border-radius: 5px;
 }
 
+/* Card styles */
 .card-title {
   font-size: 24px;
   font-weight: bold;
@@ -191,5 +249,80 @@ export default {
 
 .skills {
   padding: 12px 36px;
+}
+
+/* Dropdown styles */
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-toggle {
+  background-color: rgba(25, 135, 84, 0.1); /* Updated to green color */
+  color: #333;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  display: none;
+  width: 300px; /* Increased width for more space */
+  background-color: #fff;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+  padding: 10px; /* Added padding to the modal */
+}
+
+.dropdown-menu.show {
+  display: block;
+}
+
+.dismiss-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: #333; /* Reverted to grey */
+}
+
+/* Swap the positions of "Show Results" and "Clear Filter" buttons */
+.filter-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px; /* Added margin to separate buttons from checkboxes */
+  order: 1; /* Swap the order */
+}
+
+/* Remove the blue outline from the "Show Results" button */
+.btn-primary {
+  background-color: rgba(25, 135, 84, 0.1); /* Updated to green color */
+  color: #000; /* Black text */
+  border: none;
+}
+
+/* Add hover animation for the "Show Results" button */
+.btn-primary:hover {
+  background-color: rgba(25, 135, 84, 0.8); /* Darker shade of green */
+  color: #fff; /* Font color */
+}
+
+/* Revert to original checkbox styles */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 5px 0; /* Added padding between checkbox items */
+}
+
+.checkbox-label input[type="checkbox"] {
+  margin-right: 10px;
 }
 </style>
