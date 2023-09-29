@@ -53,10 +53,21 @@
   
   
 <script>
+import axios from 'axios'
 
 export default {
-    name: "testform",
-}
+    data() {
+        return {
+
+        };
+    },
+    methods: {
+
+    },
+    mounted() {
+        axios.get('http://127.0.0.1:5000/api/joblistings').then(response => this.roles = response.data)
+    }
+};
 </script>
   
 <style scoped>
