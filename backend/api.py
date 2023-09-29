@@ -6,7 +6,7 @@ api.py
 from datetime import datetime
 from flask import Blueprint, request, jsonify
 # from models import db, 
-from models import db, Staff, Role, Staff, Skill, RoleSkillMapping, RoleListing
+from models import Staff_Skill, db, Staff, Role, Staff, Skill, RoleSkillMapping, RoleListing
 from sqlalchemy import desc
 api = Blueprint('api', __name__)
 
@@ -283,3 +283,30 @@ def filterRoleListingBySkill(list_of_skill_id):
 
     # Return the JSON response
     return jsonify(role_listings_json)
+
+@api.route("/getStaffSkills/<int:staff_id>")
+def getStaffSkills(staff_id):
+    try:
+        query = (
+            db.session.query(Staff_Skill, Skill.Skill_Name)
+            .join(Skill, Staff_Skill.Skill_ID == Skill.Skill_ID)
+            .filter(Staff_Skill.Staff_ID == staff_id) 
+        )
+
+        # Execute the query and retrieve the results
+        results = query.all()
+
+        # Convert the results into a JSON format
+        staff_json = []
+
+        for staff_skill, skill_name in results:
+            staff_skill_data = {
+                "Skill_ID": staff_skill.Skill_ID,
+                "Skill_Name": skill_name,
+            }
+            staff_json.append(staff_skill_data)
+
+        return jsonify(staff_json)
+
+    except Exception as e:
+        return jsonify({"message": "Error retrieving Staff's Skill", "error": str(e)}), 500
