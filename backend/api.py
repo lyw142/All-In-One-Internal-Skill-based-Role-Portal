@@ -8,6 +8,8 @@ from flask import Blueprint, request, jsonify
 # from models import db, 
 from models import Staff_Skill, db, Staff, Role, Staff, Skill, RoleSkillMapping, RoleListing
 from sqlalchemy import desc
+from flask import Flask
+from flask_cors import CORS
 api = Blueprint('api', __name__)
 
 
@@ -225,16 +227,14 @@ def getSkills():
 
     except Exception as e:
         return jsonify({"message": "Error retrieving skills", "error": str(e)}), 500
-    
+
+#filter by skills
+
 @api.route("/filterRoleListingBySkill/<list_of_skill_id>")
 def filterRoleListingBySkill(list_of_skill_id):
-    selected_skill_ids = []
-
-    # List of selected skill IDs
-    for x in range(len(list_of_skill_id)):
-        selected_skill_ids.append(list_of_skill_id[x])
-
-    # Create a subquery to find role IDs that meet all selected skills
+    
+    selected_skill_ids = list_of_skill_id.split(',')
+    
     subquery = (
         db.session.query(RoleSkillMapping.Role_ID)
         .filter(RoleSkillMapping.Skill_ID.in_(selected_skill_ids))
@@ -283,6 +283,32 @@ def filterRoleListingBySkill(list_of_skill_id):
 
     # Return the JSON response
     return jsonify(role_listings_json)
+
+# @api.route("/filterRoleListingBySkills", methods=["POST"])
+# def filter_role_listing_by_skills():
+#     # Get the selected skills from the request
+#     selected_skills = request.json.get("selectedSkills", [])
+
+#     # Filter role listings based on selected skills
+#     filtered_listings = [listing for listing in role_listings if all(skill in listing["Skills"] for skill in selected_skills)]
+
+#     # Convert the filtered listings into a JSON format
+#     role_listings_json = []
+#     for listing in filtered_listings:
+#         role_listing_data = {
+#             "Listing_ID": listing["Listing_ID"],
+#             "Deadline": listing["Deadline"].strftime("%Y-%m-%d"),
+#             "Date_Posted": listing["Date_Posted"].strftime("%Y-%m-%d"),
+#             "Hiring_Manager": listing["Hiring_Manager"],
+#             "Role_Name": listing["Role_Name"],
+#             "Role_Responsibilities": listing["Role_Responsibilities"],
+#             "Role_Requirements": listing["Role_Requirements"],
+#             "Salary": listing["Salary"],
+#             "Skills": listing["Skills"],
+#         }
+#         role_listings_json.append(role_listing_data)
+
+#     return jsonify(role_listings_json)
 
 @api.route("/getStaffSkills/<int:staff_id>")
 def getStaffSkills(staff_id):
