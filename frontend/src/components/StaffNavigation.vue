@@ -181,7 +181,7 @@ export default {
 
       try {
         // Make an API request to filter role listings based on selected skills
-        const response = await axios.get(`/api/filterRoleListingBySkill/${selectedSkillIds.join(",")}`);
+        const response = await axios.get(`http://127.0.0.1:5000/api/filterRoleListingBySkill/${selectedSkillIds.join(",")}`);
 
         // Update the roles data property with the filtered role listings
         this.roles = response.data;
