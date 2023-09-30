@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- Navbar -->
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
       <div class="navbar-left">
         <img src="../assets/logo.png" alt="Logo" class="logo" />
@@ -10,13 +11,16 @@
       </div>
     </div>
 
+    <!-- Main content -->
     <div class="container mt-4">
+      <!-- Search and Filter bar -->
       <div class="row mb-4">
         <div class="col-md-10">
           <input type="text" class="form-control" placeholder="Search for a role..." v-model="searchQuery" />
         </div>
+        
+        <!-- Filter dropdown for skills selection -->
         <div class="col-md-2">
-          <!-- Filter dropdown for skills selection -->
           <div class="dropdown">
             <button class="btn btn-secondary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Filter by Skills
@@ -25,7 +29,7 @@
               <!-- Checklist of skills with checkboxes -->
               <div v-for="skill in skills" :key="skill.Skill_ID">
                 <label class="checkbox-label">
-                  <input type="checkbox" v-model="selectedSkills" :value="skill.Skill_Name" class="checkbox-input" />
+                  <input type="checkbox" v-model="selectedSkills" :value="skill" class="checkbox-input" />
                   <span class="checkbox-text">{{ skill.Skill_Name }}</span>
                 </label>
               </div>
@@ -39,19 +43,23 @@
           </div>
         </div>
       </div>
-      <div :style="{ display: 'flex' }">
+
+      <!-- Role listings -->
+      <div :style="{ display: 'flex' }" v-if="roles.length > 0">
         <div :style="{ width: '40%' }">
-          <div v-for="role in roles" @click="selectRole(role)">
-            <div class="card mb-3">
+          <div v-for="role in roles" @click="selectRole(role), countMatchingSkills(role)">
+            <div :class="{ 'card': true, 'green-border': role === selectedRole, 'mb-3': true }">
               <div class="card-body">
                 <h5 class="card-title">{{ role.Role_Name }}</h5>
                 <p class="card-text">
                   <strong>Skills Required:</strong>
-                  <span v-for="skill in role.Skills" class="skill-box">
+                  <span v-for="skill in role.Skills" class="skill-box" :style="{
+                    backgroundColor: userSkills.includes(skill.trim()) ? 'rgba(25, 135, 84, 0.8)' : 'rgba(25, 135, 84, 0.1)',
+                    color: userSkills.includes(skill.trim()) ? 'white' : 'inherit'
+                  }">
                     {{ skill.trim() }}
                   </span>
                 </p>
-
                 <p class="card-text">
                   <strong>Application Deadline:</strong>
                   {{ role.Deadline }}
@@ -60,8 +68,10 @@
             </div>
           </div>
         </div>
+
+        <!-- Role details -->
         <div :style="{ width: '60%', marginLeft: '16px' }">
-          <div class="card" v-if="isCardClicked" style="width: 100%; position: auto;">
+          <div class="card overflow-y-auto" v-if="isCardClicked" id="roledescription">
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
@@ -70,14 +80,33 @@
               <div class="divider">
                 <h3 class="card-title">Role description</h3>
                 <div class="role-description">
-                  {{ selectedRole.Role_Description }}
+                  <strong>Job responsibilities</strong>
+                  <ul>
+                    <li v-for="line in selectedRole.Role_Responsibilities.split('\n')">
+                      {{ line }}
+                    </li>
+                  </ul>
+                </div>
+                <!-- Role Requirements -->
+                <div class="role-requirements">
+                  <strong>Role Requirements</strong>
+                  <ul>
+                    <li v-for="line in selectedRole.Role_Requirements.split('\n')">
+                      {{ line }}
+                    </li>
+                  </ul>
                 </div>
               </div>
               <div class="skills">
                 <p>
-                  <strong>Skills Required:</strong>
+                  <strong>How you match</strong>
                 </p>
-                <span v-for="skill in selectedRole.Skills" class="skill-box">
+                <p>{{ countMatchingSkills(selectedRole) }} skill(s) on your profile, {{ selectedRole.Skills.length -
+                  countMatchingSkills(selectedRole) }} skill(s) missing from your profile</p>
+                <span v-for="skill in selectedRole.Skills" class="skill-box" :style="{
+                  backgroundColor: userSkills.includes(skill.trim()) ? 'rgba(25, 135, 84, 0.8)' : 'rgba(25, 135, 84, 0.1)',
+                  color: userSkills.includes(skill.trim()) ? 'white' : 'inherit'
+                }">
                   {{ skill.trim() }}
                 </span>
               </div>
@@ -88,12 +117,17 @@
           </div>
         </div>
       </div>
+
+      <!-- No available roles message -->
+      <div v-if="roles.length == 0">
+        There are no available roles at the moment
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios';
+import axios from 'axios'
 
 export default {
   data() {
@@ -102,16 +136,28 @@ export default {
       roles: [],
       selectedRole: {},
       isCardClicked: false,
-      skills: [], // Add an empty array to store skills
-      selectedSkills: [], // Add an empty array for selected skills
+      isActive: false,
+      userSkills: ["Java", "Programming", "English"],
+      skills: [], // Add this property to store skills
+      selectedSkills: [], // Add this property to store selected skills
     };
   },
   methods: {
+    // Your methods...
     selectRole(role) {
       this.selectedRole = role;
       this.isCardClicked = true;
     },
-    // Function to fetch skills from the API
+    toggleActive() {
+      this.isActive = !this.isActive;
+    },
+    countMatchingSkills(role) {
+      // Filter the role.Skills array to include only skills that are in userSkills
+      const matchingSkills = role.Skills.filter(skill => this.userSkills.includes(skill.trim()));
+      // Return the count of matching skills
+      return matchingSkills.length;
+    },
+   // Function to fetch skills from the API
     fetchSkills() {
       axios.get('http://127.0.0.1:5000/api/skills') // Replace with your API endpoint URL
         .then(response => {
@@ -125,12 +171,30 @@ export default {
       // Uncheck all selected skills without closing the dropdown
       this.selectedSkills = [];
     },
+    async applyFilter() {
+      // Assuming you have an array of selected skill IDs in this.selectedSkills
+      const selectedSkillIds = this.selectedSkills.map(skill => skill.Skill_ID);
+
+      // Log the selected skill IDs to the console for debugging
+      console.log('Selected Skill IDs:', selectedSkillIds);
+      console.log('API Request input:', selectedSkillIds.join(","))
+
+      try {
+        // Make an API request to filter role listings based on selected skills
+        const response = await axios.get(`/api/filterRoleListingBySkill/${selectedSkillIds.join(",")}`);
+
+        // Update the roles data property with the filtered role listings
+        this.roles = response.data;
+      } catch (error) {
+        console.error('Error filtering role listings:', error);
+      }
+    },
   },
   mounted() {
-    // Call the method to fetch skills when the component is mounted
+// Call the method to fetch skills when the component is mounted
     this.fetchSkills();
 
-    axios.get('http://127.0.0.1:5000/api/joblistings')
+    axios.get('http://127.0.0.1:5000/api/openjoblistings')
       .then(response => {
         this.roles = response.data;
       })
@@ -140,9 +204,6 @@ export default {
   },
 };
 </script>
-
-
-
 
 
 <style scoped>
@@ -324,5 +385,11 @@ export default {
 
 .checkbox-label input[type="checkbox"] {
   margin-right: 10px;
+}
+
+.green-border {
+  border-color: rgba(25, 135, 84, 0.8); /* Darker shade of green */;
+  border-width: 2px;
+  border-style: solid;
 }
 </style>
