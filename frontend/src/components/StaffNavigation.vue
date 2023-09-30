@@ -18,7 +18,8 @@
         <div class="col-md-2">
           <!-- Filter dropdown for skills selection -->
           <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
               Filter by Skills
             </button>
             <div class="dropdown-menu" aria-labelledby="skillsDropdown">
@@ -113,13 +114,9 @@ export default {
     },
     // Function to fetch skills from the API
     fetchSkills() {
-      axios.get('http://127.0.0.1:5000/api/skills') // Replace with your API endpoint URL
-        .then(response => {
-          this.skills = response.data; // Store skills in the 'skills' data property
-        })
-        .catch(error => {
-          console.error('Error fetching skills:', error);
-        });
+      axios.get('http://127.0.0.1:5000/api/skills').then(response => { this.skills = response.data; }).catch(error => {
+        console.error('Error fetching skills:', error);
+      });
     },
     clearFilter() {
       // Uncheck all selected skills without closing the dropdown
@@ -130,7 +127,7 @@ export default {
     // Call the method to fetch skills when the component is mounted
     this.fetchSkills();
 
-    axios.get('http://127.0.0.1:5000/api/joblistings')
+    axios.get('http://127.0.0.1:5000/api/openjoblistings')
       .then(response => {
         this.roles = response.data;
       })
@@ -192,8 +189,10 @@ export default {
 }
 
 .btn-primary {
-  background-color: rgba(25, 135, 84, 0.1); /* Start with green color */
-  color: #000; /* Black text */
+  background-color: rgba(25, 135, 84, 0.1);
+  /* Start with green color */
+  color: #000;
+  /* Black text */
   border: none;
   border-radius: 5px;
   padding: 10px 20px;
@@ -202,8 +201,10 @@ export default {
 
 /* Adjust button text color */
 .btn-primary:hover {
-  background-color: rgba(25, 135, 84, 0.8); /* Darker green on hover */
-  color: #fff; /* White text on hover */
+  background-color: rgba(25, 135, 84, 0.8);
+  /* Darker green on hover */
+  color: #fff;
+  /* White text on hover */
 }
 
 /* Style the search input */
@@ -258,7 +259,8 @@ export default {
 }
 
 .dropdown-toggle {
-  background-color: rgba(25, 135, 84, 0.1); /* Updated to green color */
+  background-color: rgba(25, 135, 84, 0.1);
+  /* Updated to green color */
   color: #333;
   border: none;
   border-radius: 5px;
@@ -271,11 +273,13 @@ export default {
   top: 100%;
   left: 0;
   display: none;
-  width: 300px; /* Increased width for more space */
+  width: 300px;
+  /* Increased width for more space */
   background-color: #fff;
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
-  padding: 10px; /* Added padding to the modal */
+  padding: 10px;
+  /* Added padding to the modal */
 }
 
 .dropdown-menu.show {
@@ -290,28 +294,35 @@ export default {
   position: absolute;
   top: 10px;
   right: 10px;
-  color: #333; /* Reverted to grey */
+  color: #333;
+  /* Reverted to grey */
 }
 
 /* Swap the positions of "Show Results" and "Clear Filter" buttons */
 .filter-buttons {
   display: flex;
   justify-content: space-between;
-  margin-top: 10px; /* Added margin to separate buttons from checkboxes */
-  order: 1; /* Swap the order */
+  margin-top: 10px;
+  /* Added margin to separate buttons from checkboxes */
+  order: 1;
+  /* Swap the order */
 }
 
 /* Remove the blue outline from the "Show Results" button */
 .btn-primary {
-  background-color: rgba(25, 135, 84, 0.1); /* Updated to green color */
-  color: #000; /* Black text */
+  background-color: rgba(25, 135, 84, 0.1);
+  /* Updated to green color */
+  color: #000;
+  /* Black text */
   border: none;
 }
 
 /* Add hover animation for the "Show Results" button */
 .btn-primary:hover {
-  background-color: rgba(25, 135, 84, 0.8); /* Darker shade of green */
-  color: #fff; /* Font color */
+  background-color: rgba(25, 135, 84, 0.8);
+  /* Darker shade of green */
+  color: #fff;
+  /* Font color */
 }
 
 /* Revert to original checkbox styles */
@@ -319,7 +330,8 @@ export default {
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding: 5px 0; /* Added padding between checkbox items */
+  padding: 5px 0;
+  /* Added padding between checkbox items */
 }
 
 .checkbox-label input[type="checkbox"] {
