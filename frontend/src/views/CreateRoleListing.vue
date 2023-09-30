@@ -50,9 +50,18 @@
             <!-- Skill -->
             <div class="form-group mb-3">
                 <label for="roleSkills">Skills required</label>
-                <input type="text" class="form-control" id="roleSkills" v-model="roleSkills" @input="formatSkills"
-                    required />
-                <!-- You can allow users to enter multiple skills, separated by commas or spaces -->
+                <select v-model="selectedSkill" @change="addSkill">
+                    <option value="" disabled>Select a skill</option>
+                    <option v-for="skill in this.availableSkills" :key="skill.Skill_ID" :value="skill.Skill_Name">{{
+                        skill.Skill_Name }}
+                    </option>
+                </select>
+                <ul>
+                    <li v-for="(skill, index) in selectedSkills" :key="index">
+                        {{ skill }}
+                        <button @click="removeSkill(index)">Remove</button>
+                    </li>
+                </ul>
             </div>
 
             <!-- Salary -->
@@ -115,19 +124,20 @@ import axios from 'axios'
 export default {
     data() {
         return {
-
+            // variables that i used 
             minSalary: null,
             maxSalary: null,
-            roleSkills: '',
-            formattedSkills: '',
+            selectedSkill: '',
+            selectedSkills: [],
+            availableSkills: [],
 
-
+            // for form submission
             Role_Name: "",
             Role_Responsibilities: "",
             Role_Requirements: "",
             Dept: "",
             Salary: "",
-            Skills: '',
+            Skills: [],
             Deadline: "",
             Date_Posted: "",
             Hiring_Manager: "",
@@ -135,48 +145,47 @@ export default {
         };
     },
     methods: {
-        async submitForm() {
-            this.Salary = '$' + this.minSalary.toString() + '-' + '$' + this.maxSalary.toString();
-            this.Skills = this.formattedSkills;
-            try {
-                const response = await axios.post('http://127.0.0.1:5000/api/createjoblisting', {
-                    Role_Name: this.Role_Name,
-                    Role_Responsibilities: this.Role_Responsibilities,
-                    Role_Requirements: this.Role_Requirements,
-                    Dept: this.Dept,
-                    Salary: this.Salary,
-                    Skills: this.Skills,
-                    Deadline: this.Deadline,
-                    Date_Posted: this.Date_Posted,
-                    Hiring_Manager: this.Hiring_Manager,
-                });
-
-                // Handle the response here
-                console.log('Response:', response.data);
-                // this.Role_Name = "";
-                // this.Role_Responsibilities = "";
-                // this.Role_Requirements = "";
-                // this.Dept = "";
-                // this.Salary = "";
-                // this.Skills = '';
-                // this.Deadline = "";
-                // this.Date_Posted = "";
-                // this.Hiring_Manager = "";
-            } catch (error) {
-                // Handle errors here
-                console.error('Error:', error);
+        // async submitForm() {
+        //     this.Salary = '$' + this.minSalary.toString() + '-' + '$' + this.maxSalary.toString();
+        //     this.Skills = this.formattedSkills;
+        //     try {
+        //         const response = await axios.post('http://127.0.0.1:5000/api/createjoblisting', {
+        //             Role_Name: this.Role_Name,
+        //             Role_Responsibilities: this.Role_Responsibilities,
+        //             Role_Requirements: this.Role_Requirements,
+        //             Dept: this.Dept,
+        //             Salary: this.Salary,
+        //             Skills: this.Skills,
+        //             Deadline: this.Deadline,
+        //             Date_Posted: this.Date_Posted,
+        //             Hiring_Manager: this.Hiring_Manager,
+        //         });
+        //         console.log('Response:', response.data);
+        //     } catch (error) {
+        //         // Handle errors here
+        //         console.error('Error:', error);
+        //     }
+        // },
+        addSkill() {
+            // console.log(this.selectedSkill)
+            if (this.selectedSkill && !this.selectedSkills.includes(this.selectedSkill)) {
+                this.selectedSkills.push(this.selectedSkill);
+                this.selectedSkill = ''; // Clear the selected skill after adding
+                // console.log(this.selectedSkills)
             }
         },
-
-        formatSkills() {
-            const rawSkills = this.roleSkills.split(/[, ]+/).map(skill => skill.trim());
-            this.formattedSkills = rawSkills.join(', ');
+        removeSkill(index) {
+            this.selectedSkills.splice(index, 1);
         },
-
+        submitForm() {
+            this.Salary = '$' + this.minSalary.toString() + '-' + '$' + this.maxSalary.toString();
+            this.Skills = this.selectedSkills;
+            // console.log(this.Skills);
+        },
     },
-    // mounted() {
-    //     axios.get('http://127.0.0.1:5000/api/skills').then(response => this.availableSkills = response.data)
-    // }
+    mounted() {
+        axios.get('http://127.0.0.1:5000/api/skills').then(response => this.availableSkills = response.data)
+    }
 };
 </script>
   

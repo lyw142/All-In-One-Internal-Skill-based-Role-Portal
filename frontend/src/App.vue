@@ -13,7 +13,7 @@ export default {
   },
   computed: {
     show() {
-      return 1
+      return 2
     }
   }
 }
