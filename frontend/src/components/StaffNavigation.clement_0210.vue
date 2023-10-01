@@ -22,8 +22,7 @@
         <!-- Filter dropdown for skills selection -->
         <div class="col-md-2">
           <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown"
-              aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Filter by Skills
             </button>
             <div class="dropdown-menu" aria-labelledby="skillsDropdown" @click.stop>

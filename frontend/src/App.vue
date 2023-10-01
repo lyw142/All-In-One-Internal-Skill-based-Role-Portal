@@ -1,11 +1,11 @@
 <script>
 
 import StaffNavigation from "./components/StaffNavigation.vue";
-import testform from "./views/testform.vue"
+import createrolelisting from "./views/CreateRoleListing.vue"
 
 export default {
   name: 'App',
-  components: { StaffNavigation, testform },
+  components: { StaffNavigation, createrolelisting },
   data() {
     return {
       title: 'SPM Sprint 1'
@@ -13,7 +13,7 @@ export default {
   },
   computed: {
     show() {
-      return 1
+      return 2
     }
   }
 }
@@ -21,7 +21,7 @@ export default {
 
 <template>
   <StaffNavigation v-if="show == 1" />
-  <testform v-if="show == 2" />
+  <createrolelisting v-if="show == 2" />
 </template>
 
 <style>
