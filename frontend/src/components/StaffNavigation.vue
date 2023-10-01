@@ -22,10 +22,10 @@
         <!-- Filter dropdown for skills selection -->
         <div class="col-md-2">
           <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Filter by Skills
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown" aria-haspopup="true" :aria-expanded="isDropdownOpen" @click="toggleDropdown">
+            Filter by Skills
             </button>
-            <div class="dropdown-menu" aria-labelledby="skillsDropdown">
+            <div class="dropdown-menu" aria-labelledby="skillsDropdown" @click.stop>
               <!-- Checklist of skills with checkboxes -->
               <div v-for="skill in skills" :key="skill.Skill_ID">
                 <label class="checkbox-label">
@@ -34,10 +34,17 @@
                 </label>
               </div>
               <!-- Action buttons -->
-              <button class="dismiss-button" @click="cancelFilter">×</button>
+              <!-- Action buttons -->
+              <button class="dismiss-button" @click.stop="cancelFilter">×</button>
+
+
               <div class="filter-buttons">
                 <button class="btn btn-secondary" @click="clearFilter">Clear Filter</button>
                 <button class="btn btn-primary" @click="applyFilter">Show Results</button>
+              </div>
+              <!-- Display a message when no skills are selected -->
+              <div class="filter-message" v-if="showNoSkillsMessage">
+                {{ showNoSkillsMessage }}
               </div>
             </div>
           </div>
@@ -140,6 +147,8 @@ export default {
       userSkills: ["Java", "Programming", "English"],
       skills: [], // Add this property to store skills
       selectedSkills: [], // Add this property to store selected skills
+      showNoSkillsMessage: false, // Add this property to track the message display
+      isDropdownOpen: false, // Add this property to track the dropdown state
     };
   },
   methods: {
@@ -167,31 +176,71 @@ export default {
           console.error('Error fetching skills:', error);
         });
     },
-    clearFilter() {
-      // Uncheck all selected skills without closing the dropdown
-      this.selectedSkills = [];
-    },
-    async applyFilter() {
-      // Assuming you have an array of selected skill IDs in this.selectedSkills
-      const selectedSkillIds = this.selectedSkills.map(skill => skill.Skill_ID);
 
-      // Log the selected skill IDs to the console for debugging
-      console.log('Selected Skill IDs:', selectedSkillIds);
-      console.log('API Request input:', selectedSkillIds.join(","))
+     toggleDropdown() {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  },
 
-      try {
-        // Make an API request to filter role listings based on selected skills
-        const response = await axios.get(`http://127.0.0.1:5000/api/filterRoleListingBySkill/${selectedSkillIds.join(",")}`);
+cancelFilter() {
+  this.isDropdownOpen = false; // Close the filter dropdown
+},
 
-        // Update the roles data property with the filtered role listings
-        this.roles = response.data;
-      } catch (error) {
-        console.error('Error filtering role listings:', error);
+clearFilter() {
+  // Check if no skills were previously selected (no filter applied)
+  if (this.selectedSkills.length === 0) {
+    // Display a message indicating that no filter is applied
+    this.showNoSkillsMessage = 'No filter is currently applied.';
+  } else {
+    // Reset the message and uncheck all selected skills
+    this.showNoSkillsMessage = false;
+    this.selectedSkills = [];
+
+    // Reset the job listings to their pre-filter state
+    this.fetchAllRoles();
+  }
+},
+
+  async fetchAllRoles() {
+    try {
+      // Make an API request to fetch all roles without any filter
+      const response = await axios.get('http://127.0.0.1:5000/api/openjoblistings');
+
+      // Update the roles data property with all roles
+      this.roles = response.data;
+    } catch (error) {
+      console.error('Error fetching all roles:', error);
+    }
+  },
+async applyFilter() { // Declare applyFilter as an async function
+  // Check if no skills are selected
+  if (this.selectedSkills.length === 0) {
+    // Display a message indicating that at least one skill should be selected
+    this.showNoSkillsMessage = 'Please select at least one skill.';
+  } else {
+    // If skills are selected, reset the message and proceed with filtering
+    this.showNoSkillsMessage = false;
+
+    // Assuming you have an array of selected skill IDs in this.selectedSkills
+    const selectedSkillIds = this.selectedSkills.map(skill => skill.Skill_ID);
+
+    // Log the selected skill IDs to the console for debugging
+    console.log('Selected Skill IDs:', selectedSkillIds);
+    console.log('API Request input:', selectedSkillIds.join(","))
+
+    try {
+      // Make an API request to filter role listings based on selected skills
+      const response = await axios.get(`http://127.0.0.1:5000/api/filterRoleListingBySkill/${selectedSkillIds.join(",")}`);
+
+      // Update the roles data property with the filtered role listings
+      this.roles = response.data;
+    } catch (error) {
+      console.error('Error filtering role listings:', error);
+        }
       }
     },
   },
   mounted() {
-// Call the method to fetch skills when the component is mounted
+    // Call the method to fetch skills when the component is mounted
     this.fetchSkills();
 
     axios.get('http://127.0.0.1:5000/api/openjoblistings')
@@ -204,6 +253,8 @@ export default {
   },
 };
 </script>
+
+
 
 
 <style scoped>
