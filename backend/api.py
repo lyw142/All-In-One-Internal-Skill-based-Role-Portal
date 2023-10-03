@@ -7,7 +7,7 @@ from datetime import datetime
 from flask import Blueprint, request, jsonify
 # from models import db, 
 from models import Staff_Skill, db, Staff, Role, Staff, Skill, RoleSkillMapping, RoleListing
-from sqlalchemy import desc
+from sqlalchemy import and_, desc, func
 from flask import Flask
 from flask_cors import CORS
 api = Blueprint('api', __name__)
@@ -407,3 +407,35 @@ def getStaffSkills(staff_id):
 
     except Exception as e:
         return jsonify({"message": "Error retrieving Staff's Skill", "error": str(e)}), 500
+
+#Login
+@api.route("/login")
+def login():
+    try:
+        data = request.get_json()
+
+        query = (
+            db.session.query(Staff)
+            .filter(Staff.Email == data["Email"])
+            .filter(Staff.Password == data["Password"])
+            .all()
+        )   
+
+        staff_json = []
+
+        if query:
+            for staff in query:
+                staff_data = {
+                    "Access_Rights": staff.Access_Rights,
+                    "Staff_ID": staff.Staff_ID,
+                    "Name" : staff.Staff_FName + staff.Staff_LName
+                }
+                staff_json.append(staff_data)
+            return jsonify(staff_json), 200
+        else :
+            return jsonify({
+                "data": "Staff not found"
+            }), 404
+
+    except Exception as e:
+        return jsonify({"message": "Error retrieving Staff information", "error": str(e)}), 500
