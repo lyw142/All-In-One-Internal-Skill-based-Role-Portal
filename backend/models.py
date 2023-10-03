@@ -50,9 +50,9 @@ class Staff_Skill(db.Model):
     Staff_ID = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'), primary_key=True)
     Skill_ID = db.Column(db.Integer, db.ForeignKey('skill.Skill_ID', ondelete='CASCADE'), primary_key=True)
 
-    def __init__(self, Staff_ID, Skill_Name):
+    def __init__(self, Staff_ID, Skill_ID):
         self.Staff_ID = Staff_ID
-        self.Skill_Name = Skill_Name
+        self.Skill_ID = Skill_ID
 
     # skill = db.relationship('Skill', backref='staff_skill')
 
@@ -60,7 +60,7 @@ class Staff_Skill(db.Model):
     def json(self):
         return {
                 "Staff_ID": self.Staff_ID, 
-                "Skill_Name": self.Skill_Name,
+                "Skill_ID": self.Skill_ID,
             }
        
 ## SKILL ##
