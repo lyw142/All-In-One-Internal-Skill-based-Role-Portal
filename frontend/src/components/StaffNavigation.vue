@@ -18,7 +18,7 @@
         <div class="col-md-10">
           <input type="text" class="form-control" placeholder="Search for a role..." v-model="searchQuery" />
         </div>
-        
+
         <!-- Filter dropdown for skills selection -->
         <div class="col-md-2">
           <div class="dropdown">
@@ -55,7 +55,7 @@
       <!-- Role listings -->
       <div :style="{ display: 'flex' }" v-if="roles.length > 0">
         <div :style="{ width: '40%' }">
-          <div v-for="role in roles" @click="selectRole(role), countMatchingSkills(role)">
+          <div v-for="role in roles" @click="selectRole(role), countMatchingSkills(role), updateProgressBar()">
             <div :class="{ 'card': true, 'green-border': role === selectedRole, 'mb-3': true }">
               <div class="card-body">
                 <h5 class="card-title">{{ role.Role_Name }}</h5>
@@ -109,6 +109,10 @@
                 <p>
                   <strong>How you match</strong>
                 </p>
+                <div class="progress " role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0"
+                  aria-valuemax="100" style="margin-bottom: 10px;">
+                  <div class="progress-bar bg-success" :style="{ width: progressBarWidth }">{{ progressBarWidth }}</div>
+                </div>
                 <p>{{ countMatchingSkills(selectedRole) }} skill(s) on your profile, {{ selectedRole.Skills.length -
                   countMatchingSkills(selectedRole) }} skill(s) missing from your profile</p>
                 <span v-for="skill in selectedRole.Skills" class="skill-box" :style="{
@@ -148,6 +152,7 @@ export default {
       userSkills: ["Java", "Programming", "English"],
       skills: [], // Add this property to store skills
       selectedSkills: [], // Add this property to store selected skills
+      progressBarWidth: "",
       showNoSkillsMessage: false, // Add this property to track the message display
       isDropdownOpen: false, // Add this property to track the dropdown state
     };
@@ -167,71 +172,75 @@ export default {
       // Return the count of matching skills
       return matchingSkills.length;
     },
-   // Function to fetch skills from the API
+    updateProgressBar() {
+      const hellohello = ((this.countMatchingSkills(this.selectedRole) / this.selectedRole.Skills.length) * 100).toString();
+      this.progressBarWidth = hellohello + "%";
+    },
+    // Function to fetch skills from the API
     fetchSkills() {
       axios.get('http://127.0.0.1:5000/api/skills').then(response => { this.skills = response.data; }).catch(error => {
         console.error('Error fetching skills:', error);
       });
     },
 
-     toggleDropdown() {
-    this.isDropdownOpen = !this.isDropdownOpen;
-  },
+    toggleDropdown() {
+      this.isDropdownOpen = !this.isDropdownOpen;
+    },
 
-cancelFilter() {
-  this.isDropdownOpen = false; // Close the filter dropdown
-},
+    cancelFilter() {
+      this.isDropdownOpen = false; // Close the filter dropdown
+    },
 
-clearFilter() {
-  // Check if no skills were previously selected (no filter applied)
-  if (this.selectedSkills.length === 0) {
-    // Display a message indicating that no filter is applied
-    this.showNoSkillsMessage = 'No filter is currently applied.';
-  } else {
-    // Reset the message and uncheck all selected skills
-    this.showNoSkillsMessage = false;
-    this.selectedSkills = [];
+    clearFilter() {
+      // Check if no skills were previously selected (no filter applied)
+      if (this.selectedSkills.length === 0) {
+        // Display a message indicating that no filter is applied
+        this.showNoSkillsMessage = 'No filter is currently applied.';
+      } else {
+        // Reset the message and uncheck all selected skills
+        this.showNoSkillsMessage = false;
+        this.selectedSkills = [];
 
-    // Reset the job listings to their pre-filter state
-    this.fetchAllRoles();
-  }
-},
+        // Reset the job listings to their pre-filter state
+        this.fetchAllRoles();
+      }
+    },
 
-  async fetchAllRoles() {
-    try {
-      // Make an API request to fetch all roles without any filter
-      const response = await axios.get('http://127.0.0.1:5000/api/openjoblistings');
+    async fetchAllRoles() {
+      try {
+        // Make an API request to fetch all roles without any filter
+        const response = await axios.get('http://127.0.0.1:5000/api/openjoblistings');
 
-      // Update the roles data property with all roles
-      this.roles = response.data;
-    } catch (error) {
-      console.error('Error fetching all roles:', error);
-    }
-  },
-async applyFilter() { // Declare applyFilter as an async function
-  // Check if no skills are selected
-  if (this.selectedSkills.length === 0) {
-    // Display a message indicating that at least one skill should be selected
-    this.showNoSkillsMessage = 'Please select at least one skill.';
-  } else {
-    // If skills are selected, reset the message and proceed with filtering
-    this.showNoSkillsMessage = false;
+        // Update the roles data property with all roles
+        this.roles = response.data;
+      } catch (error) {
+        console.error('Error fetching all roles:', error);
+      }
+    },
+    async applyFilter() { // Declare applyFilter as an async function
+      // Check if no skills are selected
+      if (this.selectedSkills.length === 0) {
+        // Display a message indicating that at least one skill should be selected
+        this.showNoSkillsMessage = 'Please select at least one skill.';
+      } else {
+        // If skills are selected, reset the message and proceed with filtering
+        this.showNoSkillsMessage = false;
 
-    // Assuming you have an array of selected skill IDs in this.selectedSkills
-    const selectedSkillIds = this.selectedSkills.map(skill => skill.Skill_ID);
+        // Assuming you have an array of selected skill IDs in this.selectedSkills
+        const selectedSkillIds = this.selectedSkills.map(skill => skill.Skill_ID);
 
-    // Log the selected skill IDs to the console for debugging
-    console.log('Selected Skill IDs:', selectedSkillIds);
-    console.log('API Request input:', selectedSkillIds.join(","))
+        // Log the selected skill IDs to the console for debugging
+        console.log('Selected Skill IDs:', selectedSkillIds);
+        console.log('API Request input:', selectedSkillIds.join(","))
 
-    try {
-      // Make an API request to filter role listings based on selected skills
-      const response = await axios.get(`http://127.0.0.1:5000/api/filterRoleListingBySkill/${selectedSkillIds.join(",")}`);
+        try {
+          // Make an API request to filter role listings based on selected skills
+          const response = await axios.get(`http://127.0.0.1:5000/api/filterRoleListingBySkill/${selectedSkillIds.join(",")}`);
 
-      // Update the roles data property with the filtered role listings
-      this.roles = response.data;
-    } catch (error) {
-      console.error('Error filtering role listings:', error);
+          // Update the roles data property with the filtered role listings
+          this.roles = response.data;
+        } catch (error) {
+          console.error('Error filtering role listings:', error);
         }
       }
     },
@@ -451,7 +460,9 @@ async applyFilter() { // Declare applyFilter as an async function
 }
 
 .green-border {
-  border-color: rgba(25, 135, 84, 0.8); /* Darker shade of green */;
+  border-color: rgba(25, 135, 84, 0.8);
+  /* Darker shade of green */
+  ;
   border-width: 2px;
   border-style: solid;
 }
