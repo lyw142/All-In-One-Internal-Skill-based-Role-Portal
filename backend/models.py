@@ -8,6 +8,23 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+## ACCESS_RIGHTS ##
+class Access_Control(db.Model):
+    __tablename__ = 'access_control'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Specify InnoDB engine for this table
+
+    Access_ID = db.Column(db.Integer, primary_key=True)
+    Access_Control_Name = db.Column(db.String(100), nullable=False)
+    
+    def __init__(self, Access_ID, Access_Control_Name): 
+        self.Access_ID = Access_ID
+        self.Access_Control_Name = Access_Control_Name
+
+    def to_json(self):
+        return {
+            "Access_ID": self.Access_ID,
+            "Access_Control_Nmae": self.Access_Control_Name,
+        }
     
 ## STAFF ##
 class Staff(db.Model):
@@ -15,21 +32,25 @@ class Staff(db.Model):
     __table_args__ = {'mysql_engine': 'InnoDB'}  # Specify InnoDB engine for this table
 
     Staff_ID = db.Column(db.Integer, primary_key=True)
-    Staff_FName = db.Column(db.String(50), nullable=False)
-    Staff_LName = db.Column(db.String(50), nullable=False)
-    Email = db.Column(db.String(50), nullable=False)
-    Password = db.Column(db.String(50), nullable=False)
+    Staff_FName = db.Column(db.String(100), nullable=False)
+    Staff_LName = db.Column(db.String(100), nullable=False)
+    Email = db.Column(db.String(100), nullable=False)
+    Country = db.Column(db.String(100), nullable=False)
+    Dept = db.Column(db.String(100), nullable=False)
+    Password = db.Column(db.String(100), nullable=False)
     Role_ID = db.Column(db.Integer, db.ForeignKey('role.Role_ID'), nullable=False)
-    Access_Rights = db.Column(db.Integer, nullable=False)
+    Access_Rights = db.Column(db.Integer, db.ForeignKey('access_control.Access_ID'), nullable=False)
     
     
-    def __init__(self, Staff_FName, Staff_LName, Email, Password, Access_Rights, Role_ID): 
+    def __init__(self, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights): 
         self.Staff_FName = Staff_FName
         self.Staff_LName = Staff_LName
         self.Email = Email
+        self.Country = Country
+        self.Dept = Dept
         self.Password = Password
-        self.Access_Rights = Access_Rights
         self.Role_ID = Role_ID
+        self.Access_Rights = Access_Rights
 
     def to_json(self):
         return {
@@ -37,9 +58,11 @@ class Staff(db.Model):
             "Staff_FName": self.Staff_FName,
             "Staff_LName": self.Staff_LName,
             "Email": self.Email,
+            "Country" : self.Country,
+            "Dept" : self.Dept,
             "Password": self.Password,
-            "Access_Rights": self.Access_Rights,
-            "Role_ID": self.Role_ID
+            "Role_ID": self.Role_ID,
+            "Access_Rights": self.Access_Rights
         }
 
 ## STAFF_SKILL ##
@@ -69,11 +92,13 @@ class Skill(db.Model):
     __table_args__ = {'mysql_engine': 'InnoDB'}  # Specify InnoDB engine for this table
 
     Skill_ID = db.Column(db.Integer, primary_key=True,autoincrement=True)
-    Skill_Name = db.Column(db.String(20), nullable=False)
+    Skill_Name = db.Column(db.String(100), nullable=False)
+    Skill_Desc = db.Column(db.String(1000), nullable=False)
     Skill_Status = db.Column(db.String(15), nullable=False, default = 'Active')
 
-    def __init__(self, Skill_Name, Skill_Status):
+    def __init__(self, Skill_Name, Skill_Desc, Skill_Status):
         self.Skill_Name = Skill_Name
+        self.Skill_Desc = Skill_Desc
         self.Skill_Status = Skill_Status
 
 
@@ -82,6 +107,7 @@ class Skill(db.Model):
         return {
                 "Skill_ID": self.Skill_ID,
                 "Skill_Name": self.Skill_Name,
+                "Skill_Desc" : self.Skill_Desc,
                 "Skill_Status": self.Skill_Status
             }
             
@@ -93,30 +119,19 @@ class Role(db.Model):
     __table_args__ = {'mysql_engine': 'InnoDB'}  # Specify InnoDB engine for this table
 
     Role_ID = db.Column(db.Integer, primary_key=True)
-    Role_Name = db.Column(db.String(20), nullable=False)
-    Role_Responsibilities = db.Column(db.String(1000), nullable=False)
-    Role_Requirements = db.Column(db.String(1000), nullable=False)
-    Salary = db.Column(db.String(20), nullable=False)
-    Dept = db.Column(db.String(50), nullable=False)
-    
-    
+    Role_Name = db.Column(db.String(100), nullable=False)
+    Role_Responsibilities = db.Column(db.String(2000), nullable=False)
 
-    def __init__(self, Role_Name, Role_Responsibilities, Role_Requirements, Salary, Dept):
+    def __init__(self, Role_Name, Role_Responsibilities):
         self.Role_Name = Role_Name
         self.Role_Responsibilities = Role_Responsibilities
-        self.Role_Requirements = Role_Requirements
-        self.Salary = Salary
-        self.Dept = Dept
         
 
     def to_json(self):
         return {
             "Role_ID": self.Role_ID,
             "Role_Name": self.Role_Name,
-            "Role_Responsibilties": self.Role_Responsibilities,
-            "Role_Requirements": self.Role_Requirements,
-            "Salary": self.Salary,
-            "Dept": self.Dept
+            "Role_Responsibilties": self.Role_Responsibilities
         }
 
 ## Role_skill_mapping #
@@ -145,7 +160,7 @@ class Application(db.Model):
 
     Application_ID = db.Column(db.Integer, primary_key=True)
     Application_Date = db.Column(db.Date, nullable=False)
-    Application_Status = db.Column(db.String(20), nullable=False)
+    Application_Status = db.Column(db.String(50), nullable=False)
     Staff_ID = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'))
     Listing_ID = db.Column(db.Integer, db.ForeignKey('role_listing.Listing_ID', ondelete='CASCADE'))
 
@@ -176,15 +191,19 @@ class RoleListing(db.Model):
     Listing_ID = db.Column(db.Integer, primary_key=True)
     Deadline = db.Column(db.Date, nullable=False)
     Date_Posted = db.Column(db.Date, nullable=False)
+    Country = db.Column(db.String(100), nullable=False)
+    Salary = db.Column(db.Integer, nullable=False)
     Hiring_Manager = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'), nullable=False)
     Role_ID = db.Column(db.Integer, db.ForeignKey('role.Role_ID', ondelete='CASCADE'), nullable=False)
 
     #staff = db.relationship('Staff', backref='applications')
     #role = db.relationship("Role", back_populates="role_listing")
     
-    def __init__(self, Deadline, Date_Posted, Hiring_Manager, Role_ID):
+    def __init__(self, Deadline, Date_Posted, Country, Salary, Hiring_Manager, Role_ID):
         self.Deadline = Deadline
         self.Date_Posted = Date_Posted
+        self.Country = Country
+        self.Salary = Salary
         self.Hiring_Manager = Hiring_Manager
         self.Role_ID = Role_ID
 
@@ -193,6 +212,8 @@ class RoleListing(db.Model):
             "Listing_ID": self.Listing_ID,
             "Deadline": self.Deadline, 
             "Date_Posted": self.Date_Posted,
+            "Country" : self.Country,
+            "Salary" : self.Salary,
             "Hiring_Manager": self.Hiring_Manager,
             "Role_ID": self.Role_ID
         }

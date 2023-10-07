@@ -26,6 +26,8 @@ def createListing():
         role_listing = RoleListing(
             Deadline=data['Deadline'],
             Date_Posted=data['Date_Posted'],
+            Country=data['Country'],
+            Salary=data['Salary'],
             Hiring_Manager=data['Hiring_Manager'],
             Role_ID=existing_role.Role_ID  # Use the existing role's ID
         )
@@ -36,10 +38,7 @@ def createListing():
     else:
         new_role = Role(
             Role_Name=data['Role_Name'],
-            Role_Responsibilities=data['Role_Responsibilities'],
-            Role_Requirements=data['Role_Requirements'],
-            Salary=data['Salary'],
-            Dept=data['Dept']
+            Role_Responsibilities=data['Role_Responsibilities']
         )
         
         db.session.add(new_role)
@@ -49,6 +48,7 @@ def createListing():
         
         # Query the Skill table to get the Skill_ID for the given Skill_Name
         skill = Skill.query.filter_by(Skill_Name=data['Skill']).first()
+        print(skill)
 
         if skill:
             skill_id = skill.Skill_ID
@@ -56,6 +56,7 @@ def createListing():
             # Create a new Skill object if the Skill_Name does not exist in the database
             new_skill = Skill(
                 Skill_Name=data['Skill'],
+                Skill_Desc= data['Skill_Desc'],
                 Skill_Status = "Active"
             )
             db.session.add(new_skill)
@@ -75,6 +76,8 @@ def createListing():
         role_listing = RoleListing(
             Deadline=data['Deadline'],
             Date_Posted=data['Date_Posted'],
+            Country = data['Country'],
+            Salary = data['Salary'],
             Hiring_Manager=data['Hiring_Manager'],
             Role_ID=new_role.Role_ID
         )
@@ -130,7 +133,7 @@ def findAllOpenJobListings():
 
     # Perform joins to retrieve role listings with Hiring Manager and Role Name
     query = (
-        db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name, Role.Role_Responsibilities, Role.Role_Requirements, Role.Salary)
+        db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name, Role.Role_Responsibilities)
         .join(Staff, RoleListing.Hiring_Manager == Staff.Staff_ID)
         .join(Role, RoleListing.Role_ID == Role.Role_ID)
         .filter(RoleListing.Deadline >= current_date)  # Filter by Deadline
@@ -142,7 +145,8 @@ def findAllOpenJobListings():
 
     # Convert the results into a JSON format
     role_listings_json = []
-    for role_listing, hiring_manager_fname, hiring_manager_lname, role_name, role_responsibilities, role_requirements, salary in results:
+    for role_listing, hiring_manager_fname, hiring_manager_lname, role_name, role_responsibilities in results:
+        result1, result2 = retrieveAllSkillsFromRoleListing(role_listing.Role_ID)
         role_listing_data = {
             "Listing_ID": role_listing.Listing_ID,
             "Deadline": str(role_listing.Deadline),
@@ -150,9 +154,9 @@ def findAllOpenJobListings():
             "Hiring_Manager": hiring_manager_fname + " " + hiring_manager_lname,
             "Role_Name": role_name,
             "Role_Responsibilities": role_responsibilities,
-            "Role_Requirements": role_requirements,
-            "Salary": salary,
-            "Skills": retrieveAllSkillsFromRoleListing(role_listing.Role_ID)
+            "Role_Requirements": result2,
+            "Salary": role_listing.Salary,
+            "Skills": result1
         }
         role_listings_json.append(role_listing_data)
 
@@ -161,7 +165,7 @@ def findAllOpenJobListings():
 def retrieveAllSkillsFromRoleListing(Role_ID):
     # Perform joins to retrieve role listings with Hiring Manager and Role Name
     query = (
-        db.session.query(RoleSkillMapping, Skill.Skill_Name)
+        db.session.query(RoleSkillMapping, Skill.Skill_Name, Skill.Skill_Desc)
         .join(Role, RoleSkillMapping.Role_ID == Role.Role_ID)
         .join(Skill, RoleSkillMapping.Skill_ID == Skill.Skill_ID)
         .filter(Role.Role_ID == Role_ID)
@@ -169,21 +173,22 @@ def retrieveAllSkillsFromRoleListing(Role_ID):
 
     # Execute the query and retrieve the results
     results = query.all()
-    print(results)
 
     # Convert the results into a JSON format
     skills_json = []
-    for skills_name in results:
-        skills_json.append(skills_name.Skill_Name)
+    skills_desc_json = []
+    for skills_result in results:
+        skills_json.append(skills_result.Skill_Name)
+        skills_desc_json.append(skills_result.Skill_Desc)
 
-    return skills_json
+    return skills_json,skills_desc_json
 
 @api.route("/getRoleListing/<int:listing_id>")
 def getRoleListing(listing_id):
     try:
         # Perform joins to retrieve role listings with Hiring Manager and Role Name for the specified Listing_ID
         query = (
-            db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name, Role.Role_Responsibilities, Role.Role_Requirements, Role.Salary)
+            db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name, Role.Role_Responsibilities)
             .join(Staff, RoleListing.Hiring_Manager == Staff.Staff_ID)
             .join(Role, RoleListing.Role_ID == Role.Role_ID)
             .filter(RoleListing.Listing_ID == listing_id)  # Filter by the specified Listing_ID
@@ -195,7 +200,8 @@ def getRoleListing(listing_id):
 
         # Convert the results into a JSON format
         role_listings_json = []
-        for role_listing, hiring_manager_fname, hiring_manager_lname, role_name, role_responsibilities, role_requirements, salary in results:
+        for role_listing, hiring_manager_fname, hiring_manager_lname, role_name, role_responsibilities in results:
+            result1, result2 = retrieveAllSkillsFromRoleListing(role_listing.Role_ID)
             role_listing_data = {
                 "Listing_ID": role_listing.Listing_ID,
                 "Deadline": str(role_listing.Deadline),
@@ -203,16 +209,16 @@ def getRoleListing(listing_id):
                 "Hiring_Manager": hiring_manager_fname + " " + hiring_manager_lname,
                 "Role_Name": role_name,
                 "Role_Responsibilities": role_responsibilities,
-                "Role_Requirements": role_requirements,
-                "Salary": salary,
-                "Skills": retrieveAllSkillsFromRoleListing(role_listing.Role_ID)
+                "Role_Requirements": result2,
+                "Salary": role_listing.Salary,
+                "Skills": result1
             }
             role_listings_json.append(role_listing_data)
 
         return jsonify(role_listings_json)
 
     except Exception as e:
-        return jsonify({"message": "Error retrieving role listings", "error": str(e)}), 500
+        return jsonify({"message": "Error retrieving specific role listing", "error": str(e)}), 500
 
 @api.route("/updateRoleListing/<int:listing_id>", methods=["POST"])
 def updateRoleListing(listing_id):
@@ -229,13 +235,18 @@ def updateRoleListing(listing_id):
         # Update the role listing attributes
         role_listing.Deadline = data["Deadline"]
 
+        # Update the role listing attributes
+        role_listing.Country = data["Country"]
+
+        # Update the role listing attributes
+        role_listing.Salary = data["Salary"]
+
         # Fetch the corresponding Role object
         role = Role.query.get(role_listing.Role_ID)
 
         # Update the Role attributes
         if role:
             role.Role_Responsibilities = data["Role_Responsibilities"]
-            role.Role_Requirements = data["Role_Requirements"]
         else:
             # Handle the case where the corresponding Role is not found
             return jsonify({"message": "Role not found"}), 404
@@ -255,10 +266,10 @@ def findClosedJobListings():
 
     # Perform joins to retrieve role listings with Hiring Manager and Role Name
     query = (
-        db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name, Role.Role_Responsibilities, Role.Role_Requirements, Role.Salary)
+        db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name, Role.Role_Responsibilities)
         .join(Staff, RoleListing.Hiring_Manager == Staff.Staff_ID)
         .join(Role, RoleListing.Role_ID == Role.Role_ID)
-        .filter(RoleListing.Deadline < current_date)  # Filter by Deadline smaller than current date
+        .filter(RoleListing.Deadline < current_date)  # Filter by Deadline
         .order_by(desc(RoleListing.Date_Posted))
     )
 
@@ -267,7 +278,8 @@ def findClosedJobListings():
 
     # Convert the results into a JSON format
     role_listings_json = []
-    for role_listing, hiring_manager_fname, hiring_manager_lname, role_name, role_responsibilities, role_requirements, salary in results:
+    for role_listing, hiring_manager_fname, hiring_manager_lname, role_name, role_responsibilities in results:
+        result1, result2 = retrieveAllSkillsFromRoleListing(role_listing.Role_ID)
         role_listing_data = {
             "Listing_ID": role_listing.Listing_ID,
             "Deadline": str(role_listing.Deadline),
@@ -275,9 +287,9 @@ def findClosedJobListings():
             "Hiring_Manager": hiring_manager_fname + " " + hiring_manager_lname,
             "Role_Name": role_name,
             "Role_Responsibilities": role_responsibilities,
-            "Role_Requirements": role_requirements,
-            "Salary": salary,
-            "Skills": retrieveAllSkillsFromRoleListing(role_listing.Role_ID)
+            "Role_Requirements": result2,
+            "Salary": role_listing.Salary,
+            "Skills": result1
         }
         role_listings_json.append(role_listing_data)
 
@@ -291,13 +303,13 @@ def getSkills():
         skills = Skill.query.all()
 
         # Convert the skills to a list of dictionaries
-        skills_data = [{"Skill_ID": skill.Skill_ID, "Skill_Name": skill.Skill_Name, "Skill_Status": skill.Skill_Status} for skill in skills]
+        skills_data = [{"Skill_ID": skill.Skill_ID, "Skill_Name": skill.Skill_Name, "Skill_Desc" : skill.Skill_Desc, "Skill_Status": skill.Skill_Status} for skill in skills]
 
         # Return the skills as JSON response
         return jsonify(skills_data), 200
 
     except Exception as e:
-        return jsonify({"message": "Error retrieving skills", "error": str(e)}), 500
+        return jsonify({"message": "Error retrieving list of skills", "error": str(e)}), 500
 
 #filter by skills
 
@@ -321,11 +333,10 @@ def filterRoleListingBySkill(list_of_skill_id):
             RoleListing.Deadline,
             RoleListing.Date_Posted,
             RoleListing.Role_ID,
+            RoleListing.Salary,
             db.func.concat(Staff.Staff_FName, " ", Staff.Staff_LName).label("Hiring_Manager_Name"),
             Role.Role_Name,
-            Role.Role_Responsibilities,
-            Role.Role_Requirements,
-            Role.Salary,
+            Role.Role_Responsibilities
         )
         .join(Staff, RoleListing.Hiring_Manager == Staff.Staff_ID)
         .join(Role, RoleListing.Role_ID == Role.Role_ID)
@@ -338,7 +349,8 @@ def filterRoleListingBySkill(list_of_skill_id):
     # Convert the query results into JSON format
     role_listings_json = []
 
-    for role_listing, deadline, date_posted, role_id, hiring_manager_name, role_name, role_responsibilites, role_requirements, salary in role_listings:
+    for role_listing, deadline, date_posted, role_id, salary, hiring_manager_name, role_name, role_responsibilites in role_listings:
+        result1, result2 = retrieveAllSkillsFromRoleListing(role_id)
         role_listing_data = {
             "Listing_ID": role_listing,
             "Deadline": str(deadline),
@@ -346,9 +358,9 @@ def filterRoleListingBySkill(list_of_skill_id):
             "Hiring_Manager": hiring_manager_name,
             "Role_Name": role_name,
             "Role_Responsibilities": role_responsibilites,
-            "Role_Requirements" : role_requirements,
+            "Role_Requirements" : result2,
             "Salary": salary,
-            "Skills": retrieveAllSkillsFromRoleListing(role_id)
+            "Skills": result1
         }
         role_listings_json.append(role_listing_data)
 
