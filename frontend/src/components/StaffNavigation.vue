@@ -10,7 +10,6 @@
         <button class="btn btn-secondary">Logout</button>
       </div>
     </div>
-
     <!-- Main content -->
     <div class="container mt-4">
       <!-- Search and Filter bar -->
@@ -89,17 +88,16 @@
                 <h3 class="card-title">Role description</h3>
                 <div class="role-description">
                   <strong>Job responsibilities</strong>
-                  <ul>
-                    <li v-for="line in selectedRole.Role_Responsibilities.split('\n')">
-                      {{ line }}
-                    </li>
-                  </ul>
+                  <div style="margin-bottom: 20px;margin-top: 5px;">
+                    {{ selectedRole.Role_Responsibilities }}
+
+                  </div>
                 </div>
                 <!-- Role Requirements -->
                 <div class="role-requirements">
                   <strong>Role Requirements</strong>
-                  <ul>
-                    <li v-for="line in selectedRole.Role_Requirements.split('\n')">
+                  <ul style="margin-top: 5px;">
+                    <li v-for="line in selectedRole.Role_Requirements">
                       {{ line }}
                     </li>
                   </ul>
@@ -149,12 +147,13 @@ export default {
       selectedRole: {},
       isCardClicked: false,
       isActive: false,
-      userSkills: ["Java", "Programming", "English"],
+      userSkills: ["Problem Solving", "Project Management", "Collaboration"],
       skills: [], // Add this property to store skills
       selectedSkills: [], // Add this property to store selected skills
       progressBarWidth: "",
       showNoSkillsMessage: false, // Add this property to track the message display
       isDropdownOpen: false, // Add this property to track the dropdown state
+      testarray: [],
     };
   },
   methods: {
@@ -251,7 +250,7 @@ export default {
 
     axios.get('http://127.0.0.1:5000/api/openjoblistings')
       .then(response => {
-        this.roles = response.data;
+        this.roles = response.data
       })
       .catch(error => {
         console.error('Error fetching data:', error);
