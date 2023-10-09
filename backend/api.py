@@ -6,10 +6,11 @@ api.py
 from datetime import datetime
 from flask import Blueprint, request, jsonify
 # from models import db, 
-from models import Staff_Skill, db, Staff, Role, Staff, Skill, RoleSkillMapping, RoleListing
+from models import Staff_Skill, db, Staff, Role, Staff, Skill, RoleSkillMapping, RoleListing, Application
 from sqlalchemy import and_, desc, func
 from flask import Flask
 from flask_cors import CORS
+import datetime
 api = Blueprint('api', __name__)
 
 
@@ -451,3 +452,57 @@ def login():
 
     except Exception as e:
         return jsonify({"message": "Error retrieving Staff information", "error": str(e)}), 500
+    
+"""
+Apply for Open role - Create new application
+"""
+@api.route("/applyforopenrole", methods=["POST"])
+def create_application():
+    current_date = datetime.datetime.now()
+    formatted_date = current_date.strftime("%Y-%m-%d")
+
+    try:
+        # Get the application data from the request
+        application_date = formatted_date
+        application_status = "Received"
+        staff_id = request.json["Staff_ID"]
+        listing_id = request.json["Listing_ID"]
+
+        # Create a new Application object
+        application = Application(application_date, application_status, staff_id, listing_id)
+
+        # Add the Application object to the database
+        db.session.add(application)
+        db.session.commit()
+
+        # Return a success response
+        return jsonify({"message": "Application successfully created"}), 201
+    except KeyError as e:
+        # Handle the error here
+        return jsonify({"error": "Missing required key: " + str(e)}), 400
+    except ValueError as e:
+        # Handle the error here
+        return jsonify({"error": "Invalid value: " + str(e)}), 400
+
+"""
+Endpoint to get all applications
+"""
+@api.route("/getapplications", methods=["GET"])
+def get_all_applications():
+
+    try:
+        # Get all applications from the database
+        applications = Application.query.all()
+
+        # Convert the applications to JSON
+        application_json = []
+        for application in applications:
+            application_json.append(application.json())
+
+        # Return the JSON response
+        return jsonify(application_json)
+    except Exception as e:
+        # Handle the error here
+        return jsonify({"error": str(e)}), 500
+
+
