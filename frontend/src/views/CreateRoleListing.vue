@@ -143,7 +143,10 @@ export default {
                 Deadline: this.Deadline,
                 Date_Posted: this.Date_Posted,
                 Hiring_Manager: this.Hiring_Manager,
-            }).then(response => console.log(response));
+            }).then(response => {
+                console.log(response);
+                alert("New role listing successfully created");
+            });
         },
         addSkill() {
             if (this.selectedSkill && !this.selectedSkills.includes(this.selectedSkill)) {
