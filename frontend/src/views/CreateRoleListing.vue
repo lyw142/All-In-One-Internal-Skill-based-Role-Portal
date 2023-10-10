@@ -82,15 +82,9 @@
             <div class="form-group mb-3">
                 <div class="row">
                     <div class="col-6">
-                        <label for="minSalary">Minimum possible salary ($)</label>
-                        <input type="number" class="form-control" id="minSalary" v-model="minSalary" required
-                            pattern="[0-9]{1,11}" />
-                    </div>
-
-                    <div class="col-6">
-                        <label for="maxSalary">Maximum possible salary ($)</label>
-                        <input type="number" class="form-control" id="maxSalary" v-model="maxSalary" required
-                            pattern="[0-9]{1,11}" />
+                        <label for="minSalary">Salary ($)</label>
+                        <input type="number" class="form-control" id="roleSalary" :value="Salary"
+                            @input="Salary = $event.target.value.toString()" required pattern="[0-9]{1,11}" />
                     </div>
                 </div>
             </div>
@@ -119,8 +113,6 @@ export default {
     data() {
         return {
             // variables that i used 
-            minSalary: null,
-            maxSalary: null,
             selectedSkill: '',
             selectedSkills: [],
             availableSkills: [],
@@ -140,7 +132,6 @@ export default {
     },
     methods: {
         submitForm() {
-            this.Salary = '$' + this.minSalary.toString() + '-' + '$' + this.maxSalary.toString();
             this.Skills = this.formattedSkills;
             axios.post('http://127.0.0.1:5000/api/createjoblisting', {
                 Role_Name: this.Role_Name,
@@ -153,7 +144,6 @@ export default {
                 Date_Posted: this.Date_Posted,
                 Hiring_Manager: this.Hiring_Manager,
             }).then(response => console.log(response));
-
         },
         addSkill() {
             if (this.selectedSkill && !this.selectedSkills.includes(this.selectedSkill)) {
