@@ -236,6 +236,9 @@ def updateRoleListing(listing_id):
         # Update the role listing attributes
         role_listing.Deadline = data["Deadline"]
 
+        # # Update the role listing attributes
+        # role_listing.Date_Posted = data["Date_Posted"]
+
         # Update the role listing attributes
         role_listing.Country = data["Country"]
 
@@ -249,8 +252,17 @@ def updateRoleListing(listing_id):
         if role:
             role.Role_Responsibilities = data["Role_Responsibilities"]
         else:
-            # Handle the case where the corresponding Role is not found
             return jsonify({"message": "Role not found"}), 404
+
+        skill_ids = data["Skill_ID"]
+
+        for skill_id in skill_ids:
+            role_skill_mapping = RoleSkillMapping(Role_ID=role_listing.Role_ID, Skill_ID=skill_id)
+
+            db.session.add(role_skill_mapping)
+
+        print(role_listing.Role_ID)
+        print(data["Skill_ID"])
 
         # Commit changes to the database
         db.session.commit()
