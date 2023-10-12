@@ -2,10 +2,10 @@
 
 import StaffNavigation from "./components/StaffNavigation.vue";
 import createrolelisting from "./views/CreateRoleListing.vue"
-
+import HRNavigation from "./components/HRNavigation.vue"
 export default {
   name: 'App',
-  components: { StaffNavigation, createrolelisting },
+  components: { StaffNavigation, createrolelisting, HRNavigation },
   data() {
     return {
       title: 'SPM Sprint 1'
@@ -13,7 +13,7 @@ export default {
   },
   computed: {
     show() {
-      return 1
+      return 3
     }
   }
 }
@@ -22,6 +22,7 @@ export default {
 <template>
   <StaffNavigation v-if="show == 1" />
   <createrolelisting v-if="show == 2" />
+  <HRNavigation v-if="show == 3" />
 </template>
 
 <style>
