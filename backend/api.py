@@ -3,14 +3,14 @@ api.py
 - provides the API endpoints for consuming and producing
   REST requests and responses
 """
-from datetime import datetime
 from flask import Blueprint, request, jsonify
+from datetime import datetime
 # from models import db, 
 from models import Staff_Skill, db, Staff, Role, Staff, Skill, RoleSkillMapping, RoleListing, Application
 from sqlalchemy import and_, desc, func
 from flask import Flask
 from flask_cors import CORS
-import datetime
+# import datetime
 api = Blueprint('api', __name__)
 
 
