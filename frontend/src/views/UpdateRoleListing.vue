@@ -80,7 +80,11 @@ export default {
             selectedSkill: '',
             selectedSkills: [],
             availableSkills: [],
-            final_skills: [],
+            originalSkills: [],
+            addedSkills: [],
+            removedSkills: [],
+            addedSkills_ID: [],
+            removedSkills_ID: [],
 
             Role_Responsibilities: "",
             Salary: "",
@@ -97,6 +101,7 @@ export default {
             if (this.selectedSkill && !this.selectedSkills.includes(this.selectedSkill)) {
                 this.selectedSkills.push(this.selectedSkill);
                 this.selectedSkill = '';
+
             }
         },
         removeSkill(skillToRemove) {
@@ -104,23 +109,48 @@ export default {
             if (index !== -1) {
                 this.selectedSkills.splice(index, 1);
             }
-        },
-        submitForm() {
-            this.selectedSkills.forEach((skillName) => {
-                // Find the skill in skillDatabase by matching the Skill_Name.
-                const matchingSkill = this.availableSkills.find((skill) => skill.Skill_Name === skillName);
 
-                // If a matching skill is found, add its Skill_ID to the final_skills array.
-                if (matchingSkill) {
-                    this.final_skills.push(matchingSkill.Skill_ID);
-                }
-            });
+        },
+        compareSkills() {
+            this.addedSkills = this.selectedSkills.filter(skill => !this.originalSkills.includes(skill));
+            this.removedSkills = this.originalSkills.filter(skill => !this.selectedSkills.includes(skill));
+            console.log(this.addedSkills);
+            console.log(this.removedSkills);
+        },
+
+        submitForm() {
+            this.compareSkills();
+            if (this.addedSkills.length > 0) {
+                this.addedSkills.forEach((skillName) => {
+                    // Find the skill in skillDatabase by matching the Skill_Name.
+                    const matchingSkill = this.availableSkills.find((skill) => skill.Skill_Name === skillName);
+
+                    // If a matching skill is found, add its Skill_ID to the added skills array.
+                    if (matchingSkill) {
+                        this.addedSkills_ID.push(matchingSkill.Skill_ID);
+                    }
+                });
+            };
+            if (this.removedSkills.length > 0) {
+                this.removedSkills.forEach((skillName) => {
+                    // Find the skill in skillDatabase by matching the Skill_Name.
+                    const matchingSkill = this.availableSkills.find((skill) => skill.Skill_Name === skillName);
+
+                    // If a matching skill is found, add its Skill_ID to the removed skills array.
+                    if (matchingSkill) {
+                        this.removedSkills_ID.push(matchingSkill.Skill_ID);
+                    }
+                });
+            };
+            console.log(this.addedSkills_ID);
+            console.log(this.removedSkills_ID);
             // post method goes here 
             const url = `http://127.0.0.1:5000/api/updateRoleListing/${this.Listing_ID}`;
             axios.post(url, {
                 Role_Responsibilities: this.Role_Responsibilities,
                 Salary: this.Salary,
-                Skills: this.final_skills,
+                AddedSkills: this.addedSkills_ID,
+                RemovedSkills: this.removedSkills_ID,
                 Deadline: this.Deadline,
                 Country: this.Country,
             }).then(response => {
@@ -131,7 +161,6 @@ export default {
             // console.log({
             //     Role_Responsibilities: this.Role_Responsibilities,
             //     Salary: this.Salary,
-            //     Skills: this.final_skills,
             //     Deadline: this.Deadline,
             //     Country: this.Country,
             // })
@@ -146,9 +175,16 @@ export default {
             this.Salary = response.data[0].Salary;
             this.Deadline = response.data[0].Deadline;
             this.Country = response.data[0].Country;
-            this.selectedSkills = response.data[0].Skills
+            this.selectedSkills = response.data[0].Skills;
+            // this.originalSkills = response.data[0].Skills;
         });
         axios.get('http://127.0.0.1:5000/api/skills').then(response => this.availableSkills = response.data)
+    },
+    created() {
+        const apiUrltwo = `http://127.0.0.1:5000/api/getRoleListing/${this.Listing_ID}`;
+        axios.get(apiUrltwo).then(response => {
+            this.originalSkills = response.data[0].Skills;
+        });
     }
 };
 </script>
