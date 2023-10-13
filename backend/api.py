@@ -234,38 +234,30 @@ def updateRoleListing(listing_id):
         # Get the JSON data from the request
         data = request.get_json()
 
-        # Update the role listing attributes
         role_listing.Deadline = data["Deadline"]
-
-        # # Update the role listing attributes
-        # role_listing.Date_Posted = data["Date_Posted"]
-
-        # Update the role listing attributes
         role_listing.Country = data["Country"]
-
-        # Update the role listing attributes
         role_listing.Salary = data["Salary"]
+        skill_ids = data["Skill_ID"]
+        remove_skill = data["Remove_Skill"] # array of skills id
 
-        # Fetch the corresponding Role object
         role = Role.query.get(role_listing.Role_ID)
 
-        # Update the Role attributes
         if role:
             role.Role_Responsibilities = data["Role_Responsibilities"]
         else:
             return jsonify({"message": "Role not found"}), 404
 
-        skill_ids = data["Skill_ID"]
 
         for skill_id in skill_ids:
             role_skill_mapping = RoleSkillMapping(Role_ID=role_listing.Role_ID, Skill_ID=skill_id)
 
             db.session.add(role_skill_mapping)
 
-        print(role_listing.Role_ID)
-        print(data["Skill_ID"])
+        for skill_id in remove_skill:
+            role_skill_mapping = RoleSkillMapping.query.filter_by(Role_ID=role_listing.Role_ID, Skill_ID=skill_id).first()
+            if role_skill_mapping:
+                db.session.delete(role_skill_mapping)
 
-        # Commit changes to the database
         db.session.commit()
 
         return jsonify({"message": "Role listing updated successfully"})
