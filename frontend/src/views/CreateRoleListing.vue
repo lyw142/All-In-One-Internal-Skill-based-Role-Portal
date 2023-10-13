@@ -1,27 +1,15 @@
 <template>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#"><img src="../assets/logo.png" height="50" width="50"></a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
-                aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="#1">Roles</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Candidates</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">View staff skills</a>
-                    </li>
-                </ul>
-                <button type="button" class="btn btn-secondary">Logout</button>
-            </div>
+    <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+        <div class="navbar-left">
+            <img src="../assets/logo.png" alt="Logo" class="logo" />
+            <a to="/roles" class="nav-link" style="color: white;">Roles</a>
+            <a to="/candidates" class="nav-link" style="color: white;">Candidates</a>
+            <a to="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
         </div>
-    </nav>
+        <div class="navbar-right">
+            <button class="btn btn-secondary">Logout</button>
+        </div>
+    </div>
     <!-- form starts here -->
     <div class="container mt-4">
         <h1>Create a new role listing</h1>
@@ -132,7 +120,6 @@ export default {
     },
     methods: {
         submitForm() {
-            this.Skills = this.formattedSkills;
             axios.post('http://127.0.0.1:5000/api/createjoblisting', {
                 Role_Name: this.Role_Name,
                 Role_Responsibilities: this.Role_Responsibilities,
@@ -166,6 +153,37 @@ export default {
 </script>
   
 <style scoped>
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #333;
+    padding: 10px 20px;
+}
+
+
+.navbar-left {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    width: 40px;
+    height: 40px;
+    margin-right: 20px;
+}
+
+.nav-link {
+    text-decoration: none;
+    margin-right: 20px;
+    color: #333;
+    font-size: 16px;
+}
+
+.nav-link:last-child {
+    margin-right: 0;
+}
+
 .btn {
     margin-top: 10px;
     margin-bottom: 40px;

@@ -1,11 +1,11 @@
 <template>
   <div>
-    <div class="navbar">
+    <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
       <div class="navbar-left">
-        <img src="logo.png" alt="Logo" class="logo" />
-        <a to="/roles" class="nav-link">Roles</a>
-        <a to="/candidates" class="nav-link">Candidates</a>
-        <a to="/view-staff-skills" class="nav-link">View Staff Skills</a>
+        <img src="../assets/logo.png" alt="Logo" class="logo" />
+        <a to="/roles" class="nav-link" style="color: white;">Roles</a>
+        <a to="/candidates" class="nav-link" style="color: white;">Candidates</a>
+        <a to="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
       </div>
       <div class="navbar-right">
         <button class="btn btn-secondary">Logout</button>
@@ -14,24 +14,16 @@
     <div class="row mb-3" :style="{ padding: '10px 20px' }">
       <div class="col-md-6" :style="{ textAlign: 'left' }">
         <span>Roles </span>
-        <button
-          :class="{
-            'btn-secondary': selectedStatus === 'open',
-            'btn-outline-secondary': selectedStatus !== 'open',
-          }"
-          class="btn btn-sm btn pr-2"
-          @click="toggleStatus('open')"
-        >
+        <button :class="{
+          'btn-secondary': selectedStatus === 'open',
+          'btn-outline-secondary': selectedStatus !== 'open',
+        }" class="btn btn-sm btn pr-2" @click="toggleStatus('open')">
           Open and paused ({{ openCount }})
         </button>
-        <button
-          :class="{
-            'btn-secondary': selectedStatus === 'closed',
-            'btn-outline-secondary': selectedStatus !== 'closed',
-          }"
-          class="btn btn-sm btn"
-          @click="toggleStatus('closed')"
-        >
+        <button :class="{
+          'btn-secondary': selectedStatus === 'closed',
+          'btn-outline-secondary': selectedStatus !== 'closed',
+        }" class="btn btn-sm btn" @click="toggleStatus('closed')">
           Closed ({{ closedCount }})
         </button>
       </div>
@@ -44,39 +36,23 @@
     <div class="container mt-4">
       <div class="row mb-4">
         <div class="col-md-8">
-          <input
-            type="text"
-            class="form-control"
-            placeholder="Search for a role..."
-            v-model="searchQuery"
-          />
+          <input type="text" class="form-control" placeholder="Search for a role..." v-model="searchQuery" />
         </div>
       </div>
       <div :style="{ display: 'flex' }">
         <div :style="{ width: '40%' }">
-          <div
-            v-for="(role, index) in roles"
-            :key="index"
-            @click="roleClicked(role.listingID)"
-          >
+          <div v-for="(role, index) in roles" :key="index" @click="roleClicked(role.listingID)">
             <div class="card mb-3">
               <div class="card-body">
                 <h5 class="card-title">{{ role.title }}</h5>
                 <p class="card-text">
                   <strong>Skills Required:</strong>
-                  <span
-                    v-for="(skill, index) in role.skills.split(',')"
-                    :key="index"
-                    class="skill-box"
-                  >
+                  <span v-for="(skill, index) in role.skills.split(',')" :key="index" class="skill-box">
                     {{ skill.trim() }}
                   </span>
                 </p>
                 <ul>
-                  <li
-                    v-for="(line, index) in role.description.split('\n')"
-                    :key="index"
-                  >
+                  <li v-for="(line, index) in role.description.split('\n')" :key="index">
                     {{ line }}
                   </li>
                 </ul>
@@ -87,10 +63,10 @@
               </div>
             </div>
           </div>
-          <div v-if="roles.length===0">
-          <h3>
-          There are no listings available at the moment
-          </h3>
+          <div v-if="roles.length === 0">
+            <h3>
+              There are no listings available at the moment
+            </h3>
           </div>
         </div>
         <div :style="{ width: '60%', marginLeft: '16px' }">
@@ -128,11 +104,7 @@
                 <p>
                   <strong>Skills Required:</strong>
                 </p>
-                <span
-                  v-for="(skill, index) in selectedRole.Skills"
-                  :key="index"
-                  class="skill-box"
-                >
+                <span v-for="(skill, index) in selectedRole.Skills" :key="index" class="skill-box">
                   {{ skill.trim() }}
                 </span>
               </div>
@@ -156,30 +128,7 @@ export default {
       editOpen: false,
       jobListings: [], // New property to store job listings
       selectedStatus: "open", // Default selected status
-      roles: [
-        {
-          title: "Human Resource (Entry Level)",
-          skills: "Communication, Recruitment, HR Policies",
-          description:
-            "We are seeking an Entry Level Human Resource professional to join our team. This role involves assisting with recruitment, onboarding, and HR policy compliance.\n Ideal candidates should have strong communication skills and a desire to grow in the field of HR.",
-          deadline: 7, // Number of days until the application deadline
-        },
-        {
-          title: "Human Resource Officer",
-          skills: "Employee Relations, Benefits Administration, HR Compliance",
-          description:
-            "We are looking for an experienced Human Resource Officer to manage HR functions, including employee relations, benefits administration, and ensuring HR compliance.\n The ideal candidate should have a strong background in HR and excellent problem-solving skills.",
-          deadline: 14, // Number of days until the application deadline
-        },
-        {
-          title: "Real Estate Sale Coordinator",
-          skills: "Real Estate Sales, Customer Service, Negotiation",
-          description:
-            "Join our real estate team as a Sale Coordinator!\n This role involves coordinating real estate transactions, providing excellent customer service to clients, and assisting with negotiations.\n If you have a passion for real estate and a customer-centric approach, we want to hear from you.",
-          deadline: 5, // Number of days until the application deadline
-        },
-        // Add more role objects as needed
-      ],
+      roles: [],
       selectedRole: null,
     };
   },
@@ -192,7 +141,7 @@ export default {
       this.loadJobListings();
     },
     createRole() {
-      // Implement your logic to create a new role
+      this.$router.push({ name: "CreateRoleListing" });
     },
 
     calculateDeadline(deadline) {
@@ -203,9 +152,8 @@ export default {
       return daysRemaining;
     },
     loadJobListings() {
-      const apiUrl = `http://127.0.0.1:5000/api/${
-        this.selectedStatus === "open" ? "open" : "closed"
-      }joblistings`;
+      const apiUrl = `http://127.0.0.1:5000/api/${this.selectedStatus === "open" ? "open" : "closed"
+        }joblistings`;
 
       axios
         .get(apiUrl)
@@ -244,23 +192,19 @@ export default {
       this.fetchRoleDetails(listingID);
     },
     editRole() {
-      // Use a prompt dialog to collect user input for editing
-      const newJobRequirements = prompt(
-        "Enter requirements for the role:",
-        this.selectedRole.Role_Requirements
-      );
-      // Update the role title if the user provided a value
-      if (newJobRequirements !== null) {
-        this.selectedRole.Role_Requirements = newJobRequirements;
-        axios
-          .post(
-            `http://127.0.0.1:5000/api/updateRoleListing/${this.selectedRole.Listing_ID}`,
-            this.selectedRole
-          )
-          .then((response) => {
-            console.log({ response });
-          });
-      }
+      const Listing_ID = this.selectedRole.Listing_ID;
+      this.$router.push({ name: "UpdateRoleListing", params: { Listing_ID } });
+      // if (newJobRequirements !== null) {
+      //   this.selectedRole.Role_Requirements = newJobRequirements;
+      //   axios
+      //     .post(
+      //       `http://127.0.0.1:5000/api/updateRoleListing/${this.selectedRole.Listing_ID}`,
+      //       this.selectedRole
+      //     )
+      //     .then((response) => {
+      //       console.log({ response });
+      //     });
+      // }
     },
   },
   mounted() {
@@ -279,6 +223,7 @@ export default {
   color: #333;
   padding: 10px 20px;
 }
+
 
 .navbar-left {
   display: flex;
@@ -340,14 +285,17 @@ export default {
   font-weight: bold;
   margin-bottom: 10px;
 }
+
 .card,
 .card-body {
   text-align: left;
 }
+
 .card-text {
   font-size: 16px;
   margin-bottom: 10px;
 }
+
 .skill-box {
   display: inline-block;
   background-color: rgba(25, 135, 84, 0.1);
@@ -357,10 +305,12 @@ export default {
   border-radius: 4px;
   font-size: 14px;
 }
+
 .divider {
   padding: 12px 36px;
   border-bottom: 1px solid rgba(25, 135, 84, 0.1);
 }
+
 .skills {
   padding: 12px 36px;
 }

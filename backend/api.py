@@ -212,7 +212,8 @@ def getRoleListing(listing_id):
                 "Role_Responsibilities": role_responsibilities,
                 "Role_Requirements": result2,
                 "Salary": role_listing.Salary,
-                "Skills": result1
+                "Skills": result1,
+                "Country": role_listing.Country,
             }
             role_listings_json.append(role_listing_data)
 

@@ -27,5 +27,5 @@ npm run dev
 ```sh
 npm run build
 ```
-### i installed popperjs, bootstrap, scss/sass
-### i will get the commands to install these 3 dependencies later
+### i installed popperjs, bootstrap, scss/sass, vue-router
+### i will get the commands to install these 4 dependencies later

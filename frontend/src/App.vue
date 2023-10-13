@@ -1,28 +1,21 @@
 <script>
 
-import StaffNavigation from "./components/StaffNavigation.vue";
-import createrolelisting from "./views/CreateRoleListing.vue"
-import HRNavigation from "./components/HRNavigation.vue"
 export default {
   name: 'App',
-  components: { StaffNavigation, createrolelisting, HRNavigation },
   data() {
     return {
       title: 'SPM Sprint 1'
     }
   },
-  computed: {
-    show() {
-      return 3
-    }
-  }
 }
 </script>
 
 <template>
-  <StaffNavigation v-if="show == 1" />
-  <createrolelisting v-if="show == 2" />
-  <HRNavigation v-if="show == 3" />
+  <router-link to="/staffnav">I am a staff member</router-link>
+  <router-link to="/hrnav">I am from HR</router-link>
+  <router-link to="/">go back home</router-link>
+
+  <router-view></router-view>
 </template>
 
 <style>
