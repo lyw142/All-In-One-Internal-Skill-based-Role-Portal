@@ -8,7 +8,7 @@
         <a to="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
       </div>
       <div class="navbar-right">
-        <button class="btn btn-secondary">Logout</button>
+        <button class="btn btn-secondary" @click="clearUserSessionData()">Logout</button>
       </div>
     </div>
     <div class="row mb-3" :style="{ padding: '10px 20px' }">
@@ -118,6 +118,7 @@
 
 <script>
 import axios from "axios"; // Import Axios library
+import Cookies from 'js-cookie'
 
 export default {
   data() {
@@ -206,8 +207,28 @@ export default {
       //     });
       // }
     },
+    // Retrieve user session data from a cookie
+    getUserSessionData() {
+      const serializedUser = Cookies.get('userSession')
+      if (serializedUser) {
+        const data = JSON.parse(serializedUser)
+        if (!(data.Access_Rights == 4)) {
+          this.$router.push("/staffnav");
+        }
+        console.log("Logged in");
+      } else {
+        this.$router.push("/");; // No user session data found
+      }
+    },
+
+    // Clear user session data from the cookie
+    clearUserSessionData() {
+      Cookies.remove('userSession');
+      this.$router.push("/");; // No user session data found
+    }
   },
   mounted() {
+    this.getUserSessionData();
     // Load job listings when the component is mounted
     this.loadJobListings();
   },
