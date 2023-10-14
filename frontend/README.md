@@ -27,13 +27,6 @@ npm run dev
 ```sh
 npm run build
 ```
-
-### For Session Cookie
-
-```sh
-npm install js-cookie
-```
-
 ### I installed bootstrap, scss/sass, vue-router. Not sure if popperjs was ever used, but in case you need it it's below as well
 
 ### npm i bootstrap@5.3.2
