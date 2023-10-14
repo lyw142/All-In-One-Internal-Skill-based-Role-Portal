@@ -427,7 +427,7 @@ def getStaffSkills(staff_id):
         return jsonify({"message": "Error retrieving Staff's Skill", "error": str(e)}), 500
 
 #Login
-@api.route("/login")
+@api.route("/login", methods=['POST'])
 def login():
     try:
         data = request.get_json()
@@ -439,17 +439,16 @@ def login():
             .all()
         )   
 
-        staff_json = []
-
         if query:
-            for staff in query:
-                staff_data = {
-                    "Access_Rights": staff.Access_Rights,
-                    "Staff_ID": staff.Staff_ID,
-                    "Name" : staff.Staff_FName + staff.Staff_LName
-                }
-                staff_json.append(staff_data)
-            return jsonify(staff_json), 200
+            staff = query[0]  # Assuming only one staff member is found
+
+            staff_data = {
+                "Access_Rights": staff.Access_Rights,
+                "Staff_ID": staff.Staff_ID,
+                "Name": staff.Staff_FName + staff.Staff_LName
+            }
+            
+            return jsonify(staff_data), 200
         else :
             return jsonify({
                 "data": "Staff not found"
