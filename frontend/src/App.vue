@@ -11,10 +11,6 @@ export default {
 </script>
 
 <template>
-  <router-link to="/staffnav">I am a staff member</router-link>
-  <router-link to="/hrnav">I am from HR</router-link>
-  <router-link to="/">go back home</router-link>
-
   <router-view></router-view>
 </template>
 

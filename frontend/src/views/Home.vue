@@ -1,15 +1,4 @@
 <template>
-    <div class="home">
-        <h1>This will be the login page</h1>
-    </div>
-    <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
-        <div class="navbar-left">
-            <img src="../assets/logo.png" alt="Logo" class="logo" />
-            <a to="/roles" class="nav-link" style="color: white;">Roles</a>
-            <a to="/candidates" class="nav-link" style="color: white;">Candidates</a>
-            <a to="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
-        </div>
-    </div>
     <!-- form starts here -->
     <div class="container mt-4">
         <h2>Login</h2>
