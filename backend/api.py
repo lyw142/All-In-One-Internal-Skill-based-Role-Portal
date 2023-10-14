@@ -237,8 +237,8 @@ def updateRoleListing(listing_id):
         role_listing.Deadline = data["Deadline"]
         role_listing.Country = data["Country"]
         role_listing.Salary = data["Salary"]
-        skill_ids = data["Skill_ID"]
-        remove_skill = data["Remove_Skill"] # array of skills id
+        skill_ids = data["AddedSkills"]
+        remove_skill = data["RemovedSkills"] # array of skills id
 
         role = Role.query.get(role_listing.Role_ID)
 
