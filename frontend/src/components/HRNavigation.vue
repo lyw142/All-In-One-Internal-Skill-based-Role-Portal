@@ -214,7 +214,6 @@ export default {
         if (!(data.Access_Rights == 4)) {
           this.$router.push("/staffnav");
         }
-        console.log("Logged in");
       } else {
         this.$router.push("/");; // No user session data found
       }

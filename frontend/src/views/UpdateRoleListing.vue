@@ -7,7 +7,7 @@
             <a to="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
         </div>
         <div class="navbar-right">
-            <button class="btn btn-secondary">Logout</button>
+            <button class="btn btn-secondary" @click="clearUserSessionData()">Logout</button>
         </div>
     </div>
     <!-- form starts here -->
@@ -174,10 +174,28 @@ export default {
             //     Country: this.Country,
             // })
 
-        }
+        },
+        // Retrieve user session data from a cookie
+        getUserSessionData() {
+            const serializedUser = Cookies.get('userSession')
+            if (serializedUser) {
+                const data = JSON.parse(serializedUser)
+                if (!(data.Access_Rights == 4)) {
+                    this.$router.push("/staffnav");
+                }
+            } else {
+                this.$router.push("/");; // No user session data found
+            }
+        },
 
+        // Clear user session data from the cookie
+        clearUserSessionData() {
+            Cookies.remove('userSession');
+            this.$router.push("/");; // No user session data found
+        }
     },
     mounted() {
+        this.getUserSessionData();
         const apiUrl = `http://127.0.0.1:5000/api/getRoleListing/${this.Listing_ID}`;
         axios.get(apiUrl).then(response => {
             this.Role_Responsibilities = response.data[0].Role_Responsibilities;
