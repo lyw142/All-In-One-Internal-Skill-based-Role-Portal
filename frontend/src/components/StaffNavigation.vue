@@ -4,7 +4,7 @@
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
       <div class="navbar-left">
         <img src="../assets/logo.png" alt="Logo" class="logo" />
-        <a to="/roles" class="nav-link" style="color: white;">Roles</a>
+        <a to="/roles" class="nav-link" style="color: white;">View roles</a>
       </div>
       <div class="navbar-right">
         <button class="btn btn-secondary" @click="clearUserSessionData()">Logout</button>
@@ -69,7 +69,8 @@
                 </p>
                 <p class="card-text">
                   <strong>Application Deadline:</strong>
-                  {{ role.Deadline }}
+                  {{ role.Deadline }}, {{ this.calculateDeadline(role.Deadline) }} day(s) remaining
+
                 </p>
               </div>
             </div>
@@ -162,6 +163,13 @@ export default {
     selectRole(role) {
       this.selectedRole = role;
       this.isCardClicked = true;
+    },
+    calculateDeadline(deadline) {
+      const today = new Date();
+      const deadlineDate = new Date(deadline);
+      const timeDifference = deadlineDate - today;
+      const daysRemaining = Math.ceil(timeDifference / (1000 * 60 * 60 * 24));
+      return daysRemaining;
     },
     toggleActive() {
       this.isActive = !this.isActive;
@@ -268,7 +276,7 @@ export default {
 
     axios.get('http://127.0.0.1:5000/api/openjoblistings')
       .then(response => {
-        this.roles = response.data
+        this.roles = response.data;
       })
       .catch(error => {
         console.error('Error fetching data:', error);

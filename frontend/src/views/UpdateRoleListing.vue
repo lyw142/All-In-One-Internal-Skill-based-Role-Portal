@@ -19,7 +19,7 @@
             <div class="form-group mb-3">
                 <label for="roleResponsibilities">Role Responsibilities</label>
                 <textarea class="form-control" id="roleResponsibilities" v-model="this.Role_Responsibilities" required
-                    maxlength="1000" pattern="[A-Za-z\s]+"></textarea>
+                    maxlength="1000" pattern="[A-Za-z\s]+" rows="7"></textarea>
             </div>
 
 
@@ -27,7 +27,7 @@
             <div class="row">
                 <div class="form-group col-6">
                     <label for="roleSkills">Skills required</label>
-                    <select v-model="selectedSkill" @change="addSkill" style="margin-left: 10px;">
+                    <select class="form-select" v-model="selectedSkill" @change="addSkill" style="margin-left: 10px;">
                         <option value="" disabled>Select a skill</option>
                         <option v-for="skill in this.availableSkills" :key="skill.Skill_ID" :value="skill.Skill_Name">{{
                             skill.Skill_Name }}</option>
@@ -35,7 +35,12 @@
                     <ul style="margin-top: 5px;">
                         <li class="mb-2" v-for="skill in selectedSkills" :key="skill">
                             {{ skill }}
-                            <button @click="removeSkill(skill)" style="border-radius: 5px;">Remove</button>
+
+                            <button @click="removeSkill(skill)" style="border: none; background: none; cursor: pointer;">
+                                <img src="../assets/images/closeicon.png" alt="Remove"
+                                    style="border-radius: 5px; width: 15px; height: 15px;">
+                            </button>
+
                         </li>
                     </ul>
                 </div>
@@ -63,7 +68,6 @@
                     </div>
                 </div>
             </div>
-
             <button type="submit" class="btn btn-secondary">Update</button>
         </form>
     </div>
@@ -156,6 +160,7 @@ export default {
             }).then(response => {
                 console.log(response);
                 alert("The role listing has been updated");
+                this.$router.push("/hrnav");
             });
 
             // console.log({

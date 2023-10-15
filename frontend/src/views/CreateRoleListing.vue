@@ -40,14 +40,14 @@
             <div class="form-group mb-3">
                 <label for="roleResponsibilities">Role Responsibilities</label>
                 <textarea class="form-control" id="roleResponsibilities" v-model="Role_Responsibilities" required
-                    maxlength="1000" pattern="[A-Za-z\s]+"></textarea>
+                    maxlength="1000" pattern="[A-Za-z\s]+" rows="6"></textarea>
             </div>
 
             <!-- Role Requirements -->
             <div class="form-group mb-3">
                 <label for="roleRequirements">Role Requirements</label>
                 <textarea class="form-control" id="roleRequirements" v-model="Role_Requirements" required maxlength="1000"
-                    pattern="[A-Za-z\s]+"></textarea>
+                    pattern="[A-Za-z\s]+" rows="6"></textarea>
             </div>
             <!-- Skill -->
             <div class="form-group mb-3">
@@ -61,7 +61,10 @@
                 <ul style="margin-top: 5px;">
                     <li class="mb-2" v-for="(skill, index) in selectedSkills" :key="index">
                         {{ skill }}
-                        <button @click="removeSkill(index)" style="border-radius: 5px;">Remove</button>
+                        <button @click="removeSkill(index)" style="border: none; background: none; cursor: pointer;">
+                            <img src="../assets/images/closeicon.png" alt="Remove"
+                                style="border-radius: 5px; width: 15px; height: 15px;">
+                        </button>
                     </li>
                 </ul>
             </div>
@@ -133,6 +136,7 @@ export default {
             }).then(response => {
                 console.log(response);
                 alert("New role listing successfully created");
+                this.$router.push("/hrnav");
             });
         },
         addSkill() {

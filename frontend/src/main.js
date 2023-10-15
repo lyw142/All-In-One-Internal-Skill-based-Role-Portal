@@ -19,8 +19,6 @@ const router = createRouter({
         {path: '/hrnav', name:'HRNav', component: HRNavigation},
         {path: '/updaterolelisting/:Listing_ID', name:'UpdateRoleListing', component: UpdateRoleListing, props: true},
         {path: '/createrolelisting', name:'CreateRoleListing', component: CreateRoleListing},
-
-
     ]
 })
 

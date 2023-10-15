@@ -1,18 +1,20 @@
 <template>
     <!-- form starts here -->
-    <div class="container mt-4">
-        <h2>Login</h2>
-        <form @submit.prevent="loginAttempt()">
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" v-model="formData.email" class="form-control" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" v-model="formData.password" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
+    <div class="container">
+        <div>
+            <h2>Login</h2>
+            <form @submit.prevent="loginAttempt()">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" v-model="formData.email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" v-model="formData.password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
     </div>
 </template>
 
