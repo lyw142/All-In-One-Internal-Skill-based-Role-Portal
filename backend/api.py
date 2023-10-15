@@ -462,7 +462,7 @@ Apply for Open role - Create new application
 """
 @api.route("/applyforopenrole", methods=["POST"])
 def create_application():
-    current_date = datetime.datetime.now()
+    current_date = datetime.now()
     formatted_date = current_date.strftime("%Y-%m-%d")
 
     try:
@@ -472,7 +472,13 @@ def create_application():
         staff_id = request.json["Staff_ID"]
         listing_id = request.json["Listing_ID"]
 
-        # Create a new Application object
+
+        # Check if Staff_ID already exists in the Application table
+        existing_application = Application.query.filter_by(Staff_ID=staff_id).first()
+        if existing_application:
+            return jsonify({"error": "You have already applied for this job role."}), 400
+        
+        # If its a new applcation, then create a new Application object
         application = Application(application_date, application_status, staff_id, listing_id)
 
         # Add the Application object to the database
