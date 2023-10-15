@@ -140,7 +140,15 @@
                 </span>
               </div>
               <div>
-                <button class="btn btn-secondary" style="margin: 10px;" @click="showConfirmationModal(role)">Apply for role</button>
+                <button
+  class="btn btn-secondary"
+  style="margin: 10px;"
+  @click="showConfirmationModal(selectedRole)"
+  :disabled="hasAppliedForRole"
+>
+  {{ hasAppliedForRole ? 'Applied' : 'Apply for role' }}
+</button>
+
               </div>
             </div>
           </div>
@@ -177,6 +185,7 @@ export default {
       selectedRole: null, // Role selected for application
       showConfirmModal: false, // Initially hidden
       showSuccessModal: false, // Add a new property to control the success modal
+      hasAppliedForRole: false, // Define the hasAppliedForRole property
     };
   },
   methods: {
@@ -238,10 +247,22 @@ export default {
       this.showConfirmModal = false;
     },
 
-    selectRole(role) {
-      this.selectedRole = role;
-      this.isCardClicked = true;
-    },
+    async selectRole(role) {
+  // Set the selected role
+  this.selectedRole = role;
+  this.isCardClicked = true;
+
+  // Check if the user has already applied for this role
+  try {
+    const response = await axios.get(
+      `http://127.0.0.1:5000/api/checkApplicationStatus/${this.staff_id}/${role.Listing_ID}`
+    );
+
+    // Check the response to determine if the user has applied
+    this.hasAppliedForRole = response.data.hasApplied; // Adjust the response structure as needed
+  } catch (error) {
+    console.error('Error checking application status:', error);
+  }},
 
     getUserSkills() {
       axios.get('http://127.0.0.1:5000/api/getStaffSkills/' + this.staff_id)
