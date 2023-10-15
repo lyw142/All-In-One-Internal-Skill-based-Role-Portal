@@ -149,13 +149,13 @@ export default {
       selectedRole: {},
       isCardClicked: false,
       isActive: false,
-      userSkills: ["Problem Solving", "Project Management", "Collaboration"],
+      userSkills: [],
       skills: [], // Add this property to store skills
       selectedSkills: [], // Add this property to store selected skills
       progressBarWidth: "",
       showNoSkillsMessage: false, // Add this property to track the message display
       isDropdownOpen: false, // Add this property to track the dropdown state
-      testarray: [],
+      staff_id: null,
     };
   },
   methods: {
@@ -164,6 +164,20 @@ export default {
       this.selectedRole = role;
       this.isCardClicked = true;
     },
+
+    getUserSkills() {
+      axios.get('http://127.0.0.1:5000/api/getStaffSkills/' + this.staff_id)
+        .then(response => {
+          response.data.forEach(skill => {
+            // Append the skill_name to the userSkills array
+            this.userSkills.push(skill.Skill_Name);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    },
+
     calculateDeadline(deadline) {
       const today = new Date();
       const deadlineDate = new Date(deadline);
@@ -181,8 +195,8 @@ export default {
       return matchingSkills.length;
     },
     updateProgressBar() {
-      const hellohello = ((this.countMatchingSkills(this.selectedRole) / this.selectedRole.Skills.length) * 100).toString();
-      this.progressBarWidth = hellohello + "%";
+      const pctbar = ((this.countMatchingSkills(this.selectedRole) / this.selectedRole.Skills.length) * 100).toString();
+      this.progressBarWidth = pctbar + "%";
     },
     // Function to fetch skills from the API
     fetchSkills() {
@@ -257,7 +271,8 @@ export default {
     getUserSessionData() {
       const serializedUser = Cookies.get('userSession');
       if (serializedUser) {
-        console.log("Logged in");
+        const userData = JSON.parse(serializedUser);
+        this.staff_id = userData.Staff_ID;
       } else {
         this.$router.push("/");; // No user session data found
       }
@@ -273,6 +288,7 @@ export default {
     // Call the method to fetch skills when the component is mounted
     this.getUserSessionData();
     this.fetchSkills();
+    this.getUserSkills();
 
     axios.get('http://127.0.0.1:5000/api/openjoblistings')
       .then(response => {
