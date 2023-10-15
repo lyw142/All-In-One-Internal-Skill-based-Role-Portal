@@ -94,6 +94,24 @@
 
                   </div>
                 </div>
+
+              <!-- Confirmation modal (initially hidden) -->
+              <div class="modal-container" v-if="showConfirmModal">
+                <div class="confirmation-modal">
+                  <p>Are you sure you want to submit an application for the role of {{ selectedRole.Role_Name }}?</p>
+                  <button class="btn btn-primary" style="width: 120px; height: 40px; margin-right: 10px;" @click="submitApplication">Confirm</button>
+                  <button class="btn btn-secondary" style="width: 120px; height: 40px; margin-left: 10px;" @click="cancelApplication">Cancel</button>
+                </div>
+              </div>
+
+              <!-- Success Modal -->
+              <div class="modal-container" v-if="showSuccessModal">
+                <div class="confirmation-modal">
+                  <p>Your application has been successfully submitted.</p>
+                  <button class="btn btn-primary" @click="returnToJobListings">Return to job listings</button>
+                </div>
+              </div>
+
                 <!-- Role Requirements -->
                 <div class="role-requirements">
                   <strong>Role Requirements</strong>
@@ -122,7 +140,7 @@
                 </span>
               </div>
               <div>
-                <button class="btn btn-secondary" style="margin: 10px;">Apply for role</button>
+                <button class="btn btn-secondary" style="margin: 10px;" @click="showConfirmationModal(role)">Apply for role</button>
               </div>
             </div>
           </div>
@@ -156,10 +174,70 @@ export default {
       showNoSkillsMessage: false, // Add this property to track the message display
       isDropdownOpen: false, // Add this property to track the dropdown state
       staff_id: null,
+      selectedRole: null, // Role selected for application
+      showConfirmModal: false, // Initially hidden
+      showSuccessModal: false, // Add a new property to control the success modal
     };
   },
   methods: {
     // Your methods...
+    showConfirmationModal(role) {
+        console.log('Clicked role:', role);
+        this.showConfirmModal = true;
+    },
+
+    returnToJobListings() {
+        this.showSuccessModal = false;
+    },
+
+    submitApplication() {
+      console.log('Submitting application for the role: ', this.selectedRole.Role_Name);
+
+      // Check the Staff_ID and Listing_ID before making the request
+      console.log('Staff_ID:', 160299); // Replace with the actual Staff ID
+      console.log('Listing_ID:', this.selectedRole.Listing_ID);
+
+      // Define the data to be sent in the request (for testing purposes)
+      const data = {
+          Listing_ID: this.selectedRole.Listing_ID,
+          Staff_ID: 160299, // Replace with the actual Staff ID
+        };
+
+      console.log('Data being sent for testing:', data);
+
+      // For testing, you can log the data and skip the API request
+      // console.log('Testing: Application data would be sent but not actually submitted to the API.');
+      this.showConfirmModal = false;
+      console.log('Testing: Confirmation modal should be closed');
+
+      // This part would be replaced with an actual API request in the production version
+      axios.post('http://127.0.0.1:5000/api/applyforopenrole', data)
+        .then(response => {
+          // Application was successfully created
+          console.log('Application submitted successfully:', response.data.message);
+          // You can perform additional actions here if needed
+           })
+           .catch(error => {
+             console.error('Error submitting application:', error);
+             // Handle the error or show an error message to the user
+           })
+           .finally(() => {
+             // Close the confirmation modal, regardless of success or failure
+             this.showConfirmModal = false;
+           });
+
+        // Assuming a successful API request
+        // You would typically make the API request and handle the response
+        // For this demonstration, we'll directly show the success modal
+      this.showSuccessModal = true;
+
+      },
+
+    cancelApplication() {
+      // Cancel the application and hide the confirmation modal
+      this.showConfirmModal = false;
+    },
+
     selectRole(role) {
       this.selectedRole = role;
       this.isCardClicked = true;
@@ -507,4 +585,28 @@ export default {
   border-width: 2px;
   border-style: solid;
 }
+
+/* Styles for the modal container */
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background to darken the content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100; /* Make sure the modal is above other elements */
+}
+
+  /* Styles for the modal content */
+.confirmation-modal {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
 </style>
