@@ -18,13 +18,13 @@
           'btn-secondary': selectedStatus === 'open',
           'btn-outline-secondary': selectedStatus !== 'open',
         }" class="btn btn-sm btn pr-2" @click="toggleStatus('open')">
-          Open and paused ({{ openCount }})
+          Open and paused <span v-if="openCount !== null">({{ openCount }})</span>
         </button>
         <button :class="{
           'btn-secondary': selectedStatus === 'closed',
           'btn-outline-secondary': selectedStatus !== 'closed',
         }" class="btn btn-sm btn" @click="toggleStatus('closed')">
-          Closed ({{ closedCount }})
+          Closed <span v-if="closedCount !== null">({{ closedCount }})</span>
         </button>
       </div>
       <div class="col-md-6" :style="{ textAlign: 'right' }">
@@ -74,7 +74,7 @@
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
-                <p>{{ selectedRole.Salary }}</p>
+                <p>${{ (selectedRole.Salary/12).toFixed(0) }} per month, Full time</p>
                 <button class="btn btn-secondary" @click="editRole()">
                   Edit role
                 </button>
@@ -82,20 +82,18 @@
               <div class="divider">
                 <h3 class="card-title">Role description</h3>
                 <div class="role-description">
-                  <strong>Job responsabilities</strong>
-                  <ol>
-                    <li>
+                  <strong>Job responsibilities</strong>
+                  <p>
                       {{ selectedRole.Role_Responsibilities }}
-                    </li>
-                  </ol>
+                   </p>
                 </div>
 
                 <!-- Role Requirements -->
                 <div class="role-requirements">
                   <strong>Role Requirements</strong>
                   <ol>
-                    <li>
-                      {{ selectedRole.Role_Requirements }}
+                    <li v-for="(requirement, index) in selectedRole.Role_Requirements" :key="index" >
+                      {{ requirement }}
                     </li>
                   </ol>
                 </div>
@@ -118,13 +116,12 @@
 
 <script>
 import axios from "axios"; // Import Axios library
-import Cookies from 'js-cookie'
 
 export default {
   data() {
     return {
-      openCount: 1,
-      closedCount: 0,
+      openCount: null,
+      closedCount: null,
       searchQuery: "",
       editOpen: false,
       jobListings: [], // New property to store job listings
@@ -161,6 +158,8 @@ export default {
         .then((response) => {
           // Update jobListings with the API response data
           this.jobListings = response.data;
+          if (this.selectedStatus === "open") { this.openCount = this.jobListings.length; }
+          else { this.closedCount = this.jobListings.length; }
           this.roles = response.data.map((listing) => ({
             listingID: listing.Listing_ID,
             title: listing.Role_Name,
@@ -226,6 +225,7 @@ export default {
       Cookies.remove('userSession');
       this.$router.push("/");; // No user session data found
     }
+
   },
   mounted() {
     this.getUserSessionData();
