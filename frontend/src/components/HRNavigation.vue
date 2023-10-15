@@ -57,8 +57,7 @@
                   </li>
                 </ul>
                 <p class="card-text">
-                  <strong>Application Deadline:</strong> Closed in
-                  {{ role.deadline }} days
+                  <strong>Application Deadline:</strong> Closed
                 </p>
               </div>
             </div>
