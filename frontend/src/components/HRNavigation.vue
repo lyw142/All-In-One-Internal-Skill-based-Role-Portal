@@ -116,6 +116,7 @@
 
 <script>
 import axios from "axios"; // Import Axios library
+import Cookies from 'js-cookie'
 
 export default {
   data() {
