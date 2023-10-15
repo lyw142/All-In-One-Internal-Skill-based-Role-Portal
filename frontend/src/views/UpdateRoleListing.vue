@@ -33,7 +33,7 @@
                             skill.Skill_Name }}</option>
                     </select>
                     <ul style="margin-top: 5px;">
-                        <li class="mb-2" v-for="skill in selectedSkills" :key="skill">
+                        <li class="skill-box mb-2" v-for="skill in selectedSkills" :key="skill">
                             {{ skill }}
 
                             <button @click="removeSkill(skill)" style="border: none; background: none; cursor: pointer;">
@@ -69,6 +69,7 @@
                 </div>
             </div>
             <button type="submit" class="btn btn-secondary">Update</button>
+            <button type="button" class="btn btn-secondary" @click="cancel" style="margin-left: 20px;">Cancel</button>
         </form>
     </div>
 </template>
@@ -101,6 +102,9 @@ export default {
         };
     },
     methods: {
+        cancel() {
+            this.$router.push("/hrnav");
+        },
         addSkill() {
             if (this.selectedSkill && !this.selectedSkills.includes(this.selectedSkill)) {
                 this.selectedSkills.push(this.selectedSkill);
@@ -229,5 +233,15 @@ export default {
 
 .nav-link:last-child {
     margin-right: 0;
+}
+
+.skill-box {
+    display: inline-block;
+    background-color: rgba(25, 135, 84, 0.1);
+    padding: 4px 8px;
+    margin-right: 5px;
+    margin-bottom: 5px;
+    border-radius: 4px;
+    font-size: 14px;
 }
 </style>
