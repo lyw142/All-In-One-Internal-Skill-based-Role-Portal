@@ -194,13 +194,13 @@ export default {
       console.log('Submitting application for the role: ', this.selectedRole.Role_Name);
 
       // Check the Staff_ID and Listing_ID before making the request
-      console.log('Staff_ID:', 160299); // Replace with the actual Staff ID
+      console.log('Staff_ID:', this.staff_id); // Replace with the actual Staff ID
       console.log('Listing_ID:', this.selectedRole.Listing_ID);
 
       // Define the data to be sent in the request (for testing purposes)
       const data = {
           Listing_ID: this.selectedRole.Listing_ID,
-          Staff_ID: 160299, // Replace with the actual Staff ID
+          Staff_ID: this.staff_id,
         };
 
       console.log('Data being sent for testing:', data);
