@@ -57,8 +57,12 @@
                   </li>
                 </ul>
                 <p class="card-text">
-                  <strong>Application Deadline:</strong> {{ (role.deadline) <= 0 ? 'Closed' : (role.deadline)
-                    + ' days remaining' }} </p>
+                  <strong>Application Deadline:</strong> {{ (role.deadline) <= 0 ? 'Closed' : (role.deadline) + ' (' +
+                    this.calculateDeadline(role.deadline) + ' days remaining)' }} </p>
+                    <p class="card-text">
+                      <strong>Application Date Posted:</strong>
+                      {{ role.dateposted }}
+                    </p>
               </div>
             </div>
           </div>
@@ -165,7 +169,8 @@ export default {
             title: listing.Role_Name,
             skills: listing.Skills.join(", "),
             description: listing.Role_Responsibilities,
-            deadline: this.calculateDeadline(listing.Deadline), // Calculate the remaining days
+            deadline: listing.Deadline, // Calculate the remaining days
+            dateposted: listing.Date_Posted,
           }));
         })
         .catch((error) => {
