@@ -57,8 +57,8 @@
                   </li>
                 </ul>
                 <p class="card-text">
-                  <strong>Application Deadline:</strong> Closed
-                </p>
+                  <strong>Application Deadline:</strong> {{ (role.deadline) <= 0 ? 'Closed' : (role.deadline)
+                    + ' days remaining' }} </p>
               </div>
             </div>
           </div>
@@ -73,7 +73,7 @@
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
-                <p>${{ (selectedRole.Salary/12).toFixed(0) }} per month, Full time</p>
+                <p>${{ (selectedRole.Salary / 12).toFixed(0) }} per month, Full time</p>
                 <button class="btn btn-secondary" @click="editRole()">
                   Edit role
                 </button>
@@ -83,15 +83,15 @@
                 <div class="role-description">
                   <strong>Job responsibilities</strong>
                   <p>
-                      {{ selectedRole.Role_Responsibilities }}
-                   </p>
+                    {{ selectedRole.Role_Responsibilities }}
+                  </p>
                 </div>
 
                 <!-- Role Requirements -->
                 <div class="role-requirements">
                   <strong>Role Requirements</strong>
                   <ol>
-                    <li v-for="(requirement, index) in selectedRole.Role_Requirements" :key="index" >
+                    <li v-for="(requirement, index) in selectedRole.Role_Requirements" :key="index">
                       {{ requirement }}
                     </li>
                   </ol>
