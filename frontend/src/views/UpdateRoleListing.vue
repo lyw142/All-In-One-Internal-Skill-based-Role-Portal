@@ -103,8 +103,7 @@ export default {
             Skills: [],
             Deadline: "",
             Country: "",
-
-
+            Date_created: "",
 
         };
     },
@@ -161,18 +160,26 @@ export default {
             console.log(this.removedSkills_ID);
             // post method goes here 
             const url = `http://127.0.0.1:5000/api/updateRoleListing/${this.Listing_ID}`;
-            axios.post(url, {
-                Role_Responsibilities: this.Role_Responsibilities,
-                Salary: this.Salary,
-                AddedSkills: this.addedSkills_ID,
-                RemovedSkills: this.removedSkills_ID,
-                Deadline: this.Deadline,
-                Country: this.Country,
-            }).then(response => {
-                console.log(response);
-                alert("The role listing has been updated");
-                this.$router.push("/hrnav");
-            });
+
+            // Check if the deadline is after the date_created
+            if (this.Deadline > this.Date_created) {
+                axios.post(url, {
+                    Role_Responsibilities: this.Role_Responsibilities,
+                    Salary: this.Salary,
+                    AddedSkills: this.addedSkills_ID,
+                    RemovedSkills: this.removedSkills_ID,
+                    Deadline: this.Deadline,
+                    Country: this.Country,
+                }).then(response => {
+                    console.log(response);
+                    alert("The role listing has been updated");
+                    this.$router.push("/hrnav");
+                });
+            } else {
+                // Display an alert if the deadline is before or equal to the date_created
+                alert("Deadline cannot be before or on the date that this role listing was created.");
+            }
+
 
             // console.log({
             //     Role_Responsibilities: this.Role_Responsibilities,
@@ -210,6 +217,7 @@ export default {
             this.Deadline = response.data[0].Deadline;
             this.Country = response.data[0].Country;
             this.selectedSkills = response.data[0].Skills;
+            this.Date_created = response.data[0].Date_Posted;
             // this.originalSkills = response.data[0].Skills;
         });
         axios.get('http://127.0.0.1:5000/api/skills').then(response => this.availableSkills = response.data)

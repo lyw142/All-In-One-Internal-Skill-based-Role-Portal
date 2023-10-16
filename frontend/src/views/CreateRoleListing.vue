@@ -133,21 +133,27 @@ export default {
     },
     methods: {
         submitForm() {
-            axios.post('http://127.0.0.1:5000/api/createjoblisting', {
-                Role_Name: this.Role_Name,
-                Role_Responsibilities: this.Role_Responsibilities,
-                Role_Requirements: this.Role_Requirements,
-                Dept: this.Dept,
-                Salary: this.Salary,
-                Skills: this.Skills,
-                Deadline: this.Deadline,
-                Date_Posted: this.Date_Posted,
-                Hiring_Manager: this.Hiring_Manager,
-            }).then(response => {
-                console.log(response);
-                alert("New role listing successfully created");
-                this.$router.push("/hrnav");
-            });
+            if (this.Deadline > this.Date_Posted) {
+                axios.post('http://127.0.0.1:5000/api/createjoblisting', {
+                    Role_Name: this.Role_Name,
+                    Role_Responsibilities: this.Role_Responsibilities,
+                    Role_Requirements: this.Role_Requirements,
+                    Dept: this.Dept,
+                    Salary: this.Salary,
+                    Skills: this.Skills,
+                    Deadline: this.Deadline,
+                    Date_Posted: this.Date_Posted,
+                    Hiring_Manager: this.Hiring_Manager,
+                }).then(response => {
+                    console.log(response);
+                    alert("New role listing successfully created");
+                    this.$router.push("/hrnav");
+                });
+            } else {
+                // Display an alert if the deadline is before or equal to the date_created
+                alert("Deadline cannot be before or on the the same date as Date Posted");
+            }
+
         },
         cancel() {
             this.$router.push("/hrnav");
