@@ -40,6 +40,8 @@ class Staff(db.Model):
     Password = db.Column(db.String(100), nullable=False)
     Role_ID = db.Column(db.Integer, db.ForeignKey('role.Role_ID'), nullable=False)
     Access_Rights = db.Column(db.Integer, db.ForeignKey('access_control.Access_ID'), nullable=False)
+
+    skills = db.relationship('Staff_Skill', backref='staff')
     
     
     def __init__(self, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights): 
@@ -72,7 +74,8 @@ class Staff_Skill(db.Model):
 
     Staff_ID = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'), primary_key=True)
     Skill_ID = db.Column(db.Integer, db.ForeignKey('skill.Skill_ID', ondelete='CASCADE'), primary_key=True)
-
+    
+    skill = db.relationship('Skill', backref='staff_skills')
     def __init__(self, Staff_ID, Skill_ID):
         self.Staff_ID = Staff_ID
         self.Skill_ID = Skill_ID
@@ -164,6 +167,7 @@ class Application(db.Model):
     Staff_ID = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'))
     Listing_ID = db.Column(db.Integer, db.ForeignKey('role_listing.Listing_ID', ondelete='CASCADE'))
 
+    staff = db.relationship('Staff', backref='applications')
     #staff = db.relationship('Staff', backref='applications')
     #role = db.relationship('Role', backref='applications')
     
@@ -180,7 +184,10 @@ class Application(db.Model):
                     "Application_Date": self.Application_Date,
                     "Application_Status": self.Application_Status,
                     "Staff_ID": self.Staff_ID,
-                    "Listing_ID": self.Listing_ID
+                    "Listing_ID": self.Listing_ID,
+                    "Staff_FName": self.staff.Staff_FName,  # Include Staff_FName
+                    # "Skills": [skill.json() for skill in self.staff.skills]  # Include Staff's skills
+                    "Skills": [{"Skill_ID": skill.skill.Skill_ID, "Skill_Name": skill.skill.Skill_Name} for skill in self.staff.skills]
                 }
 
 ## Role_Listing ##
