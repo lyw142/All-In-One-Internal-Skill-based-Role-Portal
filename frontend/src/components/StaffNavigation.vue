@@ -309,8 +309,13 @@ export default {
     },
 
     cancelFilter() {
-      this.isDropdownOpen = false; // Close the filter dropdown
-    },
+  const dropdown = document.querySelector('.dropdown-menu');
+  if (dropdown) {
+    dropdown.classList.remove('show');
+  }
+},
+
+
 
     clearFilter() {
       // Check if no skills were previously selected (no filter applied)
