@@ -13,7 +13,13 @@
     <!-- form starts here -->
 
     <div class="container mt-4">
-        <h1>Create a new role listing</h1>
+
+        <div style="display: flex; align-items: center;margin-bottom: 20px;">
+            <button type="button" class="btn" @click="cancel" style="padding: 0; margin: 0;">
+                <img src="../assets/images/backbtn.png" alt="Back" class="logo" style="margin-right: 0;" />
+            </button>
+            <h1 style="margin-bottom: 0; margin-left: 10px;">Create a new role listing</h1>
+        </div>
 
         <form @submit.prevent="submitForm">
 
@@ -190,7 +196,6 @@ export default {
     padding: 10px 20px;
 }
 
-
 .navbar-left {
     display: flex;
     align-items: center;
@@ -213,10 +218,6 @@ export default {
     margin-right: 0;
 }
 
-.btn {
-    margin-top: 10px;
-    margin-bottom: 40px;
-}
 
 .skill-box {
     display: inline-block;
@@ -226,5 +227,9 @@ export default {
     margin-bottom: 5px;
     border-radius: 4px;
     font-size: 14px;
+}
+
+form {
+    margin-bottom: 20px;
 }
 </style>

@@ -12,7 +12,12 @@
     </div>
     <!-- form starts here -->
     <div class="container mt-4">
-        <h1>Update role listing</h1>
+        <div style="display: flex; align-items: center;margin-bottom: 20px;">
+            <button type="button" class="btn" @click="cancel" style="padding: 0; margin: 0;">
+                <img src="../assets/images/backbtn.png" alt="Back" class="logo" style="margin-right: 0;" />
+            </button>
+            <h1 style="margin-bottom: 0; margin-left: 10px;">Update role listing</h1>
+        </div>
         <form @submit.prevent="submitForm">
 
             <!-- Role Responsibilities -->
@@ -54,7 +59,7 @@
 
 
             <!-- Salary -->
-            <div class="form-group mb-3">
+            <div class="form-group">
                 <div class="row">
                     <div class="col-6">
                         <label for="minSalary">Salary ($)</label>
@@ -219,11 +224,6 @@ export default {
 </script>
   
 <style scoped>
-.btn {
-    margin-top: 10px;
-    margin-bottom: 40px;
-}
-
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -231,7 +231,6 @@ export default {
     color: #333;
     padding: 10px 20px;
 }
-
 
 .navbar-left {
     display: flex;
@@ -255,6 +254,7 @@ export default {
     margin-right: 0;
 }
 
+
 .skill-box {
     display: inline-block;
     background-color: rgba(25, 135, 84, 0.1);
@@ -263,5 +263,9 @@ export default {
     margin-bottom: 5px;
     border-radius: 4px;
     font-size: 14px;
+}
+
+form {
+    margin-bottom: 20px;
 }
 </style>
