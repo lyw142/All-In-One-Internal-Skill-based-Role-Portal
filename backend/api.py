@@ -76,7 +76,7 @@ def createListing():
         '''
         NEW CODE - try out
         '''
-        skill_names = data['Skill']
+        skill_names = data['Skills']
 
         # Check if skill_names is a string (single skill), and if so, convert it to a list
         if isinstance(skill_names, str):
@@ -100,14 +100,14 @@ def createListing():
                 # Retrieve the new Skill_ID
                 skill_id = Skill.query.filter_by(Skill_Name=skill_name).first().Skill_ID
 
-            new_role_skill = RoleSkillMapping(
-                Skill_ID=skill_id,
-                Role_ID=new_role.Role_ID
-            )
-            db.session.add(new_role_skill)
-            db.session.commit()
+                new_role_skill = RoleSkillMapping(
+                    Skill_ID=skill_id,
+                    Role_ID=new_role.Role_ID
+                )
+                db.session.add(new_role_skill)
+                db.session.commit()
 
-        # Create a new RoleListing entry
+        # Create a new RoleListing entryc
         role_listing = RoleListing(
             Deadline=data['Deadline'],
             Date_Posted=data['Date_Posted'],
