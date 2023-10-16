@@ -47,31 +47,65 @@ def createListing():
 
         new_role = Role.query.filter_by(Role_Name=data['Role_Name']).first()
         
-        # Query the Skill table to get the Skill_ID for the given Skill_Name
-        skill = Skill.query.filter_by(Skill_Name=data['Skill']).first()
-        print(skill)
+        # # Query the Skill table to get the Skill_ID for the given Skill_Name
+        # skill = Skill.query.filter_by(Skill_Name=data['Skill']).first()
+        # print(skill)
 
-        if skill:
-            skill_id = skill.Skill_ID
-        else:
-            # Create a new Skill object if the Skill_Name does not exist in the database
-            new_skill = Skill(
-                Skill_Name=data['Skill'],
-                Skill_Desc= data['Skill_Desc'],
-                Skill_Status = "Active"
+        # if skill:
+        #     skill_id = skill.Skill_ID
+        # else:
+        #     # Create a new Skill object if the Skill_Name does not exist in the database
+        #     new_skill = Skill(
+        #         Skill_Name=data['Skill'],
+        #         Skill_Desc= data['Skill_Desc'],
+        #         Skill_Status = "Active"
+        #     )
+        #     db.session.add(new_skill)
+        #     db.session.commit()
+
+        #     # Retrieve the new Skill_ID
+        #     skill_id = Skill.query.filter_by(Skill_Name=data['Skill']).first().Skill_ID
+
+        # new_role_skill = RoleSkillMapping(
+        #     Skill_ID=skill_id,
+        #     Role_ID=new_role.Role_ID
+        # )
+        # db.session.add(new_role_skill)
+        # db.session.commit()
+
+        '''
+        NEW CODE - try out
+        '''
+        skill_names = data['Skill']
+
+        # Check if skill_names is a string (single skill), and if so, convert it to a list
+        if isinstance(skill_names, str):
+            skill_names = [skill_names]
+        for skill_name in skill_names:
+            # Query the Skill table to get the Skill_ID for the given Skill_Name
+            skill = Skill.query.filter_by(Skill_Name=skill_name).first()
+
+            if skill:
+                skill_id = skill.Skill_ID
+            else:
+                # Create a new Skill object if the Skill_Name does not exist in the database
+                new_skill = Skill(
+                    Skill_Name=skill_name,
+                    Skill_Desc=data.get('Skill_Desc', ''),  # Make sure to handle Skill_Desc properly
+                    Skill_Status="Active"
+                )
+                db.session.add(new_skill)
+                db.session.commit()
+
+                # Retrieve the new Skill_ID
+                skill_id = Skill.query.filter_by(Skill_Name=skill_name).first().Skill_ID
+
+            new_role_skill = RoleSkillMapping(
+                Skill_ID=skill_id,
+                Role_ID=new_role.Role_ID
             )
-            db.session.add(new_skill)
+            db.session.add(new_role_skill)
             db.session.commit()
-
-            # Retrieve the new Skill_ID
-            skill_id = Skill.query.filter_by(Skill_Name=data['Skill']).first().Skill_ID
-
-        new_role_skill = RoleSkillMapping(
-            Skill_ID=skill_id,
-            Role_ID=new_role.Role_ID
-        )
-        db.session.add(new_role_skill)
-        db.session.commit()
 
         # Create a new RoleListing entry
         role_listing = RoleListing(
@@ -476,7 +510,7 @@ def create_application():
         # Check if Staff_ID already exists in the Application table
         existing_application = Application.query.filter_by(Staff_ID=staff_id,Listing_ID=listing_id).first()
         if existing_application:
-            error_message = "You have already applied for this job role."
+            error_message = "You have `already applied for this job role."
             return jsonify({"error": error_message}), 400
         
         # If its a new applcation, then create a new Application object
