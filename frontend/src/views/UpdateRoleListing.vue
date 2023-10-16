@@ -77,6 +77,8 @@
   
 <script>
 import axios from 'axios'
+import Cookies from 'js-cookie'
+
 export default {
     props: ['Listing_ID'],
     data() {
