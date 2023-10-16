@@ -7,13 +7,19 @@
             <a to="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
         </div>
         <div class="navbar-right">
-            <button class="btn btn-secondary">Logout</button>
+            <button class="btn btn-secondary" @click="clearUserSessionData()">Logout</button>
         </div>
     </div>
     <!-- form starts here -->
 
     <div class="container mt-4">
-        <h1>Create a new role listing</h1>
+
+        <div style="display: flex; align-items: center;margin-bottom: 20px;">
+            <button type="button" class="btn" @click="cancel" style="padding: 0; margin: 0;">
+                <img src="../assets/images/backbtn.png" alt="Back" class="logo" style="margin-right: 0;" />
+            </button>
+            <h1 style="margin-bottom: 0; margin-left: 10px;">Create a new role listing</h1>
+        </div>
 
         <form @submit.prevent="submitForm">
 
@@ -103,6 +109,7 @@
   
 <script>
 import axios from 'axios'
+import Cookies from 'js-cookie'
 export default {
     data() {
         return {
@@ -126,21 +133,27 @@ export default {
     },
     methods: {
         submitForm() {
-            axios.post('http://127.0.0.1:5000/api/createjoblisting', {
-                Role_Name: this.Role_Name,
-                Role_Responsibilities: this.Role_Responsibilities,
-                Role_Requirements: this.Role_Requirements,
-                Dept: this.Dept,
-                Salary: this.Salary,
-                Skills: this.Skills,
-                Deadline: this.Deadline,
-                Date_Posted: this.Date_Posted,
-                Hiring_Manager: this.Hiring_Manager,
-            }).then(response => {
-                console.log(response);
-                alert("New role listing successfully created");
-                this.$router.push("/hrnav");
-            });
+            if (this.Deadline > this.Date_Posted) {
+                axios.post('http://127.0.0.1:5000/api/createjoblisting', {
+                    Role_Name: this.Role_Name,
+                    Role_Responsibilities: this.Role_Responsibilities,
+                    Role_Requirements: this.Role_Requirements,
+                    Dept: this.Dept,
+                    Salary: this.Salary,
+                    Skills: this.Skills,
+                    Deadline: this.Deadline,
+                    Date_Posted: this.Date_Posted,
+                    Hiring_Manager: this.Hiring_Manager,
+                }).then(response => {
+                    console.log(response);
+                    alert("New role listing successfully created");
+                    this.$router.push("/hrnav");
+                });
+            } else {
+                // Display an alert if the deadline is before or equal to the date_created
+                alert("Deadline cannot be before or on the the same date as Date Posted");
+            }
+
         },
         cancel() {
             this.$router.push("/hrnav");
@@ -154,9 +167,27 @@ export default {
         removeSkill(index) {
             this.selectedSkills.splice(index, 1);
         },
+        // Retrieve user session data from a cookie
+        getUserSessionData() {
+            const serializedUser = Cookies.get('userSession')
+            if (serializedUser) {
+                const data = JSON.parse(serializedUser)
+                if (!(data.Access_Rights == 4)) {
+                    this.$router.push("/staffnav");
+                }
+            } else {
+                this.$router.push("/");; // No user session data found
+            }
+        },
 
+        // Clear user session data from the cookie
+        clearUserSessionData() {
+            Cookies.remove('userSession');
+            this.$router.push("/");; // No user session data found
+        }
     },
     mounted() {
+        this.getUserSessionData();
         axios.get('http://127.0.0.1:5000/api/skills').then(response => this.availableSkills = response.data)
     }
 };
@@ -170,7 +201,6 @@ export default {
     color: #333;
     padding: 10px 20px;
 }
-
 
 .navbar-left {
     display: flex;
@@ -194,10 +224,6 @@ export default {
     margin-right: 0;
 }
 
-.btn {
-    margin-top: 10px;
-    margin-bottom: 40px;
-}
 
 .skill-box {
     display: inline-block;
@@ -207,5 +233,9 @@ export default {
     margin-bottom: 5px;
     border-radius: 4px;
     font-size: 14px;
+}
+
+form {
+    margin-bottom: 20px;
 }
 </style>

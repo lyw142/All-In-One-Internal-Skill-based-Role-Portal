@@ -7,12 +7,17 @@
             <a to="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
         </div>
         <div class="navbar-right">
-            <button class="btn btn-secondary">Logout</button>
+            <button class="btn btn-secondary" @click="clearUserSessionData()">Logout</button>
         </div>
     </div>
     <!-- form starts here -->
     <div class="container mt-4">
-        <h1>Update role listing</h1>
+        <div style="display: flex; align-items: center;margin-bottom: 20px;">
+            <button type="button" class="btn" @click="cancel" style="padding: 0; margin: 0;">
+                <img src="../assets/images/backbtn.png" alt="Back" class="logo" style="margin-right: 0;" />
+            </button>
+            <h1 style="margin-bottom: 0; margin-left: 10px;">Update role listing</h1>
+        </div>
         <form @submit.prevent="submitForm">
 
             <!-- Role Responsibilities -->
@@ -54,7 +59,7 @@
 
 
             <!-- Salary -->
-            <div class="form-group mb-3">
+            <div class="form-group">
                 <div class="row">
                     <div class="col-6">
                         <label for="minSalary">Salary ($)</label>
@@ -77,6 +82,8 @@
   
 <script>
 import axios from 'axios'
+import Cookies from 'js-cookie'
+
 export default {
     props: ['Listing_ID'],
     data() {
@@ -96,8 +103,7 @@ export default {
             Skills: [],
             Deadline: "",
             Country: "",
-
-
+            Date_created: "",
 
         };
     },
@@ -154,18 +160,26 @@ export default {
             console.log(this.removedSkills_ID);
             // post method goes here 
             const url = `http://127.0.0.1:5000/api/updateRoleListing/${this.Listing_ID}`;
-            axios.post(url, {
-                Role_Responsibilities: this.Role_Responsibilities,
-                Salary: this.Salary,
-                AddedSkills: this.addedSkills_ID,
-                RemovedSkills: this.removedSkills_ID,
-                Deadline: this.Deadline,
-                Country: this.Country,
-            }).then(response => {
-                console.log(response);
-                alert("The role listing has been updated");
-                this.$router.push("/hrnav");
-            });
+
+            // Check if the deadline is after the date_created
+            if (this.Deadline > this.Date_created) {
+                axios.post(url, {
+                    Role_Responsibilities: this.Role_Responsibilities,
+                    Salary: this.Salary,
+                    AddedSkills: this.addedSkills_ID,
+                    RemovedSkills: this.removedSkills_ID,
+                    Deadline: this.Deadline,
+                    Country: this.Country,
+                }).then(response => {
+                    console.log(response);
+                    alert("The role listing has been updated");
+                    this.$router.push("/hrnav");
+                });
+            } else {
+                // Display an alert if the deadline is before or equal to the date_created
+                alert("Deadline cannot be before or on the date that this role listing was created.");
+            }
+
 
             // console.log({
             //     Role_Responsibilities: this.Role_Responsibilities,
@@ -174,10 +188,28 @@ export default {
             //     Country: this.Country,
             // })
 
-        }
+        },
+        // Retrieve user session data from a cookie
+        getUserSessionData() {
+            const serializedUser = Cookies.get('userSession')
+            if (serializedUser) {
+                const data = JSON.parse(serializedUser)
+                if (!(data.Access_Rights == 4)) {
+                    this.$router.push("/staffnav");
+                }
+            } else {
+                this.$router.push("/");; // No user session data found
+            }
+        },
 
+        // Clear user session data from the cookie
+        clearUserSessionData() {
+            Cookies.remove('userSession');
+            this.$router.push("/");; // No user session data found
+        }
     },
     mounted() {
+        this.getUserSessionData();
         const apiUrl = `http://127.0.0.1:5000/api/getRoleListing/${this.Listing_ID}`;
         axios.get(apiUrl).then(response => {
             this.Role_Responsibilities = response.data[0].Role_Responsibilities;
@@ -185,6 +217,7 @@ export default {
             this.Deadline = response.data[0].Deadline;
             this.Country = response.data[0].Country;
             this.selectedSkills = response.data[0].Skills;
+            this.Date_created = response.data[0].Date_Posted;
             // this.originalSkills = response.data[0].Skills;
         });
         axios.get('http://127.0.0.1:5000/api/skills').then(response => this.availableSkills = response.data)
@@ -199,11 +232,6 @@ export default {
 </script>
   
 <style scoped>
-.btn {
-    margin-top: 10px;
-    margin-bottom: 40px;
-}
-
 .navbar {
     display: flex;
     justify-content: space-between;
@@ -211,7 +239,6 @@ export default {
     color: #333;
     padding: 10px 20px;
 }
-
 
 .navbar-left {
     display: flex;
@@ -235,6 +262,7 @@ export default {
     margin-right: 0;
 }
 
+
 .skill-box {
     display: inline-block;
     background-color: rgba(25, 135, 84, 0.1);
@@ -243,5 +271,9 @@ export default {
     margin-bottom: 5px;
     border-radius: 4px;
     font-size: 14px;
+}
+
+form {
+    margin-bottom: 20px;
 }
 </style>

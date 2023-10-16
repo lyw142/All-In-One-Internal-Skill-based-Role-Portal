@@ -550,4 +550,16 @@ def get_all_applications():
         # Handle the error here
         return jsonify({"error": str(e)}), 500
 
+"""
+Endpoint to get application status
+"""
+@api.route("/checkApplicationStatus/<int:staff_id>/<int:listing_id>", methods=["GET"])
+def check_application_status(staff_id, listing_id):
+    try:
+        # Check if an application exists for the staff and role
+        existing_application = Application.query.filter_by(Staff_ID=staff_id, Listing_ID=listing_id).first()
+        has_applied = existing_application is not None
 
+        return jsonify({"hasApplied": has_applied}), 200
+    except Exception as e:
+        return jsonify({"error": "An error occurred while checking application status."}), 500

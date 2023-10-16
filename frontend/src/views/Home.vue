@@ -14,6 +14,9 @@
                 </div>
                 <button type="submit" class="btn btn-primary">Login</button>
             </form>
+            <div id="errorMessage" v-show="showError" class="color:red;">
+                {{ errMsg }}
+            </div>
         </div>
     </div>
 </template>
@@ -29,6 +32,8 @@ export default {
                 email: '',
                 password: '',
             },
+            errMsg:'',
+            showError: false
         };
     },
     methods: {
@@ -50,17 +55,20 @@ export default {
                         }
                     } else {
                         // Handle cases where login is not successful
-                        console.log("Login failed. Check your credentials.");
+                        this.showError = true;
+                        this.errMsg = "Login failed. Check your credentials."
                     }
                 })
                 .catch(error => {
                     // Handle any errors, such as network issues or a non-200 status code
                     if (error.response && error.response.status === 404) {
                         // Handle a 404 Not Found error
-                        console.log("User not found. Please check your credentials.");
+                        this.showError = true;
+                        this.errMsg = "User not found. Please check your credentials."
                     } else {
                         console.error("Error:", error);
-                        console.log("An error occurred while trying to login.");
+                        this.showError = true;
+                        this.errMsg = "An error occurred while trying to login."
                     }
                 });
         },
