@@ -571,8 +571,8 @@ def check_application_status(staff_id, listing_id):
         return jsonify({"error": "An error occurred while checking application status."}), 500
 
 #search for candidates(HR,Manager,Directors)
-@api.route("/searchCandidatesBySkills/<list_of_skill_id>")
-def searchCandidatesBySkills(list_of_skill_id):
+@api.route("/searchStaffBySkills/<list_of_skill_id>")
+def searchStaffBySkills(list_of_skill_id):
     
     selected_skill_ids = list_of_skill_id.split(',')
 
