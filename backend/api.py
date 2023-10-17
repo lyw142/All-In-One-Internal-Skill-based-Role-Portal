@@ -602,3 +602,33 @@ def searchCandidatesBySkills(list_of_skill_id):
 
     # Return the JSON response
     return jsonify(staff_json)
+
+
+@api.route("/getApplicationHistory/<int:staffID>", methods=["GET"])
+def get_applications_history(staffID):
+    try:
+        # Get all applications from the database that belong to the specified Staff ID
+        applications = Application.query.filter_by(Staff_ID=staffID).all()
+
+        application_data = []
+
+        for application in applications:
+            app_data = application.json()
+
+            role_listing = RoleListing.query.get(app_data['Listing_ID'])
+            if role_listing:
+                app_data['Deadline'] = role_listing.Deadline
+                app_data['Salary'] = role_listing.Salary
+                app_data['Hiring_Manager'] = role_listing.Hiring_Manager
+                app_data['Role_ID'] = role_listing.Role_ID
+
+                role = Role.query.get(app_data['Role_ID'])
+                if role:
+                    app_data['Role_Name'] = role.Role_Name
+
+            application_data.append(app_data)
+
+        return jsonify(application_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
