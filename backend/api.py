@@ -570,4 +570,35 @@ def check_application_status(staff_id, listing_id):
     except Exception as e:
         return jsonify({"error": "An error occurred while checking application status."}), 500
 
+#search for candidates(HR,Manager,Directors)
+@api.route("/searchCandidatesBySkills/<list_of_skill_id>")
+def searchCandidatesBySkills(list_of_skill_id):
+    
+    selected_skill_ids = list_of_skill_id.split(',')
 
+    if not selected_skill_ids:
+            return jsonify({"message": "Skill IDs are required"}), 400
+    
+    results = (
+        db.session.query(Staff)
+        .join(Staff_Skill, Staff.Staff_ID == Staff_Skill.Staff_ID)
+        .filter(Staff_Skill.Skill_ID.in_(selected_skill_ids))
+        .group_by(Staff.Staff_ID)
+        .having(func.count(Staff_Skill.Skill_ID) == len(selected_skill_ids))
+        .all()
+    )
+
+    # Convert the query results into JSON format
+    staff_json = []
+
+    for staff in results:
+        staff_data = {
+            "Staff_ID": staff.Staff_ID,
+            "Staff_Name": staff.Staff_FName + staff.Staff_LName,
+            "Staff_Email": staff.Email,
+            "Current Dept" : staff.Dept,
+        }
+        staff_json.append(staff_data)
+
+    # Return the JSON response
+    return jsonify(staff_json)
