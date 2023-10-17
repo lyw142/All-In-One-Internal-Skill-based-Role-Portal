@@ -168,6 +168,8 @@ class Application(db.Model):
     Listing_ID = db.Column(db.Integer, db.ForeignKey('role_listing.Listing_ID', ondelete='CASCADE'))
 
     staff = db.relationship('Staff', backref='applications')
+
+    role_listing = db.relationship('RoleListing', backref='applications')
     #staff = db.relationship('Staff', backref='applications')
     #role = db.relationship('Role', backref='applications')
     
@@ -187,7 +189,8 @@ class Application(db.Model):
                     "Listing_ID": self.Listing_ID,
                     "Staff_FName": self.staff.Staff_FName,  # Include Staff_FName
                     # "Skills": [skill.json() for skill in self.staff.skills]  # Include Staff's skills
-                    "Skills": [{"Skill_ID": skill.skill.Skill_ID, "Skill_Name": skill.skill.Skill_Name} for skill in self.staff.skills]
+                    "Skills": [{"Skill_ID": skill.skill.Skill_ID, "Skill_Name": skill.skill.Skill_Name} for skill in self.staff.skills],
+                    "Role_Name": self.role_listing.role.Role_Name
                 }
 
 ## Role_Listing ##
@@ -203,6 +206,7 @@ class RoleListing(db.Model):
     Hiring_Manager = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'), nullable=False)
     Role_ID = db.Column(db.Integer, db.ForeignKey('role.Role_ID', ondelete='CASCADE'), nullable=False)
 
+    role = db.relationship('Role')
     #staff = db.relationship('Staff', backref='applications')
     #role = db.relationship("Role", back_populates="role_listing")
     
