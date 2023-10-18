@@ -205,7 +205,7 @@ def findAllOpenJobListings():
 def retrieveAllSkillsFromRoleListing(Role_ID):
     # Perform joins to retrieve role listings with Hiring Manager and Role Name
     query = (
-        db.session.query(RoleSkillMapping, Skill.Skill_ID, Skill.Skill_Name, Skill.Skill_Desc)
+        db.session.query(RoleSkillMapping, Skill.Skill_Name, Skill.Skill_Desc)
         .join(Role, RoleSkillMapping.Role_ID == Role.Role_ID)
         .join(Skill, RoleSkillMapping.Skill_ID == Skill.Skill_ID)
         .filter(Role.Role_ID == Role_ID)
