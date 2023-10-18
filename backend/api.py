@@ -610,9 +610,11 @@ def searchStaffBySkills(list_of_skill_id):
 @api.route("/getApplicationHistory/<int:staffID>", methods=["GET"])
 def get_applications_history(staffID):
     try:
-        # Get all applications from the database that belong to the specified Staff ID
+        staff = Staff.query.get(staffID)
+        if staff is None:
+            return jsonify({"error": "Staff not found"}), 404
+        
         applications = Application.query.filter_by(Staff_ID=staffID).all()
-
         application_data = []
 
         for application in applications:
@@ -628,6 +630,8 @@ def get_applications_history(staffID):
                 role = Role.query.get(app_data['Role_ID'])
                 if role:
                     app_data['Role_Name'] = role.Role_Name
+
+            app_data['Dept'] = staff.Dept
 
             application_data.append(app_data)
 
