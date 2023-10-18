@@ -4,7 +4,8 @@
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
       <div class="navbar-left">
         <img src="../assets/logo.png" alt="Logo" class="logo" />
-        <a to="/roles" class="nav-link" style="color: white;">View roles</a>
+        <router-link to="/roles" class="nav-link" style="color: white;">View roles</router-link>
+        <router-link to="/application-history" class="nav-link" style="color: white;">Application History</router-link> <!-- New link -->
       </div>
       <div class="navbar-right">
         <button class="btn btn-secondary" @click="clearUserSessionData()">Logout</button>
@@ -60,26 +61,17 @@
                 <h5 class="card-title">{{ role.Role_Name }}</h5>
                 <p class="card-text">
                   <strong>Skills Required:</strong>
-                  <span v-if="role.Skills.length > 0">
-                    <span v-for="skill in role.Skills" class="skill-box" :style="{
-                      backgroundColor: userSkills.includes(skill.trim()) ? 'rgba(25, 135, 84, 0.8)' : 'rgba(25, 135, 84, 0.1)',
-                      color: userSkills.includes(skill.trim()) ? 'white' : 'inherit'
-                    }">
-                      {{ skill.trim() }}
-                    </span>
-                  </span>
-                  <span v-else>
-                    No skills required
+                  <span v-for="skill in role.Skills" class="skill-box" :style="{
+                    backgroundColor: userSkills.includes(skill.trim()) ? 'rgba(25, 135, 84, 0.8)' : 'rgba(25, 135, 84, 0.1)',
+                    color: userSkills.includes(skill.trim()) ? 'white' : 'inherit'
+                  }">
+                    {{ skill.trim() }}
                   </span>
                 </p>
-
                 <p class="card-text">
                   <strong>Application Deadline:</strong>
                   {{ role.Deadline }}, {{ this.calculateDeadline(role.Deadline) }} day(s) remaining
-                </p>
-                <p class="card-text">
-                  <strong>Posted on:</strong>
-                  {{ role.Date_Posted }}
+
                 </p>
               </div>
             </div>
@@ -92,51 +84,46 @@
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
-                <p>${{ selectedRole.Salary }} a year, Full time</p>
+                <p>${{ selectedRole.Salary }} a month, Full time</p>
               </div>
               <div class="divider">
                 <h3 class="card-title">Role description</h3>
                 <div class="role-description">
-                  <strong>Role responsibilities:</strong>
+                  <strong>Job responsibilities</strong>
                   <div style="margin-bottom: 20px;margin-top: 5px;">
                     {{ selectedRole.Role_Responsibilities }}
 
                   </div>
                 </div>
 
-                <!-- Confirmation modal (initially hidden) -->
-                <div class="modal-container" v-if="showConfirmModal">
-                  <div class="confirmation-modal">
-                    <p>Are you sure you want to submit an application for the role of {{ selectedRole.Role_Name }}?</p>
-                    <button class="btn btn-primary" style="width: 120px; height: 40px; margin-right: 10px;"
-                      @click="submitApplication">Confirm</button>
-                    <button class="btn btn-secondary" style="width: 120px; height: 40px; margin-left: 10px;"
-                      @click="cancelApplication">Cancel</button>
-                  </div>
+              <!-- Confirmation modal (initially hidden) -->
+              <div class="modal-container" v-if="showConfirmModal">
+                <div class="confirmation-modal">
+                  <p>Are you sure you want to submit an application for the role of {{ selectedRole.Role_Name }}?</p>
+                  <button class="btn btn-primary" style="width: 120px; height: 40px; margin-right: 10px;" @click="submitApplication">Confirm</button>
+                  <button class="btn btn-secondary" style="width: 120px; height: 40px; margin-left: 10px;" @click="cancelApplication">Cancel</button>
                 </div>
+              </div>
 
-                <!-- Success Modal -->
-                <div class="modal-container" v-if="showSuccessModal">
-                  <div class="confirmation-modal">
-                    <p>Your application has been successfully submitted.</p>
-                    <button class="btn btn-primary" @click="returnToJobListings">Return to job listings</button>
-                  </div>
+              <!-- Success Modal -->
+              <div class="modal-container" v-if="showSuccessModal">
+                <div class="confirmation-modal">
+                  <p>Your application has been successfully submitted.</p>
+                  <button class="btn btn-primary" @click="returnToJobListings">Return to job listings</button>
                 </div>
+              </div>
 
                 <!-- Role Requirements -->
                 <div class="role-requirements">
-                  <strong>Role Requirements:</strong>
-                  <ul v-if="selectedRole.Skills.length > 0" style="margin-top: 5px;">
+                  <strong>Role Requirements</strong>
+                  <ul style="margin-top: 5px;">
                     <li v-for="line in selectedRole.Role_Requirements">
                       {{ line }}
                     </li>
                   </ul>
-                  <span v-else>
-                    No prior skills required
-                  </span>
                 </div>
               </div>
-              <div v-if="selectedRole.Skills.length > 0" class="skills">
+              <div class="skills">
                 <p>
                   <strong>How you match</strong>
                 </p>
@@ -154,10 +141,14 @@
                 </span>
               </div>
               <div>
-                <button class="btn btn-secondary" style="margin: 10px;" @click="showConfirmationModal(selectedRole)"
-                  :disabled="hasAppliedForRole">
-                  {{ hasAppliedForRole ? 'Applied' : 'Apply for role' }}
-                </button>
+                <button
+  class="btn btn-secondary"
+  style="margin: 10px;"
+  @click="showConfirmationModal(selectedRole)"
+  :disabled="hasAppliedForRole"
+>
+  {{ hasAppliedForRole ? 'Applied' : 'Apply for role' }}
+</button>
 
               </div>
             </div>
@@ -201,12 +192,12 @@ export default {
   methods: {
     // Your methods...
     showConfirmationModal(role) {
-      console.log('Clicked role:', role);
-      this.showConfirmModal = true;
+        console.log('Clicked role:', role);
+        this.showConfirmModal = true;
     },
 
     returnToJobListings() {
-      this.showSuccessModal = false;
+        this.showSuccessModal = false;
     },
 
     submitApplication() {
@@ -218,9 +209,9 @@ export default {
 
       // Define the data to be sent in the request (for testing purposes)
       const data = {
-        Listing_ID: this.selectedRole.Listing_ID,
-        Staff_ID: this.staff_id,
-      };
+          Listing_ID: this.selectedRole.Listing_ID,
+          Staff_ID: this.staff_id,
+        };
 
       console.log('Data being sent for testing:', data);
 
@@ -235,22 +226,22 @@ export default {
           // Application was successfully created
           console.log('Application submitted successfully:', response.data.message);
           // You can perform additional actions here if needed
-        })
-        .catch(error => {
-          console.error('Error submitting application:', error);
-          // Handle the error or show an error message to the user
-        })
-        .finally(() => {
-          // Close the confirmation modal, regardless of success or failure
-          this.showConfirmModal = false;
-        });
+           })
+           .catch(error => {
+             console.error('Error submitting application:', error);
+             // Handle the error or show an error message to the user
+           })
+           .finally(() => {
+             // Close the confirmation modal, regardless of success or failure
+             this.showConfirmModal = false;
+           });
 
-      // Assuming a successful API request
-      // You would typically make the API request and handle the response
-      // For this demonstration, we'll directly show the success modal
+        // Assuming a successful API request
+        // You would typically make the API request and handle the response
+        // For this demonstration, we'll directly show the success modal
       this.showSuccessModal = true;
 
-    },
+      },
 
     cancelApplication() {
       // Cancel the application and hide the confirmation modal
@@ -258,22 +249,21 @@ export default {
     },
 
     async selectRole(role) {
-      // Set the selected role
-      this.selectedRole = role;
-      this.isCardClicked = true;
+  // Set the selected role
+  this.selectedRole = role;
+  this.isCardClicked = true;
 
-      // Check if the user has already applied for this role
-      try {
-        const response = await axios.get(
-          `http://127.0.0.1:5000/api/checkApplicationStatus/${this.staff_id}/${role.Listing_ID}`
-        );
+  // Check if the user has already applied for this role
+  try {
+    const response = await axios.get(
+      `http://127.0.0.1:5000/api/checkApplicationStatus/${this.staff_id}/${role.Listing_ID}`
+    );
 
-        // Check the response to determine if the user has applied
-        this.hasAppliedForRole = response.data.hasApplied; // Adjust the response structure as needed
-      } catch (error) {
-        console.error('Error checking application status:', error);
-      }
-    },
+    // Check the response to determine if the user has applied
+    this.hasAppliedForRole = response.data.hasApplied; // Adjust the response structure as needed
+  } catch (error) {
+    console.error('Error checking application status:', error);
+  }},
 
     getUserSkills() {
       axios.get('http://127.0.0.1:5000/api/getStaffSkills/' + this.staff_id)
@@ -305,7 +295,7 @@ export default {
       return matchingSkills.length;
     },
     updateProgressBar() {
-      const pctbar = Math.round((this.countMatchingSkills(this.selectedRole) / this.selectedRole.Skills.length) * 100).toString();
+      const pctbar = ((this.countMatchingSkills(this.selectedRole) / this.selectedRole.Skills.length) * 100).toString();
       this.progressBarWidth = pctbar + "%";
     },
     // Function to fetch skills from the API
@@ -320,11 +310,11 @@ export default {
     },
 
     cancelFilter() {
-      const dropdown = document.querySelector('.dropdown-menu');
-      if (dropdown) {
-        dropdown.classList.remove('show');
-      }
-    },
+  const dropdown = document.querySelector('.dropdown-menu');
+  if (dropdown) {
+    dropdown.classList.remove('show');
+  }
+},
 
 
 
@@ -397,8 +387,7 @@ export default {
     clearUserSessionData() {
       Cookies.remove('userSession');
       this.$router.push("/");; // No user session data found
-    },
-
+    }
   },
   mounted() {
     // Call the method to fetch skills when the component is mounted
@@ -413,7 +402,6 @@ export default {
       .catch(error => {
         console.error('Error fetching data:', error);
       });
-
   },
 };
 </script>
@@ -627,26 +615,25 @@ export default {
 
 /* Styles for the modal container */
 .modal-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  /* Semi-transparent background to darken the content */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 100;
-  /* Make sure the modal is above other elements */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* Semi-transparent background to darken the content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100; /* Make sure the modal is above other elements */
 }
 
-/* Styles for the modal content */
+  /* Styles for the modal content */
 .confirmation-modal {
-  background: white;
-  padding: 20px;
-  border-radius: 5px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  text-align: center;
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
 }
+
 </style>

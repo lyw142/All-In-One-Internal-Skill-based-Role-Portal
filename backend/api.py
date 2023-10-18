@@ -626,6 +626,7 @@ def get_applications_history(staffID):
                 app_data['Salary'] = role_listing.Salary
                 app_data['Hiring_Manager'] = role_listing.Hiring_Manager
                 app_data['Role_ID'] = role_listing.Role_ID
+                app_data['Country'] = role_listing.Country
 
                 role = Role.query.get(app_data['Role_ID'])
                 if role:

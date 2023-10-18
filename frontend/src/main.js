@@ -10,6 +10,7 @@ import StaffNavigation from './components/StaffNavigation.vue'
 import HRNavigation from './components/HRNavigation.vue'
 import UpdateRoleListing from './views/UpdateRoleListing.vue'
 import CreateRoleListing from './views/CreateRoleListing.vue'
+import ApplicationHistory from './views/ApplicationHistory.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -19,6 +20,7 @@ const router = createRouter({
         {path: '/hrnav', name:'HRNav', component: HRNavigation},
         {path: '/updaterolelisting/:Listing_ID', name:'UpdateRoleListing', component: UpdateRoleListing, props: true},
         {path: '/createrolelisting', name:'CreateRoleListing', component: CreateRoleListing},
+        {path: '/application-history', name:'ApplicationHistory', component: ApplicationHistory},
     ]
 })
 
