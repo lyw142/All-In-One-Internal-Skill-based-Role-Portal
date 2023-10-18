@@ -10,6 +10,8 @@ from models import Staff_Skill, db, Staff, Role, Staff, Skill, RoleSkillMapping,
 from sqlalchemy import and_, desc, func
 from flask import Flask
 from flask_cors import CORS
+import requests
+
 # import datetime
 api = Blueprint('api', __name__)
 
@@ -639,3 +641,54 @@ def get_applications_history(staffID):
         return jsonify(application_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@api.route("/getApplicantsBySkillMatch/<int:listing_id>")
+def getApplicantsBySkillMatch(listing_id):
+    if not listing_id:
+        return jsonify({"message": "Listing ID is required"}), 400
+
+    required_skills = get_required_skills_for_listing(listing_id)
+    applicants = (
+        db.session.query(Application.Staff_ID)
+        .filter(Application.Listing_ID == listing_id)
+        .all()
+    )
+
+    staff_skill_counts = {}
+
+    for applicant in applicants:
+        staff_id = applicant.Staff_ID
+        staff_skills = get_staff_skills(staff_id)
+
+        # Calculate the match score
+        match_score = sum(1 for skill_id in staff_skills if skill_id in required_skills)
+
+        staff_skill_counts[staff_id] = match_score
+
+    # Sort applicants by match score in descending order
+    sorted_applicants = sorted(staff_skill_counts.items(), key=lambda x: x[1], reverse=True)
+
+    staff_json = [{"Staff_ID": staff_id, "Count": count} for staff_id, count in sorted_applicants]
+
+    return jsonify(staff_json)
+
+def get_staff_skills(staff_id):
+    skills = (
+        db.session.query(Staff_Skill.Skill_ID)
+        .filter(Staff_Skill.Staff_ID == staff_id)
+        .all()
+    )
+
+    return [skill.Skill_ID for skill in skills]
+
+def get_required_skills_for_listing(listing_id):
+    results = (
+        db.session.query(RoleSkillMapping.Skill_ID)
+        .join(RoleListing, RoleSkillMapping.Role_ID == RoleListing.Role_ID)
+        .filter(RoleListing.Listing_ID == listing_id)
+        .all()
+    )
+
+    required_skills = [skill.Skill_ID for skill in results]
+
+    return required_skills
