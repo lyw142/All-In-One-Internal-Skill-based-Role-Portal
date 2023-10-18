@@ -60,17 +60,26 @@
                 <h5 class="card-title">{{ role.Role_Name }}</h5>
                 <p class="card-text">
                   <strong>Skills Required:</strong>
-                  <span v-for="skill in role.Skills" class="skill-box" :style="{
-                    backgroundColor: userSkills.includes(skill.trim()) ? 'rgba(25, 135, 84, 0.8)' : 'rgba(25, 135, 84, 0.1)',
-                    color: userSkills.includes(skill.trim()) ? 'white' : 'inherit'
-                  }">
-                    {{ skill.trim() }}
+                  <span v-if="role.Skills.length > 0">
+                    <span v-for="skill in role.Skills" class="skill-box" :style="{
+                      backgroundColor: userSkills.includes(skill.trim()) ? 'rgba(25, 135, 84, 0.8)' : 'rgba(25, 135, 84, 0.1)',
+                      color: userSkills.includes(skill.trim()) ? 'white' : 'inherit'
+                    }">
+                      {{ skill.trim() }}
+                    </span>
+                  </span>
+                  <span v-else>
+                    No skills required
                   </span>
                 </p>
+
                 <p class="card-text">
                   <strong>Application Deadline:</strong>
                   {{ role.Deadline }}, {{ this.calculateDeadline(role.Deadline) }} day(s) remaining
-
+                </p>
+                <p class="card-text">
+                  <strong>Posted on:</strong>
+                  {{ role.Date_Posted }}
                 </p>
               </div>
             </div>
@@ -88,7 +97,7 @@
               <div class="divider">
                 <h3 class="card-title">Role description</h3>
                 <div class="role-description">
-                  <strong>Job responsibilities</strong>
+                  <strong>Role responsibilities:</strong>
                   <div style="margin-bottom: 20px;margin-top: 5px;">
                     {{ selectedRole.Role_Responsibilities }}
 
@@ -116,15 +125,18 @@
 
                 <!-- Role Requirements -->
                 <div class="role-requirements">
-                  <strong>Role Requirements</strong>
-                  <ul style="margin-top: 5px;">
+                  <strong>Role Requirements:</strong>
+                  <ul v-if="selectedRole.Skills.length > 0" style="margin-top: 5px;">
                     <li v-for="line in selectedRole.Role_Requirements">
                       {{ line }}
                     </li>
                   </ul>
+                  <span v-else>
+                    No prior skills required
+                  </span>
                 </div>
               </div>
-              <div class="skills">
+              <div v-if="selectedRole.Skills.length > 0" class="skills">
                 <p>
                   <strong>How you match</strong>
                 </p>
@@ -293,7 +305,7 @@ export default {
       return matchingSkills.length;
     },
     updateProgressBar() {
-      const pctbar = ((this.countMatchingSkills(this.selectedRole) / this.selectedRole.Skills.length) * 100).toString();
+      const pctbar = Math.round((this.countMatchingSkills(this.selectedRole) / this.selectedRole.Skills.length) * 100).toString();
       this.progressBarWidth = pctbar + "%";
     },
     // Function to fetch skills from the API
@@ -385,7 +397,8 @@ export default {
     clearUserSessionData() {
       Cookies.remove('userSession');
       this.$router.push("/");; // No user session data found
-    }
+    },
+
   },
   mounted() {
     // Call the method to fetch skills when the component is mounted
@@ -400,6 +413,7 @@ export default {
       .catch(error => {
         console.error('Error fetching data:', error);
       });
+
   },
 };
 </script>
