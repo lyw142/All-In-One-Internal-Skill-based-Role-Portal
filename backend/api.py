@@ -635,4 +635,3 @@ def get_applications_history(staffID):
         return jsonify(application_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
