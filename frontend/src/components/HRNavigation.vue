@@ -60,7 +60,7 @@
                   <strong>Application Deadline:</strong> {{ (role.deadline) <= 0 ? 'Closed' : (role.deadline) + ' (' +
                     this.calculateDeadline(role.deadline) + ' days remaining)' }} </p>
                     <p class="card-text">
-                      <strong>Application Date Posted:</strong>
+                      <strong>Posted on:</strong>
                       {{ role.dateposted }}
                     </p>
               </div>

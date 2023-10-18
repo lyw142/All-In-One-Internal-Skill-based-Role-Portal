@@ -18,6 +18,9 @@ api = Blueprint('api', __name__)
 @api.route("/createjoblisting", methods=['POST'])
 def createListing():
     data = request.get_json()
+    # Check if the Role_Name is a string
+    if not isinstance(data.get('Role_Name'), str):
+        return jsonify({"error": "Role_Name must be a string"}), 400  # HTTP 400 Bad Request
     
     # Check if the Role_Name already exists in the database
     existing_role = Role.query.filter_by(Role_Name=data['Role_Name']).first()
