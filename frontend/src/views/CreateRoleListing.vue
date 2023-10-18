@@ -58,24 +58,32 @@
                     pattern="[A-Za-z\s]+" rows="6"></textarea>
             </div>
             <!-- Skill -->
-            <div class="form-group mb-3">
-                <label for="roleSkills">Skills required</label>
-                <select v-model="selectedSkill" @change="addSkill" style="margin-left: 10px;">
-                    <option value="" disabled>Select a skill</option>
-                    <option v-for="skill in this.availableSkills" :key="skill.Skill_ID" :value="skill.Skill_Name">{{
-                        skill.Skill_Name }}
-                    </option>
-                </select>
-                <ul style="margin-top: 5px;">
-                    <li class="skill-box mb-2" v-for="(skill, index) in selectedSkills" :key="index">
-                        {{ skill }}
-                        <button @click="removeSkill(index)" style="border: none; background: none; cursor: pointer;">
-                            <img src="../assets/images/closeicon.png" alt="Remove"
-                                style="border-radius: 5px; width: 15px; height: 15px;">
-                        </button>
-                    </li>
-                </ul>
+            <div class="row">
+                <div class="form-group mb-3 col-6">
+                    <label for="roleSkills">Skills required</label>
+                    <select v-model="selectedSkill" @change="addSkill" style="margin-left: 10px;">
+                        <option value="" disabled>Select a skill</option>
+                        <option v-for="skill in this.availableSkills" :key="skill.Skill_ID" :value="skill.Skill_Name">{{
+                            skill.Skill_Name }}
+                        </option>
+                    </select>
+                    <ul style="margin-top: 5px;">
+                        <li class="skill-box mb-2" v-for="(skill, index) in selectedSkills" :key="index">
+                            {{ skill }}
+                            <button @click="removeSkill(index)" style="border: none; background: none; cursor: pointer;">
+                                <img src="../assets/images/closeicon.png" alt="Remove"
+                                    style="border-radius: 5px; width: 15px; height: 15px;">
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="form-group col-6">
+                    <label for="department">Country</label>
+                    <input type="text" class="form-control" id="country" v-model="this.Country" required maxlength="20"
+                        pattern="[A-Za-z\s]+" />
+                </div>
             </div>
+
 
             <!-- Salary -->
             <div class="form-group mb-3">
@@ -128,11 +136,12 @@ export default {
             Deadline: "",
             Date_Posted: "",
             Hiring_Manager: "",
-
+            Country: "",
         };
     },
     methods: {
         submitForm() {
+
             if (this.Deadline > this.Date_Posted) {
                 axios.post('http://127.0.0.1:5000/api/createjoblisting', {
                     Role_Name: this.Role_Name,
@@ -140,10 +149,11 @@ export default {
                     Role_Requirements: this.Role_Requirements,
                     Dept: this.Dept,
                     Salary: this.Salary,
-                    Skills: this.Skills,
+                    Skills: this.selectedSkills,
                     Deadline: this.Deadline,
                     Date_Posted: this.Date_Posted,
                     Hiring_Manager: this.Hiring_Manager,
+                    Country: this.Country,
                 }).then(response => {
                     console.log(response);
                     alert("New role listing successfully created");
