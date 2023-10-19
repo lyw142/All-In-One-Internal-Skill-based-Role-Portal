@@ -3,9 +3,9 @@
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
       <div class="navbar-left">
         <img src="../assets/logo.png" alt="Logo" class="logo" />
-        <a to="/roles" class="nav-link" style="color: white;">Roles</a>
-        <a to="/candidates" class="nav-link" style="color: white;">Candidates</a>
-        <a to="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
+        <a href="/roles" class="nav-link" style="color: white;">Roles</a>
+        <a href="/candidates" class="nav-link" style="color: white;">Candidates</a>
+        <a href="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
       </div>
       <div class="navbar-right">
         <button class="btn btn-secondary" @click="clearUserSessionData()">Logout</button>
@@ -60,7 +60,7 @@
                   <strong>Application Deadline:</strong> {{ (role.deadline) <= 0 ? 'Closed' : (role.deadline) + ' (' +
                     this.calculateDeadline(role.deadline) + ' days remaining)' }} </p>
                     <p class="card-text">
-                      <strong>Posted on:</strong>
+                      <strong>Application Date Posted:</strong>
                       {{ role.dateposted }}
                     </p>
               </div>
