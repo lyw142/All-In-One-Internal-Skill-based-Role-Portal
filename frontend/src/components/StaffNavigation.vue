@@ -93,7 +93,7 @@
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
-                <p>${{ selectedRole.Salary }} a month, Full time</p>
+                <p>${{ selectedRole.Salary }} a year, Full time</p>
               </div>
               <div class="divider">
                 <h3 class="card-title">Role description</h3>
