@@ -98,13 +98,12 @@
 
               <!-- Confirmation modal (initially hidden) -->
               <div class="modal-container" v-if="showConfirmModal">
-                <div class="confirmation-modal">
-                  <p>Are you sure you want to submit an application for the role of {{ selectedRole.Role_Name }}?</p>
-                  <button class="btn btn-primary" style="width: 120px; height: 40px; margin-right: 10px;" @click="submitApplication">Confirm</button>
-                  <button class="btn btn-secondary" style="width: 120px; height: 40px; margin-left: 10px;" @click="cancelApplication">Cancel</button>
-                </div>
+              <div class="confirmation-modal">
+                <p>Are you sure you want to submit an application for the role of {{ selectedRole.Role_Name }}?</p>
+                <button class="btn btn-primary" style="width: 120px; height: 40px; margin-right: 10px;" @click="submitApplication">Confirm</button>
+                <button class="btn btn-secondary" style="width: 120px; height: 40px; margin-left: 10px;" @click="cancelApplication">Cancel</button>
               </div>
-
+            </div>
               <!-- Success Modal -->
               <div class="modal-container" v-if="showSuccessModal">
                 <div class="confirmation-modal">
@@ -187,6 +186,7 @@ export default {
       showConfirmModal: false, // Initially hidden
       showSuccessModal: false, // Add a new property to control the success modal
       hasAppliedForRole: false, // Define the hasAppliedForRole property
+      applicationProcessing: false, // Add a property to track application processing
     };
   },
 
@@ -199,8 +199,8 @@ export default {
   methods: {
     // Your methods...
     showConfirmationModal(role) {
-        console.log('Clicked role:', role);
-        this.showConfirmModal = true;
+      console.log('Clicked role:', role);
+      this.showConfirmModal = true;
     },
 
     returnToJobListings() {
@@ -210,45 +210,39 @@ export default {
     submitApplication() {
       console.log('Submitting application for the role: ', this.selectedRole.Role_Name);
 
-      // Check the Staff_ID and Listing_ID before making the request
-      console.log('Staff_ID:', this.staff_id); // Replace with the actual Staff ID
-      console.log('Listing_ID:', this.selectedRole.Listing_ID);
+      // Set the applicationProcessing to true to indicate processing
+      this.applicationProcessing = true;
 
-      // Define the data to be sent in the request (for testing purposes)
+      // Prepare the data for the API request
       const data = {
-          Listing_ID: this.selectedRole.Listing_ID,
-          Staff_ID: this.staff_id,
-        };
+        Listing_ID: this.selectedRole.Listing_ID,
+        Staff_ID: this.staff_id,
+      };
 
-      console.log('Data being sent for testing:', data);
-
-      // For testing, you can log the data and skip the API request
-      // console.log('Testing: Application data would be sent but not actually submitted to the API.');
-      this.showConfirmModal = false;
-      console.log('Testing: Confirmation modal should be closed');
-
-      // This part would be replaced with an actual API request in the production version
+      // Send the API request to apply for the role
       axios.post('http://127.0.0.1:5000/api/applyforopenrole', data)
         .then(response => {
           // Application was successfully created
-          console.log('Application submitted successfully:', response.data.message);
-          // You can perform additional actions here if needed
-           })
-           .catch(error => {
-             console.error('Error submitting application:', error);
-             // Handle the error or show an error message to the user
-           })
-           .finally(() => {
-             // Close the confirmation modal, regardless of success or failure
-             this.showConfirmModal = false;
-           });
 
-        // Assuming a successful API request
-        // You would typically make the API request and handle the response
-        // For this demonstration, we'll directly show the success modal
-      this.showSuccessModal = true;
+          // Update the button state to "Applied" immediately
+          this.hasAppliedForRole = true;
 
-      },
+          // Show the success modal
+          this.showSuccessModal = true;
+        })
+        .catch(error => {
+          console.error('Error submitting application:', error);
+
+          // Handle the error or show an error message to the user
+        })
+        .finally(() => {
+          // Set applicationProcessing to false to indicate processing has finished
+          this.applicationProcessing = false;
+
+          // Close the confirmation modal
+          this.showConfirmModal = false;
+        });
+    },
 
     cancelApplication() {
       // Cancel the application and hide the confirmation modal
