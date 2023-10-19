@@ -3,7 +3,7 @@
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
       <div class="navbar-left">
         <img src="../assets/logo.png" alt="Logo" class="logo" />
-        <a href="/roles" class="nav-link" style="color: white;">Roles</a>
+        <a href="/roles" class="nav-link" style="color: white;">View roles</a>
         <a href="/candidates" class="nav-link" style="color: white;">Candidates</a>
         <a href="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
       </div>
@@ -41,14 +41,17 @@
       </div>
       <div :style="{ display: 'flex' }">
         <div :style="{ width: '40%' }">
-          <div v-for="(role, index) in roles" :key="index" @click="roleClicked(role.listingID)">
+          <div v-for="(role, index) in roles" :key="index"
+            @click="roleClicked(role.listingID), selectRole(role), countMatchingSkills(), updateProgressBar()">
             <div class="card mb-3">
               <div class="card-body">
                 <h5 class="card-title">{{ role.title }}</h5>
                 <p class="card-text">
                   <strong>Skills Required:</strong>
-                  <span v-for="(skill, index) in role.skills.split(',')" :key="index" class="skill-box">
-                    {{ skill.trim() }}
+                  <span v-for="skill in role.skills.split(',')" class="skill-box" :style="{
+                    backgroundColor: userSkills.includes(skill.trim()) ? 'rgba(25, 135, 84, 0.8)' : 'rgba(25, 135, 84, 0.1)',
+                    color: userSkills.includes(skill.trim()) ? 'white' : 'inherit'
+                  }"> {{ skill.trim() }}
                   </span>
                 </p>
                 <ul>
@@ -91,6 +94,23 @@
                   </p>
                 </div>
 
+                <!-- Confirmation modal (initially hidden) -->
+                <div class="modal-container" v-if="showConfirmModal">
+                  <div class="confirmation-modal">
+                    <p>Are you sure you want to submit an application for the role of {{ selectedRole.Role_Name }}?</p>
+                    <button class="btn btn-primary" style="width: 120px; height: 40px; margin-right: 10px;"
+                      @click="submitApplication">Confirm</button>
+                    <button class="btn btn-secondary" style="width: 120px; height: 40px; margin-left: 10px;"
+                      @click="cancelApplication">Cancel</button>
+                  </div>
+                </div>
+                <!-- Success Modal -->
+                <div class="modal-container" v-if="showSuccessModal">
+                  <div class="confirmation-modal">
+                    <p>Your application has been successfully submitted.</p>
+                    <button class="btn btn-primary" @click="returnToJobListings">Return to job listings</button>
+                  </div>
+                </div>
                 <!-- Role Requirements -->
                 <div class="role-requirements">
                   <strong>Role Requirements</strong>
@@ -103,11 +123,27 @@
               </div>
               <div class="skills">
                 <p>
-                  <strong>Skills Required:</strong>
+                  <strong>How you match</strong>
                 </p>
-                <span v-for="(skill, index) in selectedRole.Skills" :key="index" class="skill-box">
+                <div class="progress " role="progressbar" aria-label="Basic example" aria-valuenow="0" aria-valuemin="0"
+                  aria-valuemax="100" style="margin-bottom: 10px;">
+                  <div class="progress-bar bg-success" :style="{ width: progressBarWidth }">{{ progressBarWidth }}</div>
+                </div>
+                <p>{{ this.matching_skills.length }} skill(s) on your profile, {{ this.skill_list.length -
+                  this.matching_skills.length }} skill(s) missing from your profile</p>
+                <span v-for="skill in selectedRole.Skills" class="skill-box" :style="{
+                  backgroundColor: userSkills.includes(skill.trim()) ? 'rgba(25, 135, 84, 0.8)' : 'rgba(25, 135, 84, 0.1)',
+                  color: userSkills.includes(skill.trim()) ? 'white' : 'inherit'
+                }">
                   {{ skill.trim() }}
                 </span>
+              </div>
+
+              <div>
+                <button class="btn btn-secondary" style="margin: 10px;" @click="showConfirmationModal(selectedRole)"
+                  :disabled="hasAppliedForRole">
+                  {{ hasAppliedForRole ? 'Applied' : 'Apply for role' }}
+                </button>
               </div>
             </div>
           </div>
@@ -131,7 +167,16 @@ export default {
       jobListings: [], // New property to store job listings
       selectedStatus: "open", // Default selected status
       roles: [],
+      userSkills: [],
+      skill_list: [],
+      matching_skills: [],
+      progressBarWidth: "",
       selectedRole: null,
+      staff_id: null,
+      showConfirmModal: false, // Initially hidden
+      showSuccessModal: false, // Add a new property to control the success modal
+      hasAppliedForRole: false, // Define the hasAppliedForRole property
+      applicationProcessing: false, // Add a property to track application processing
     };
   },
   methods: {
@@ -215,7 +260,8 @@ export default {
     getUserSessionData() {
       const serializedUser = Cookies.get('userSession')
       if (serializedUser) {
-        const data = JSON.parse(serializedUser)
+        const data = JSON.parse(serializedUser);
+        this.staff_id = data.Staff_ID;
         if (!(data.Access_Rights == 4)) {
           this.$router.push("/staffnav");
         }
@@ -223,16 +269,103 @@ export default {
         this.$router.push("/");; // No user session data found
       }
     },
+    getUserSkills() {
+      axios.get('http://127.0.0.1:5000/api/getStaffSkills/' + this.staff_id)
+        .then(response => {
+          response.data.forEach(skill => {
+            // Append the skill_name to the userSkills array
+            this.userSkills.push(skill.Skill_Name);
+          });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
+        });
+    },
+    countMatchingSkills() {
+      this.skill_list = this.selectedRole.skills.split(',');
+      this.matching_skills = this.skill_list.filter(skill => this.userSkills.includes(skill));
 
+    },
+    updateProgressBar() {
+      const pctbar = Math.round((this.matching_skills.length / this.skill_list.length) * 100).toString();
+      this.progressBarWidth = pctbar + "%";
+    },
     // Clear user session data from the cookie
     clearUserSessionData() {
       Cookies.remove('userSession');
       this.$router.push("/");; // No user session data found
-    }
+    },
+    showConfirmationModal(role) {
+      console.log('Clicked role:', role);
+      this.showConfirmModal = true;
+    },
+
+    returnToJobListings() {
+      this.showSuccessModal = false;
+    },
+
+    submitApplication() {
+      console.log('Submitting application for the role: ', this.selectedRole.Role_Name);
+
+      // Set the applicationProcessing to true to indicate processing
+      this.applicationProcessing = true;
+
+      // Prepare the data for the API request
+      const data = {
+        Listing_ID: this.selectedRole.Listing_ID,
+        Staff_ID: this.staff_id,
+      };
+
+      // Send the API request to apply for the role
+      axios.post('http://127.0.0.1:5000/api/applyforopenrole', data)
+        .then(response => {
+          // Application was successfully created
+
+          // Update the button state to "Applied" immediately
+          this.hasAppliedForRole = true;
+
+          // Show the success modal
+          this.showSuccessModal = true;
+        })
+        .catch(error => {
+          console.error('Error submitting application:', error);
+
+          // Handle the error or show an error message to the user
+        })
+        .finally(() => {
+          // Set applicationProcessing to false to indicate processing has finished
+          this.applicationProcessing = false;
+
+          // Close the confirmation modal
+          this.showConfirmModal = false;
+        });
+    },
+
+    cancelApplication() {
+      // Cancel the application and hide the confirmation modal
+      this.showConfirmModal = false;
+    },
+    async selectRole(role) {
+      // Set the selected role
+      this.selectedRole = role;
+      this.isCardClicked = true;
+      // Check if the user has already applied for this role
+      try {
+        const response = await axios.get(
+          `http://127.0.0.1:5000/api/checkApplicationStatus/${this.staff_id}/${role.listingID}`
+        );
+
+        // Check the response to determine if the user has applied
+        this.hasAppliedForRole = response.data.hasApplied; // Adjust the response structure as needed
+      } catch (error) {
+        console.error('Error checking application status:', error);
+      }
+    },
 
   },
   mounted() {
     this.getUserSessionData();
+    this.getUserSkills();
     // Load job listings when the component is mounted
     this.loadJobListings();
   },
@@ -338,5 +471,45 @@ export default {
 
 .skills {
   padding: 12px 36px;
+}
+
+.confirmation-modal {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+
+.modal-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  /* Semi-transparent background to darken the content */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  /* Make sure the modal is above other elements */
+}
+
+
+.btn-primary {
+  background-color: rgba(25, 135, 84, 0.1);
+  /* Updated to green color */
+  color: #000;
+  /* Black text */
+  border: none;
+}
+
+/* Add hover animation for the "Show Results" button */
+.btn-primary:hover {
+  background-color: rgba(25, 135, 84, 0.8);
+  /* Darker shade of green */
+  color: #fff;
+  /* Font color */
 }
 </style>
