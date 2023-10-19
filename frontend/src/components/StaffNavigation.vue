@@ -28,21 +28,21 @@
             </button>
             <div class="dropdown-menu" aria-labelledby="skillsDropdown" @click.stop>
               <!-- Checklist of skills with checkboxes -->
-              <div v-for="skill in skills" :key="skill.Skill_ID">
-                <label class="checkbox-label">
-                  <input type="checkbox" v-model="selectedSkills" :value="skill" class="checkbox-input" />
-                  <span class="checkbox-text">{{ skill.Skill_Name }}</span>
-                </label>
+              <div class="skills-scroll">
+                <div v-for="(skill, index) in skills" :key="skill.Skill_ID">
+                  <label class="checkbox-label">
+                    <input type="checkbox" v-model="selectedSkills" :value="skill" class="checkbox-input" />
+                    <span class="checkbox-text">{{ skill.Skill_Name }}</span>
+                  </label>
+                </div>
               </div>
-              <!-- Action buttons -->
-              <!-- Action buttons -->
-              <button class="dismiss-button" @click.stop="cancelFilter">×</button>
-
-
+              <!-- Filter buttons outside the scrollable area -->
               <div class="filter-buttons">
-                <button class="btn btn-secondary" @click="clearFilter">Clear Filter</button>
                 <button class="btn btn-primary" @click="applyFilter">Show Results</button>
+                <button class="btn btn-secondary" @click="clearFilter">Clear Filter</button>
               </div>
+              <!-- Dismiss button at the top of the dropdown -->
+              <button class="dismiss-button" @click.stop="cancelFilter">×</button>
               <!-- Display a message when no skills are selected -->
               <div class="filter-message" v-if="showNoSkillsMessage">
                 {{ showNoSkillsMessage }}
@@ -189,6 +189,13 @@ export default {
       hasAppliedForRole: false, // Define the hasAppliedForRole property
     };
   },
+
+  computed: {
+  displayedSkills() {
+    return this.skills.slice(0, 15); // Display the first 15 skills
+  },
+},
+
   methods: {
     // Your methods...
     showConfirmationModal(role) {
@@ -365,7 +372,11 @@ export default {
           const response = await axios.get(`http://127.0.0.1:5000/api/filterRoleListingBySkill/${selectedSkillIds.join(",")}`);
 
           // Update the roles data property with the filtered role listings
-          this.roles = response.data;
+          const today = new Date();
+          this.roles = response.data.filter(role => {
+            const deadlineDate = new Date(role.Deadline);
+            return deadlineDate >= today; // Only include listings with a deadline in the future
+          });
         } catch (error) {
           console.error('Error filtering role listings:', error);
         }
@@ -547,8 +558,14 @@ export default {
   z-index: 1;
   padding: 10px;
   /* Added padding to the modal */
+
+.skills-scroll {
+  max-height: 300px; /* Set the maximum height for the dropdown */
+    overflow-y: auto; /* Enable vertical scrolling if the content exceeds the max height */
+  /* Added padding to the modal */
 }
 
+}
 .dropdown-menu.show {
   display: block;
 }
