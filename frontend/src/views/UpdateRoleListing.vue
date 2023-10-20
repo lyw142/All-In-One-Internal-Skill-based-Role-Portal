@@ -24,7 +24,7 @@
             <div class="form-group mb-3">
                 <label for="roleResponsibilities">Role Responsibilities</label>
                 <textarea class="form-control" id="roleResponsibilities" v-model="this.Role_Responsibilities" required
-                    maxlength="1000" pattern="[A-Za-z\s]+" rows="7"></textarea>
+                    maxlength="1000" pattern="[A-Za-z\s]+" title="(Use alphabets only)" rows="4"></textarea>
             </div>
 
 
@@ -53,7 +53,7 @@
                 <div class="form-group col-6">
                     <label for="department">Country</label>
                     <input type="text" class="form-control" id="country" v-model="this.Country" required maxlength="20"
-                        pattern="[A-Za-z\s]+" />
+                        pattern="[A-Za-z\s]+" title="(Use alphabets only)" />
                 </div>
             </div>
 
@@ -65,7 +65,7 @@
                         <label for="minSalary">Salary ($)</label>
                         <input type="number" class="form-control" id="roleSalary"
                             @input="Salary = $event.target.value.toString()" v-model="this.Salary" required
-                            pattern="[0-9]{1,11}" />
+                            pattern="[0-9]{1,11}" title="(Use numbers only)" />
                     </div>
                     <div class="form-group mb-3 col-6">
                         <label for="roleDeadline">Deadline</label>

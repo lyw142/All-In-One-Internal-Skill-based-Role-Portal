@@ -48,11 +48,12 @@
                 <h5 class="card-title">{{ role.title }}</h5>
                 <p class="card-text">
                   <strong>Skills Required:</strong>
-                  <span v-for="skill in role.skills.split(',')" class="skill-box" :style="{
+                  <span v-if="role.skills" v-for="skill in role.skills.split(',')" class="skill-box" :style="{
                     backgroundColor: userSkills.includes(skill.trim()) ? 'rgba(25, 135, 84, 0.8)' : 'rgba(25, 135, 84, 0.1)',
                     color: userSkills.includes(skill.trim()) ? 'white' : 'inherit'
                   }"> {{ skill.trim() }}
                   </span>
+                  <span v-else> No prior skills required</span>
                 </p>
                 <ul>
                   <li v-for="(line, index) in role.description.split('\n')" :key="index">
@@ -112,7 +113,7 @@
                   </div>
                 </div>
                 <!-- Role Requirements -->
-                <div class="role-requirements">
+                <div v-if="this.selectedRole.Skills.length > 0" class="role-requirements">
                   <strong>Role Requirements</strong>
                   <ol>
                     <li v-for="(requirement, index) in selectedRole.Role_Requirements" :key="index">
@@ -121,7 +122,7 @@
                   </ol>
                 </div>
               </div>
-              <div class="skills">
+              <div v-if="this.selectedRole.Skills.length > 0" class="skills">
                 <p>
                   <strong>How you match</strong>
                 </p>

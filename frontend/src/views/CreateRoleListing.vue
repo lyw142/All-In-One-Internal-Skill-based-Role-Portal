@@ -28,19 +28,19 @@
                 <div class="form-group mb-3 col-5">
                     <label for="roleName">Role Name</label>
                     <input type="text" class="form-control" id="roleName" v-model="Role_Name" required maxlength="20"
-                        pattern="[A-Za-z\s]+" />
+                        pattern="[A-Za-z\s]+" title="(Use alphabets only)" />
                 </div>
                 <!-- Hiring Manager -->
                 <div class="form-group mb-3 col-5">
                     <label for="roleHiringManager">Hiring Manager</label>
                     <input type="text" class="form-control" id="roleHiringManager" v-model="Hiring_Manager" required
-                        maxlength="20" pattern="[0-9]{1,11}" />
+                        maxlength="20" pattern="[0-9]{1,11}" title="(Use numbers only)" />
                 </div>
                 <!-- Department -->
                 <div class="form-group col-2">
                     <label for="department">Department</label>
                     <input type="text" class="form-control" id="department" v-model="Dept" required maxlength="50"
-                        pattern="[A-Za-z\s]+" />
+                        pattern="[A-Za-z\s]+" title="(Use alphabets only)" />
                 </div>
             </div>
 
@@ -48,15 +48,15 @@
             <div class="form-group mb-3">
                 <label for="roleResponsibilities">Role Responsibilities</label>
                 <textarea class="form-control" id="roleResponsibilities" v-model="Role_Responsibilities" required
-                    maxlength="1000" pattern="[A-Za-z\s]+" rows="6"></textarea>
+                    maxlength="1000" pattern="[A-Za-z\s]+" title="(Use alphabets only)" rows="3"></textarea>
             </div>
 
             <!-- Role Requirements -->
-            <div class="form-group mb-3">
+            <!-- <div class="form-group mb-3">
                 <label for="roleRequirements">Role Requirements</label>
                 <textarea class="form-control" id="roleRequirements" v-model="Role_Requirements" required maxlength="1000"
-                    pattern="[A-Za-z\s]+" rows="6"></textarea>
-            </div>
+                    pattern="[A-Za-z\s]+" title="(Use alphabets only)" rows="3"></textarea>
+            </div> -->
             <!-- Skill -->
             <div class="row">
                 <div class="form-group mb-3 col-6">
@@ -80,7 +80,7 @@
                 <div class="form-group col-6">
                     <label for="department">Country</label>
                     <input type="text" class="form-control" id="country" v-model="this.Country" required maxlength="20"
-                        pattern="[A-Za-z\s]+" />
+                        pattern="[A-Za-z\s]+" title="(Use alphabets only)" />
                 </div>
             </div>
 
@@ -91,26 +91,29 @@
                     <div class="col-6">
                         <label for="minSalary">Salary ($)</label>
                         <input type="number" class="form-control" id="roleSalary" :value="Salary"
-                            @input="Salary = $event.target.value.toString()" required pattern="[0-9]{1,11}" />
+                            @input="Salary = $event.target.value.toString()" required pattern="[0-9]{1,11}"
+                            title="(Use numbers only)" />
                     </div>
                 </div>
             </div>
             <div class="row">
-                <!-- Deadline -->
-                <div class="form-group mb-3 col-6">
-                    <label for="roleDeadline">Deadline</label>
-                    <input type="date" class="form-control" id="roleDeadline" v-model="Deadline" required />
-                </div>
-
                 <!-- Date Posted -->
                 <div class="form-group mb-3 col-6">
                     <label for="roleDatePosted">Date Posted</label>
                     <input type="date" class="form-control" id="roleDatePosted" v-model="Date_Posted" required />
                 </div>
+                <!-- Deadline -->
+                <div class="form-group mb-3 col-6">
+                    <label for="roleDeadline">Deadline</label>
+                    <input type="date" class="form-control" id="roleDeadline" v-model="Deadline" required />
+                </div>
             </div>
+
             <button type="submit" class="btn btn-secondary">Submit</button>
             <button type="button" class="btn btn-secondary" @click="cancel" style="margin-left: 20px;">Cancel</button>
+
         </form>
+
     </div>
 </template>
   
@@ -118,6 +121,7 @@
 <script>
 import axios from 'axios'
 import Cookies from 'js-cookie'
+
 export default {
     data() {
         return {
@@ -146,7 +150,7 @@ export default {
                 axios.post('http://127.0.0.1:5000/api/createjoblisting', {
                     Role_Name: this.Role_Name,
                     Role_Responsibilities: this.Role_Responsibilities,
-                    Role_Requirements: this.Role_Requirements,
+                    // Role_Requirements: this.Role_Requirements,
                     Dept: this.Dept,
                     Salary: this.Salary,
                     Skills: this.selectedSkills,
@@ -160,8 +164,7 @@ export default {
                     this.$router.push("/hrnav");
                 });
             } else {
-                // Display an alert if the deadline is before or equal to the date_created
-                alert("Deadline cannot be before or on the the same date as Date Posted");
+                alert("Deadline cannot be before or on the date that this role listing was created.")
             }
 
         },
