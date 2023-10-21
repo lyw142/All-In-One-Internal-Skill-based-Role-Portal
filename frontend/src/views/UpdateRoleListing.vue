@@ -2,7 +2,7 @@
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
         <div class="navbar-left">
             <img src="../assets/logo.png" alt="Logo" class="logo" />
-            <a to="/roles" class="nav-link" style="color: white;">Roles</a>
+            <a to="/roles" class="nav-link" style="color: white;">View roles</a>
             <a to="/candidates" class="nav-link" style="color: white;">Candidates</a>
             <a to="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
         </div>
@@ -18,7 +18,7 @@
             </button>
             <h1 style="margin-bottom: 0; margin-left: 10px;">Update role listing</h1>
         </div>
-        <form @submit.prevent="submitForm">
+        <form @submit.prevent="formconfirmation">
 
             <!-- Role Responsibilities -->
             <div class="form-group mb-3">
@@ -27,7 +27,23 @@
                     maxlength="1000" pattern="[A-Za-z\s]+" title="(Use alphabets only)" rows="4"></textarea>
             </div>
 
-
+            <!-- Confirmation modal (initially hidden) -->
+            <div class="modal-container" v-if="showConfirmModal">
+                <div class="confirmation-modal">
+                    <p>Are you sure you want to update this role listing?</p>
+                    <button class="btn btn-primary" style="width: 120px; height: 40px; margin-right: 10px;"
+                        @click="submitForm">Confirm</button>
+                    <button class="btn btn-secondary" style="width: 120px; height: 40px; margin-left: 10px;"
+                        @click="cancelcreation">Cancel</button>
+                </div>
+            </div>
+            <!-- Success Modal -->
+            <div class="modal-container" v-if="showSuccessModal">
+                <div class="confirmation-modal">
+                    <p>Role listing successfully updated!</p>
+                    <button class="btn btn-primary" @click="cancel">Return</button>
+                </div>
+            </div>
             <!-- Skill -->
             <div class="row">
                 <div class="form-group col-6">
@@ -69,7 +85,11 @@
                     </div>
                     <div class="form-group mb-3 col-6">
                         <label for="roleDeadline">Deadline</label>
-                        <input type="date" class="form-control" id="roleDeadline" v-model="this.Deadline" required />
+                        <input :style="{ borderColor: this.invalidcolor }" type="date" class="form-control"
+                            id="roleDeadline" v-model="Deadline" required />
+
+                        <div id="invaliddate">
+                        </div>
                     </div>
                 </div>
             </div>
@@ -97,6 +117,10 @@ export default {
             removedSkills: [],
             addedSkills_ID: [],
             removedSkills_ID: [],
+            invalidcolor: "",
+            showDateModal: false,
+            showConfirmModal: false,
+            showSuccessModal: false,
 
             Role_Responsibilities: "",
             Salary: "",
@@ -172,21 +196,19 @@ export default {
                     Country: this.Country,
                 }).then(response => {
                     console.log(response);
-                    alert("The role listing has been updated");
-                    this.$router.push("/hrnav");
+                    this.showConfirmModal = false;
+                    this.showSuccessModal = true;
                 });
             } else {
-                // Display an alert if the deadline is before or equal to the date_created
-                alert("Deadline cannot be before or on the date that this role listing was created.");
+                this.checkDatevalid();
+                this.showConfirmModal = false;
             }
 
-
-            // console.log({
-            //     Role_Responsibilities: this.Role_Responsibilities,
-            //     Salary: this.Salary,
-            //     Deadline: this.Deadline,
-            //     Country: this.Country,
-            // })
+        },
+        checkDatevalid() {
+            let invaliddatetext = document.getElementById("invaliddate");
+            invaliddatetext.innerText = "Deadline cannot be before or on the date that this role listing was created. (" + this.Date_created + ")"
+            this.invalidcolor = 'red'
 
         },
         // Retrieve user session data from a cookie
@@ -206,6 +228,12 @@ export default {
         clearUserSessionData() {
             Cookies.remove('userSession');
             this.$router.push("/");; // No user session data found
+        },
+        formconfirmation() {
+            this.showConfirmModal = true;
+        },
+        cancelcreation() {
+            this.showConfirmModal = false;
         }
     },
     mounted() {
@@ -275,5 +303,48 @@ export default {
 
 form {
     margin-bottom: 20px;
+}
+
+.modal-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    /* Semi-transparent background to darken the content */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+    /* Make sure the modal is above other elements */
+}
+
+/* Styles for the modal content */
+.confirmation-modal {
+    background: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    text-align: center;
+}
+
+.btn-primary {
+    background-color: rgba(25, 135, 84, 0.1);
+    /* Start with green color */
+    color: #000;
+    /* Black text */
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+/* Adjust button text color */
+.btn-primary:hover {
+    background-color: rgba(25, 135, 84, 0.8);
+    /* Darker green on hover */
+    color: #fff;
+    /* White text on hover */
 }
 </style>
