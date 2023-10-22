@@ -188,6 +188,7 @@ class Application(db.Model):
                     "Staff_ID": self.Staff_ID,
                     "Listing_ID": self.Listing_ID,
                     "Staff_FName": self.staff.Staff_FName,  # Include Staff_FName
+                    "Staff_LName": self.staff.Staff_LName,  # Include Staff_LName
                     # "Skills": [skill.json() for skill in self.staff.skills]  # Include Staff's skills
                     "Skills": [{"Skill_ID": skill.skill.Skill_ID, "Skill_Name": skill.skill.Skill_Name} for skill in self.staff.skills],
                     "Role_Name": self.role_listing.role.Role_Name
