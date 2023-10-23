@@ -545,15 +545,7 @@ def get_all_applications():
         applications = Application.query.all()
 
         # Convert the applications to JSON
-        # application_json = []
-        # for application in applications:
-        #     application_json.append(application.json())
-
-        # # Return the JSON response
-        # return jsonify(application_json)
-
-        # Convert the applications to JSON
-        application_json = [application.json() for application in applications]
+        application_json = [application.get_all_application_details() for application in applications]
 
         # Return the JSON response
         return jsonify(application_json)
