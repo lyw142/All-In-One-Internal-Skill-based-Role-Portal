@@ -647,9 +647,9 @@ def getApplicantsBySkillMatch(listing_id):
     if not listing_id:
         return jsonify({"message": "Listing ID is required"}), 400
 
-    required_skills = get_required_skills_for_listing(listing_id)
+    required_skills_name = get_required_skills_for_listing(listing_id)
     applicants = (
-        db.session.query(Application.Staff_ID)
+        db.session.query(Application)
         .filter(Application.Listing_ID == listing_id)
         .all()
     )
@@ -658,37 +658,60 @@ def getApplicantsBySkillMatch(listing_id):
 
     for applicant in applicants:
         staff_id = applicant.Staff_ID
-        staff_skills = get_staff_skills(staff_id)
-
+        staff_skills_name = get_staff_skills(staff_id)
+        
         # Calculate the match score
-        match_score = sum(1 for skill_id in staff_skills if skill_id in required_skills)
+        match_score = sum(1 for skill_id in staff_skills_name if skill_id in required_skills_name)
 
         staff_skill_counts[staff_id] = match_score
 
     # Sort applicants by match score in descending order
     sorted_applicants = sorted(staff_skill_counts.items(), key=lambda x: x[1], reverse=True)
 
-    staff_json = [{"Staff_ID": staff_id, "Count": count} for staff_id, count in sorted_applicants]
+    staff_json = [
+        {
+            "Staff_ID": staff_id, 
+            "Staff_Name" : getStaffDetails(staff_id)["Staff_FName"] + " " + getStaffDetails(staff_id)["Staff_LName"],
+            "Staff_Skills" : get_staff_skills(staff_id), 
+            #"Count": count
+        }
+        for staff_id, count in sorted_applicants]
 
     return jsonify(staff_json)
 
 def get_staff_skills(staff_id):
     skills = (
-        db.session.query(Staff_Skill.Skill_ID)
+        db.session.query(Staff_Skill.Skill_ID, Skill.Skill_Name)
+        .join(Skill, Staff_Skill.Skill_ID == Skill.Skill_ID)
         .filter(Staff_Skill.Staff_ID == staff_id)
         .all()
     )
 
-    return [skill.Skill_ID for skill in skills]
+    return [skill_name for skill,skill_name in skills]
 
 def get_required_skills_for_listing(listing_id):
     results = (
-        db.session.query(RoleSkillMapping.Skill_ID)
+        db.session.query(RoleSkillMapping.Skill_ID, Skill)
         .join(RoleListing, RoleSkillMapping.Role_ID == RoleListing.Role_ID)
+        .join(Skill, RoleSkillMapping.Skill_ID == Skill.Skill_ID)
         .filter(RoleListing.Listing_ID == listing_id)
         .all()
     )
 
-    required_skills = [skill.Skill_ID for skill in results]
+    required_skills_name = [skill_name.Skill_Name for skill, skill_name in results]
 
-    return required_skills
+    return required_skills_name
+
+def getStaffDetails(staff_id):
+    staff = (
+        db.session.query(Staff)
+        .filter(Staff.Staff_ID == staff_id)
+        .first()
+    )
+
+    if staff:
+        staff_details = staff.to_json()
+    else:
+        staff_details = None
+
+    return staff_details
