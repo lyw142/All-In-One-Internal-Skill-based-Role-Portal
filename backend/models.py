@@ -20,10 +20,10 @@ class Access_Control(db.Model):
         self.Access_ID = Access_ID
         self.Access_Control_Name = Access_Control_Name
 
-    def to_json(self):
+    def get_access_control_details(self):
         return {
             "Access_ID": self.Access_ID,
-            "Access_Control_Nmae": self.Access_Control_Name,
+            "Access_Control_Name": self.Access_Control_Name,
         }
     
 ## STAFF ##
@@ -54,7 +54,7 @@ class Staff(db.Model):
         self.Role_ID = Role_ID
         self.Access_Rights = Access_Rights
 
-    def to_json(self):
+    def get_staff_details(self):
         return {
             "Staff_ID": self.Staff_ID,
             "Staff_FName": self.Staff_FName,
@@ -83,7 +83,7 @@ class Staff_Skill(db.Model):
     # skill = db.relationship('Skill', backref='staff_skill')
 
     # specify how to represent our Staff_Skill object as a JSON string
-    def json(self):
+    def get_staff_skill_details(self):
         return {
                 "Staff_ID": self.Staff_ID, 
                 "Skill_ID": self.Skill_ID,
@@ -106,7 +106,7 @@ class Skill(db.Model):
 
 
     # specify how to represent our book object as a JSON string
-    def json(self):
+    def get_skill_details(self):
         return {
                 "Skill_ID": self.Skill_ID,
                 "Skill_Name": self.Skill_Name,
@@ -130,7 +130,7 @@ class Role(db.Model):
         self.Role_Responsibilities = Role_Responsibilities
         
 
-    def to_json(self):
+    def get_role_details(self):
         return {
             "Role_ID": self.Role_ID,
             "Role_Name": self.Role_Name,
@@ -150,7 +150,7 @@ class RoleSkillMapping(db.Model):
         self.Skill_ID = Skill_ID
 
     # specify how to represent our book object as a JSON string
-    def json(self):
+    def get_role_skill_mapping_details(self):
         return {
                 "Role_ID": self.Role_ID,
                 "Skill_ID": self.Skill_ID
@@ -168,6 +168,7 @@ class Application(db.Model):
     Listing_ID = db.Column(db.Integer, db.ForeignKey('role_listing.Listing_ID', ondelete='CASCADE'))
 
     staff = db.relationship('Staff', backref='applications')
+    
 
     role_listing = db.relationship('RoleListing', backref='applications')
     #staff = db.relationship('Staff', backref='applications')
@@ -180,7 +181,8 @@ class Application(db.Model):
         self.Listing_ID = Listing_ID
 
     # specify how to represent our book object as a JSON string
-    def json(self):
+    def get_all_application_details(self):
+        current_role = Role.query.get(self.staff.Role_ID)
         return {
                     "Application_ID": self.Application_ID, 
                     "Application_Date": self.Application_Date,
@@ -188,7 +190,9 @@ class Application(db.Model):
                     "Staff_ID": self.Staff_ID,
                     "Listing_ID": self.Listing_ID,
                     "Staff_FName": self.staff.Staff_FName,  # Include Staff_FName
-                    "Staff_LName": self.staff.Staff_LName,  # Include Staff_LName
+                    "Staff_LName": self.staff.Staff_LName,
+                    "Staff_Current_Role": current_role.Role_Name if current_role else None,  # Include Staff_LName
+                    
                     # "Skills": [skill.json() for skill in self.staff.skills]  # Include Staff's skills
                     "Skills": [{"Skill_ID": skill.skill.Skill_ID, "Skill_Name": skill.skill.Skill_Name} for skill in self.staff.skills],
                     "Role_Name": self.role_listing.role.Role_Name
@@ -219,7 +223,7 @@ class RoleListing(db.Model):
         self.Hiring_Manager = Hiring_Manager
         self.Role_ID = Role_ID
 
-    def to_json(self):
+    def get_role_listing_details(self):
         return {
             "Listing_ID": self.Listing_ID,
             "Deadline": self.Deadline, 
