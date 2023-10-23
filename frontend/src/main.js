@@ -11,6 +11,7 @@ import HRNavigation from './components/HRNavigation.vue'
 import UpdateRoleListing from './views/UpdateRoleListing.vue'
 import CreateRoleListing from './views/CreateRoleListing.vue'
 import ApplicationHistory from './views/ApplicationHistory.vue'
+import Candidates from './components/Candidates.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -21,6 +22,7 @@ const router = createRouter({
         {path: '/updaterolelisting/:Listing_ID', name:'UpdateRoleListing', component: UpdateRoleListing, props: true},
         {path: '/createrolelisting', name:'CreateRoleListing', component: CreateRoleListing},
         {path: '/application-history', name:'ApplicationHistory', component: ApplicationHistory},
+        {path: '/candidates', name: 'Candidates', component: Candidates},
     ]
 })
 
