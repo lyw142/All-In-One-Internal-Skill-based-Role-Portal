@@ -178,6 +178,7 @@ def findAllOpenJobListings():
         .join(Staff, RoleListing.Hiring_Manager == Staff.Staff_ID)
         .join(Role, RoleListing.Role_ID == Role.Role_ID)
         .filter(RoleListing.Deadline >= current_date)  # Filter by Deadline
+        .filter(RoleListing.Date_Posted <= current_date)
         .order_by(desc(RoleListing.Date_Posted))
     )
 
