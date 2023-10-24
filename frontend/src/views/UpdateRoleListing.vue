@@ -2,9 +2,11 @@
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
         <div class="navbar-left">
             <img src="../assets/logo.png" alt="Logo" class="logo" />
-            <a to="/roles" class="nav-link" style="color: white;">View roles</a>
-            <a to="/candidates" class="nav-link" style="color: white;">Candidates</a>
-            <a to="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
+            <router-link to="/hrnav" class="nav-link" style="color: white;">Role listing management</router-link>
+            <router-link to="/candidates" class="nav-link" style="color: white;">Candidates</router-link>
+            <router-link to="/view-staff-skills" class="nav-link" style="color: white;">View staff skills</router-link>
+            <router-link to="/staffnav" class="nav-link" style="color: white;">View roles</router-link>
+            <router-link to="/application-history" class="nav-link" style="color: white;">Application History</router-link>
         </div>
         <div class="navbar-right">
             <button class="btn btn-secondary" @click="clearUserSessionData()">Logout</button>
