@@ -3,6 +3,7 @@ api.py
 - provides the API endpoints for consuming and producing
   REST requests and responses
 """
+import json
 from flask import Blueprint, request, jsonify
 from datetime import datetime
 # from models import db, 
@@ -639,37 +640,39 @@ def getApplicantsBySkillMatch(listing_id):
     if not listing_id:
         return jsonify({"message": "Listing ID is required"}), 400
 
-    required_skills_name = get_required_skills_for_listing(listing_id)
-    applicants = (
-        db.session.query(Application)
+    requiredSkill = get_required_skills_for_listing(listing_id)
+    results = (
+        db.session.query(Application, Staff)
+        .join(Staff, Application.Staff_ID == Staff.Staff_ID)
         .filter(Application.Listing_ID == listing_id)
         .all()
     )
 
-    staff_skill_counts = {}
+    detailsdict = {}
 
-    for applicant in applicants:
-        staff_id = applicant.Staff_ID
-        staff_skills_name = get_staff_skills(staff_id)
-        
-        # Calculate the match score
-        match_score = sum(1 for skill_id in staff_skills_name if skill_id in required_skills_name)
+    if(results) :
+        for app,staff in results:
+            staffSkill = get_staff_skills(app.Staff_ID),
+            # Calculate the match score
+            match_score = sum(1 for skill_name in staffSkill[0] if skill_name in requiredSkill)
+            staff_data = {
+                "Application_ID": app.Application_ID,
+                "Application_Date": str(app.Application_Date),
+                "Application_Status": app.Application_Status,
+                "Staff_ID" : staff.Staff_ID,
+                "Staff_Name" : staff.Staff_FName + " " +staff.Staff_LName,
+                "Skill" : staffSkill[0],
+                "Score" : match_score
+            }
+            detailsdict[app.Application_ID] = staff_data
 
-        staff_skill_counts[staff_id] = match_score
+    # Sort the dictionary by the "Score" values in descending order
+    sorted_data = dict(sorted(detailsdict.items(), key=lambda x: x[1]["Score"], reverse=True))
 
-    # Sort applicants by match score in descending order
-    sorted_applicants = sorted(staff_skill_counts.items(), key=lambda x: x[1], reverse=True)
+    # Convert the sorted dictionary back to JSON format
+    sorted_json = json.dumps(sorted_data, indent=4)
 
-    staff_json = [
-        {
-            "Staff_ID": staff_id, 
-            "Staff_Name" : getStaffDetails(staff_id)["Staff_FName"] + " " + getStaffDetails(staff_id)["Staff_LName"],
-            "Staff_Skills" : get_staff_skills(staff_id), 
-            #"Count": count
-        }
-        for staff_id, count in sorted_applicants]
-
-    return jsonify(staff_json)
+    return sorted_json
 
 def get_staff_skills(staff_id):
     skills = (
@@ -693,17 +696,3 @@ def get_required_skills_for_listing(listing_id):
     required_skills_name = [skill_name.Skill_Name for skill, skill_name in results]
 
     return required_skills_name
-
-def getStaffDetails(staff_id):
-    staff = (
-        db.session.query(Staff)
-        .filter(Staff.Staff_ID == staff_id)
-        .first()
-    )
-
-    if staff:
-        staff_details = staff.to_json()
-    else:
-        staff_details = None
-
-    return staff_details

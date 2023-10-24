@@ -1,19 +1,7 @@
 <template>
   <div>
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
-      <div class="navbar-left">
-        <img src="../assets/logo.png" alt="Logo" class="logo" />
-        <a to="/roles" class="nav-link" style="color: white">Roles</a>
-        <a to="/candidates" class="nav-link" style="color: white">Candidates</a>
-        <a to="/view-staff-skills" class="nav-link" style="color: white"
-          >View Staff Skills</a
-        >
-      </div>
-      <div class="navbar-right">
-        <button class="btn btn-secondary" @click="clearUserSessionData()">
-          Logout
-        </button>
-      </div>
+      <!-- ... Navbar content ... -->
     </div>
     <div class="container">
       <div class="col-5 mb-4">
@@ -24,9 +12,33 @@
           </select>
         </div>
       </div>
-      <button v-if="selectedRole" class="btn btn-success mb-4">
-        Applicants ({{ applicationCount }})
-      </button>
+      <div class="row mb-4">
+        <!-- Column for the button -->
+        <div class="col-md-10">
+          <button v-if="selectedRole" class="btn btn-success">
+            Applicants ({{ applicationCount }})
+          </button>
+        </div>
+
+        <!-- Column for the "Order By" dropdown -->
+        <div class="col-md-2">
+          <div class="dropdown">
+            <button class="btn btn-primary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
+              Order By
+            </button>
+            <div class="dropdown-menu" aria-labelledby="skillsDropdown" @click.stop>
+              <!-- Checklist of skills with checkboxes -->
+              <div class="skills-scroll">
+                <label class="checkbox-label">
+                  <input type="checkbox" v-model="selectedOrderBy" value="SkillCount" class="checkbox-input" @click="showTable"/>
+                  <span class="checkbox-text"> Skill Count</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Table to display candidate information -->
       <table class="table table-bordered">
@@ -38,16 +50,22 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="candidate in sortedCandidates">
+          <!-- Use a computed property to sort candidates based on the selected order -->
+          <tr v-if="sortOrder == true" v-for="candidate in sortedCandidates" :key="candidate.Staff_FName" v-show="true">
             <td>{{ candidate.Staff_FName }}</td>
             <td>Applied {{ formatDate(candidate.Application_Date) }}</td>
             <td style="max-width: 300px">
-              <span
-                v-for="skill in candidate.Skills"
-                :key="skill.Skill_Name"
-                class="skill-box"
-              >
+              <span v-for="skill in candidate.Skills" :key="skill.Skill_Name" class="skill-box">
                 {{ skill.Skill_Name }}
+              </span>
+            </td>
+          </tr>
+          <tr v-if="sortCount == true" v-for="(application, id) in applicationsforCount" :key="id">
+            <td>{{ application.Staff_Name }}</td>
+            <td>{{ application.Application_Status }} {{ formatDate(application.Application_Date) }}</td>
+            <td style="max-width: 300px">
+              <span v-for="skill in application.Skill" :key="skill.Staff_ID" class="skill-box">
+                {{ skill }}
               </span>
             </td>
           </tr>
@@ -59,14 +77,20 @@
 
 <script>
 import axios from "axios"; // Import Axios library
+import Cookies from 'js-cookie'
 
 export default {
   data() {
     return {
       applications: [],
+      applicationsforCount: [],
       roles: [], // Array to store unique roles
       selectedRole: "", // Selected role from the dropdown
       applicationCount: 0, // Number of applications for the selected role
+      selectedOrderBy: false,
+      Listing_ID: 0,
+      sortOrder: true,
+      sortCount: false,
     };
   },
   computed: {
@@ -79,9 +103,10 @@ export default {
         .sort(
           (a, b) => new Date(a.Application_Date) - new Date(b.Application_Date)
         );
-    },
+    }
   },
   mounted() {
+    this.getUserSessionData();
     // Fetch applications from your API and populate roles array
     this.fetchApplications();
   },
@@ -110,6 +135,7 @@ export default {
           new Set(applications.map((app) => app.Role_Name))
         );
         applications.forEach((application) => {
+          this.Listing_ID = application.Listing_ID;
           this.fetchRoleListing(application.Listing_ID);
         });
 
@@ -128,6 +154,7 @@ export default {
           matchingApps.forEach((matchingApp) => {
             matchingApp.roleListing = response.data[0];
           });
+          console.log(this.getApplicantBySkillCount())
         }
       });
     },
@@ -148,6 +175,51 @@ export default {
       const options = { year: "numeric", month: "long", day: "numeric" };
       return new Date(dateString).toLocaleDateString(undefined, options);
     },
+    // Retrieve user session data from a cookie
+    getUserSessionData() {
+      const serializedUser = Cookies.get('userSession')
+      if (serializedUser) {
+        const data = JSON.parse(serializedUser);
+        this.staff_id = data.Staff_ID;
+        if (!(data.Access_Rights == 4)) {
+          this.$router.push("/staffnav");
+        }
+      } else {
+        this.$router.push("/");; // No user session data found
+      }
+    },
+    // Clear user session data from the cookie
+    clearUserSessionData() {
+      Cookies.remove('userSession');
+      this.$router.push("/");; // No user session data found
+    },
+
+    getApplicantBySkillCount() {
+      const apiUrl = `http://127.0.0.1:5000/api/getApplicantsBySkillMatch/${this.Listing_ID}`;
+
+      axios.get(apiUrl)
+        .then((response) => {
+          // Handle the response here
+          //this.candidates = response.data; // Update your data property with the fetched applicants
+          console.log(response.data);
+          const applicationsArray = Object.values(response.data);
+          this.applicationsforCount = applicationsArray.reverse();
+        })
+        .catch((error) => {
+          // Handle any error that may occur during the request
+          console.error('Error fetching data:', error);
+        });
+    },
+    showTable() {
+      if(this.selectedOrderBy) {
+        this.sortCount = false;
+        this.sortOrder = true;
+      }
+      else {
+        this.sortCount = true;
+        this.sortOrder = false;
+      }
+    }
   },
 };
 </script>
