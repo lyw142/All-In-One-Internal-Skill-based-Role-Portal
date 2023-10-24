@@ -80,7 +80,9 @@
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
-                <p>${{ (selectedRole.Salary / 12).toFixed(0) }} per month, Full time</p>
+                <div style="margin-bottom: 10px;">
+                  <strong>Hiring Manager: </strong>{{ selectedRole.Hiring_Manager }}
+                </div>
                 <button class="btn btn-secondary" @click="editRole()">
                   Edit role
                 </button>
@@ -93,7 +95,6 @@
                     {{ selectedRole.Role_Responsibilities }}
                   </p>
                 </div>
-
 
                 <!-- Role Requirements -->
                 <div v-if="selectedRole.Skills && selectedRole.Skills.length > 0" class="role-requirements">

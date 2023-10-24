@@ -15,8 +15,8 @@
           style="color: white;">Candidates</router-link>
         <router-link v-if="userPrivileges == 4" to="/view-staff-skills" class="nav-link" style="color: white;">View staff
           skills</router-link>
-        <router-link v-if="userPrivileges == 4" to="/staffnav" class="nav-link" style="color: white;">View all role
-          listings</router-link>
+        <router-link v-if="userPrivileges == 4" to="/staffnav" class="nav-link" style="color: white;">View
+          roles</router-link>
         <router-link v-if="userPrivileges == 4" to="/application-history" class="nav-link"
           style="color: white;">Application History</router-link>
 
