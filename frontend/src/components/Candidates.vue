@@ -1,7 +1,18 @@
 <template>
   <div>
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
-      <!-- ... Navbar content ... -->
+      <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
+        <div class="navbar-left">
+          <img src="../assets/logo.png" alt="Logo" class="logo" />
+          <a href="/hrnav" class="nav-link" style="color: white;">My role listing</a>
+          <a href="/candidates" class="nav-link" style="color: white;">Candidates</a>
+          <a href="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
+          <a href="/staffnav" class="nav-link" style="color: white;">View all role listing</a>
+        </div>
+        <div class="navbar-right">
+          <button class="btn btn-secondary" @click="clearUserSessionData()">Logout</button>
+        </div>
+      </div>
     </div>
     <div class="container">
       <div class="col-5 mb-4">
@@ -31,7 +42,8 @@
               <!-- Checklist of skills with checkboxes -->
               <div class="skills-scroll">
                 <label class="checkbox-label">
-                  <input type="checkbox" v-model="selectedOrderBy" value="SkillCount" class="checkbox-input" @click="showTable"/>
+                  <input type="checkbox" v-model="selectedOrderBy" value="SkillCount" class="checkbox-input"
+                    @click="showTable" />
                   <span class="checkbox-text"> Skill Count</span>
                 </label>
               </div>
@@ -211,7 +223,7 @@ export default {
         });
     },
     showTable() {
-      if(this.selectedOrderBy) {
+      if (this.selectedOrderBy) {
         this.sortCount = false;
         this.sortOrder = true;
       }

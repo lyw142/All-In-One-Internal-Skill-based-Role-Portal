@@ -3,9 +3,10 @@
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
       <div class="navbar-left">
         <img src="../assets/logo.png" alt="Logo" class="logo" />
-        <a href="/roles" class="nav-link" style="color: white;">View roles</a>
+        <a href="/hrnav" class="nav-link" style="color: white;">My role listing</a>
         <a href="/candidates" class="nav-link" style="color: white;">Candidates</a>
         <a href="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
+        <a href="/staffnav" class="nav-link" style="color: white;">View all role listing</a>
       </div>
       <div class="navbar-right">
         <button class="btn btn-secondary" @click="clearUserSessionData()">Logout</button>

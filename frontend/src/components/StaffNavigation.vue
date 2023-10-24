@@ -4,9 +4,16 @@
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
       <div class="navbar-left">
         <img src="../assets/logo.png" alt="Logo" class="logo" />
-        <router-link to="/roles" class="nav-link" style="color: white;">View roles</router-link>
-        <router-link to="/application-history" class="nav-link" style="color: white;">Application History</router-link>
-        <!-- New link -->
+        <span v-if="userPrivileges != 4">
+          <router-link to="/roles" class="nav-link" style="color: white;">View roles</router-link>
+          <router-link to="/application-history" class="nav-link" style="color: white;">Application History</router-link>
+          <!-- New link -->
+        </span>
+        <span v-else>
+          <a href="/hrnav" class="nav-link" style="color: white;">My role listing</a>
+          <a href="/candidates" class="nav-link" style="color: white;">Candidates</a>
+          <a href="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
+        </span>
       </div>
       <div class="navbar-right">
         <button class="btn btn-secondary" @click="clearUserSessionData()">Logout</button>
@@ -181,6 +188,7 @@ export default {
   data() {
     return {
       searchQuery: "",
+      userPrivileges: 2,
       roles: [],
       selectedRole: {},
       isCardClicked: false,
@@ -390,10 +398,11 @@ export default {
 
     // Retrieve user session data from a cookie
     getUserSessionData() {
-      const serializedUser = Cookies.get('userSession');
+      const serializedUser = Cookies.get('userSession')
       if (serializedUser) {
-        const userData = JSON.parse(serializedUser);
-        this.staff_id = userData.Staff_ID;
+        const data = JSON.parse(serializedUser);
+        this.staff_id = data.Staff_ID;
+        this.userPrivileges = data.Access_Rights;
       } else {
         this.$router.push("/");; // No user session data found
       }
