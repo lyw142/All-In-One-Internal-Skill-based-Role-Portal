@@ -4,16 +4,17 @@
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
       <div class="navbar-left">
         <img src="../assets/logo.png" alt="Logo" class="logo" />
-        <span v-if="userPrivileges != 4">
-          <router-link to="/roles" class="nav-link" style="color: white;">View roles</router-link>
-          <router-link to="/application-history" class="nav-link" style="color: white;">Application History</router-link>
-          <!-- New link -->
-        </span>
-        <span v-else>
-          <a href="/hrnav" class="nav-link" style="color: white;">My role listing</a>
-          <a href="/candidates" class="nav-link" style="color: white;">Candidates</a>
-          <a href="/view-staff-skills" class="nav-link" style="color: white;">View Staff Skills</a>
-        </span>
+        <router-link v-if="userPrivileges != 4" to="/staffnav" class="nav-link" style="color: white;">View
+          roles</router-link>
+        <router-link v-if="userPrivileges != 4" to="/application-history" class="nav-link"
+          style="color: white;">Application History</router-link>
+        <!-- New link -->
+
+        <a v-if="userPrivileges == 4" href="/hrnav" class="nav-link" style="color: white;">My role listing</a>
+        <a v-if="userPrivileges == 4" href="/candidates" class="nav-link" style="color: white;">Candidates</a>
+        <a v-if="userPrivileges == 4" href="/view-staff-skills" class="nav-link" style="color: white;">View Staff
+          Skills</a>
+
       </div>
       <div class="navbar-right">
         <button class="btn btn-secondary" @click="clearUserSessionData()">Logout</button>
@@ -436,11 +437,12 @@ export default {
 
 <style scoped>
 /* Existing navbar styles */
+
 .navbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #333;
+  color: #fff;
   padding: 10px 20px;
 }
 
@@ -458,12 +460,8 @@ export default {
 .nav-link {
   text-decoration: none;
   margin-right: 20px;
-  color: #333;
+  color: #fff;
   font-size: 16px;
-}
-
-.nav-link:last-child {
-  margin-right: 0;
 }
 
 /* New content styles */
