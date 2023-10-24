@@ -80,7 +80,7 @@
             <div class="form-group">
                 <div class="row">
                     <div class="col-6">
-                        <label for="minSalary">Salary ($)</label>
+                        <label for="minSalary">Salary ($ per year)</label>
                         <input type="number" class="form-control" id="roleSalary"
                             @input="Salary = $event.target.value.toString()" v-model="this.Salary" required
                             pattern="[0-9]{1,11}" title="(Use numbers only)" />
