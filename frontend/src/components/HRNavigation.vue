@@ -105,7 +105,8 @@
                   </ol>
                 </div>
                 <div v-else>
-                  <strong>No requirements for this role</strong>
+                  <strong>Role requirements</strong>
+                  <p>No requirements for this role</p>
                 </div>
 
               </div>
