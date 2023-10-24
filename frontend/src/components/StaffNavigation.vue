@@ -9,11 +9,17 @@
         <router-link v-if="userPrivileges != 4" to="/application-history" class="nav-link"
           style="color: white;">Application History</router-link>
         <!-- New link -->
+        <router-link v-if="userPrivileges == 4" to="/hrnav" class="nav-link" style="color: white;">Role listing
+          management</router-link>
+        <router-link v-if="userPrivileges == 4" to="/candidates" class="nav-link"
+          style="color: white;">Candidates</router-link>
+        <router-link v-if="userPrivileges == 4" to="/view-staff-skills" class="nav-link" style="color: white;">View staff
+          skills</router-link>
+        <router-link v-if="userPrivileges == 4" to="/staffnav" class="nav-link" style="color: white;">View all role
+          listings</router-link>
+        <router-link v-if="userPrivileges == 4" to="/application-history" class="nav-link"
+          style="color: white;">Application History</router-link>
 
-        <a v-if="userPrivileges == 4" href="/hrnav" class="nav-link" style="color: white;">My role listing</a>
-        <a v-if="userPrivileges == 4" href="/candidates" class="nav-link" style="color: white;">Candidates</a>
-        <a v-if="userPrivileges == 4" href="/view-staff-skills" class="nav-link" style="color: white;">View Staff
-          Skills</a>
 
       </div>
       <div class="navbar-right">
@@ -101,7 +107,9 @@
             <div>
               <div class="divider">
                 <h3 class="card-title">{{ selectedRole.Role_Name }}</h3>
-                <p>${{ selectedRole.Salary }} a year, Full time</p>
+                <div>
+                  <strong>Hiring Manager: </strong>{{ selectedRole.Hiring_Manager }}
+                </div>
               </div>
               <div class="divider">
                 <h3 class="card-title">Role description</h3>
@@ -139,9 +147,9 @@
                       {{ line }}
                     </li>
                   </ul>
-                  <span v-else>
+                  <div v-else>
                     No prior skills required
-                  </span>
+                  </div>
                 </div>
               </div>
               <div v-if="selectedRole.Skills.length > 0" class="skills">
@@ -160,6 +168,9 @@
                 }">
                   {{ skill.trim() }}
                 </span>
+              </div>
+              <div v-else class="skills">
+                <strong>No skills required</strong>
               </div>
               <div>
                 <button class="btn btn-secondary" style="margin: 10px;" @click="showConfirmationModal(selectedRole)"
