@@ -81,12 +81,12 @@ def createListing():
                 # Retrieve the new Skill_ID
                 skill_id = Skill.query.filter_by(Skill_Name=skill_name).first().Skill_ID
 
-                new_role_skill = RoleSkillMapping(
+            new_role_skill = RoleSkillMapping(
                     Skill_ID=skill_id,
                     Role_ID=new_role.Role_ID
-                )
-                db.session.add(new_role_skill)
-                db.session.commit()
+            )
+            db.session.add(new_role_skill)
+            db.session.commit()
 
         # Create a new RoleListing entryc
         role_listing = RoleListing(
