@@ -610,6 +610,7 @@ def getApplicantsBySkillMatch(listing_id):
 
     return sorted_json
 
+
 def get_staff_skills(staff_id):
     skills = (
         db.session.query(Staff_Skill.Skill_ID, Skill.Skill_Name)
@@ -645,3 +646,37 @@ def get_staff_information_above_access_3():
 
     staff_list = [staff.get_staff_details() for staff in staff_above_access_3]
     return jsonify(staff_list), 200
+
+@api.route("/getAllStaffDetails", methods=["GET"])
+def getAllStaffDetails():
+    try:
+        # Project specific columns
+        staff_details = (
+            db.session.query(
+                Staff.Staff_ID,
+                Staff.Staff_FName,
+                Staff.Staff_LName,
+                Staff.Email,
+                Staff.Country,
+                Staff.Dept,
+                Staff.Role_ID
+            )
+            .all()
+        )
+        staff_data = [
+            {
+                "Staff_ID": staff.Staff_ID,
+                "Staff_FName": staff.Staff_FName,
+                "Staff_LName": staff.Staff_LName,
+                "Email": staff.Email,
+                "Country": staff.Country,
+                "Dept": staff.Dept,
+                "Role_ID": staff.Role_ID,
+            }
+            for staff in staff_details
+        ]
+
+        return jsonify(staff_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
