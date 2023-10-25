@@ -13,7 +13,6 @@
         </div>
     </div>
     <!-- form starts here -->
-
     <div class="container mt-4">
 
         <div style="display: flex; align-items: center;margin-bottom: 20px;">
@@ -22,24 +21,30 @@
             </button>
             <h1 style="margin-bottom: 0; margin-left: 10px;">Create a new role listing</h1>
         </div>
-
+        {{ this.hiringmanagers[0] }}
         <form @submit.prevent="formconfirmation">
 
             <!-- Role Name -->
             <div class="row">
-                <div class="form-group mb-3 col-5">
+                <div class="form-group mb-3 col-4">
                     <label for="roleName">Role Name</label>
                     <input type="text" class="form-control" id="roleName" v-model="Role_Name" required maxlength="20"
                         pattern="[A-Za-z\s]+" title="(Use alphabets only)" />
                 </div>
                 <!-- Hiring Manager -->
-                <div class="form-group mb-3 col-5">
-                    <label for="roleHiringManager">Hiring Manager</label>
-                    <input type="text" class="form-control" id="roleHiringManager" v-model="Hiring_Manager" required
-                        maxlength="20" pattern="[0-9]{1,11}" title="(Use numbers only)" />
+                <div class="form-group mb-3 col-4">
+                    <label for="rolehiringmanager">Hiring Manager</label>
+                    <select class="form-select" v-model="Hiring_Manager" style="margin-left: 10px;" id="rolehiringmanager"
+                        required>
+                        <option value="" disabled>Select a Hiring Manager</option>
+                        <option v-for="person in this.hiringmanagers" :value="person.Staff_ID">{{
+                            person.Staff_FName }} {{ person.Staff_LName }}
+                        </option>
+                    </select>
                 </div>
+
                 <!-- Department -->
-                <div class="form-group col-2">
+                <div class="form-group col-4">
                     <label for="department">Department</label>
                     <input type="text" class="form-control" id="department" v-model="Dept" required maxlength="50"
                         pattern="[A-Za-z\s]+" title="(Use alphabets only)" />
@@ -81,7 +86,8 @@
             <div class="row">
                 <div class="form-group mb-3 col-6">
                     <label for="roleSkills">Skills required</label>
-                    <select v-model="selectedSkill" @change="addSkill" style="margin-left: 10px;" id="roleSkills">
+                    <select class="form-select" v-model="selectedSkill" @change="addSkill" style="margin-left: 10px;"
+                        id="roleSkills">
                         <option value="" disabled>Select a skill</option>
                         <option v-for="skill in this.availableSkills" :key="skill.Skill_ID" :value="skill.Skill_Name">{{
                             skill.Skill_Name }}
@@ -158,6 +164,7 @@ export default {
             showConfirmModal: false,
             showSuccessModal: false,
             invalidcolor: "",
+            hiringmanagers: null,
 
             // for form submission
             Role_Name: "",
@@ -254,6 +261,8 @@ export default {
     mounted() {
         this.getUserSessionData();
         axios.get('http://127.0.0.1:5000/api/skills').then(response => this.availableSkills = response.data)
+        axios.get('http://127.0.0.1:5000/api/getstaffwithaccess>3').then(response => this.hiringmanagers = response.data)
+
     }
 };
 </script>
