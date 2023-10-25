@@ -67,7 +67,7 @@
             <div class="modal-container" v-if="showSuccessModal">
                 <div class="confirmation-modal">
                     <p>Role listing successfully created!</p>
-                    <button class="btn btn-primary" @click="cancel">Return</button>
+                    <button class="btn btn-primary" @click="returntodashboard">Return</button>
                 </div>
             </div>
 
@@ -81,7 +81,7 @@
             <div class="row">
                 <div class="form-group mb-3 col-6">
                     <label for="roleSkills">Skills required</label>
-                    <select v-model="selectedSkill" @change="addSkill" style="margin-left: 10px;">
+                    <select v-model="selectedSkill" @change="addSkill" style="margin-left: 10px;" id="roleSkills">
                         <option value="" disabled>Select a skill</option>
                         <option v-for="skill in this.availableSkills" :key="skill.Skill_ID" :value="skill.Skill_Name">{{
                             skill.Skill_Name }}
@@ -98,7 +98,7 @@
                     </ul>
                 </div>
                 <div class="form-group col-6">
-                    <label for="department">Country</label>
+                    <label for="country">Country</label>
                     <input type="text" class="form-control" id="country" v-model="this.Country" required maxlength="20"
                         pattern="[A-Za-z\s]+" title="(Use alphabets only)" />
                 </div>
@@ -109,7 +109,7 @@
             <div class="form-group mb-3">
                 <div class="row">
                     <div class="col-6">
-                        <label for="minSalary">Salary ($ per year)</label>
+                        <label for="roleSalary">Salary ($ per year)</label>
                         <input type="number" class="form-control" id="roleSalary" :value="Salary"
                             @input="Salary = $event.target.value.toString()" required pattern="[0-9]{1,11}"
                             title="(Use numbers only)" />
@@ -245,6 +245,9 @@ export default {
         },
         cancelcreation() {
             this.showConfirmModal = false;
+        },
+        returntodashboard() {
+            this.$router.push("/hrnav");
         }
 
     },
