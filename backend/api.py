@@ -538,7 +538,6 @@ def searchStaffBySkills(list_of_skill_id):
     # Return the JSON response
     return jsonify(staff_json)
 
-
 @api.route("/getApplicationHistory/<int:staffID>", methods=["GET"])
 def get_applications_history(staffID):
     try:
@@ -550,7 +549,7 @@ def get_applications_history(staffID):
         application_data = []
 
         for application in applications:
-            app_data = application.json()
+            app_data = application.get_all_application_details()  # Use the get_all_application_details method
 
             role_listing = RoleListing.query.get(app_data['Listing_ID'])
             if role_listing:
