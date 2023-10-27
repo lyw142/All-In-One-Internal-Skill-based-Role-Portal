@@ -34,7 +34,6 @@ def createListing():
             Deadline=data['Deadline'],
             Date_Posted=data['Date_Posted'],
             Country=data['Country'],
-            Salary=data['Salary'],
             Hiring_Manager=data['Hiring_Manager'],
             Role_ID=existing_role.Role_ID  # Use the existing role's ID
         )
@@ -93,7 +92,6 @@ def createListing():
             Deadline=data['Deadline'],
             Date_Posted=data['Date_Posted'],
             Country = data['Country'],
-            Salary = data['Salary'],
             Hiring_Manager=data['Hiring_Manager'],
             Role_ID=new_role.Role_ID
         )
@@ -133,7 +131,6 @@ def findAllOpenJobListings():
             "Role_Name": role_name,
             "Role_Responsibilities": role_responsibilities,
             "Role_Requirements": result2,
-            "Salary": role_listing.Salary,
             "Skills": result1
         }
         role_listings_json.append(role_listing_data)
@@ -188,7 +185,6 @@ def getRoleListing(listing_id):
                 "Role_Name": role_name,
                 "Role_Responsibilities": role_responsibilities,
                 "Role_Requirements": result2,
-                "Salary": role_listing.Salary,
                 "Skills": result1,
                 "Country": role_listing.Country,
             }
@@ -213,7 +209,6 @@ def updateRoleListing(listing_id):
 
         role_listing.Deadline = data["Deadline"]
         role_listing.Country = data["Country"]
-        role_listing.Salary = data["Salary"]
         skill_ids = data["AddedSkills"]
         remove_skill = data["RemovedSkills"] # array of skills id
 
@@ -271,7 +266,6 @@ def findClosedJobListings():
             "Role_Name": role_name,
             "Role_Responsibilities": role_responsibilities,
             "Role_Requirements": result2,
-            "Salary": role_listing.Salary,
             "Skills": result1
         }
         role_listings_json.append(role_listing_data)
@@ -316,7 +310,6 @@ def filterRoleListingBySkill(list_of_skill_id):
             RoleListing.Deadline,
             RoleListing.Date_Posted,
             RoleListing.Role_ID,
-            RoleListing.Salary,
             db.func.concat(Staff.Staff_FName, " ", Staff.Staff_LName).label("Hiring_Manager_Name"),
             Role.Role_Name,
             Role.Role_Responsibilities
@@ -332,7 +325,7 @@ def filterRoleListingBySkill(list_of_skill_id):
     # Convert the query results into JSON format
     role_listings_json = []
 
-    for role_listing, deadline, date_posted, role_id, salary, hiring_manager_name, role_name, role_responsibilites in role_listings:
+    for role_listing, deadline, date_posted, role_id, hiring_manager_name, role_name, role_responsibilites in role_listings:
         result1, result2 = retrieveAllSkillsFromRoleListing(role_id)
         role_listing_data = {
             "Listing_ID": role_listing,
@@ -342,7 +335,6 @@ def filterRoleListingBySkill(list_of_skill_id):
             "Role_Name": role_name,
             "Role_Responsibilities": role_responsibilites,
             "Role_Requirements" : result2,
-            "Salary": salary,
             "Skills": result1
         }
         role_listings_json.append(role_listing_data)
@@ -554,7 +546,6 @@ def get_applications_history(staffID):
             role_listing = RoleListing.query.get(app_data['Listing_ID'])
             if role_listing:
                 app_data['Deadline'] = role_listing.Deadline
-                app_data['Salary'] = role_listing.Salary
                 app_data['Hiring_Manager'] = role_listing.Hiring_Manager
                 app_data['Role_ID'] = role_listing.Role_ID
                 app_data['Country'] = role_listing.Country
