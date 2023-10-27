@@ -36,13 +36,12 @@ class Staff(db.Model):
     Staff_LName = db.Column(db.String(100), nullable=False)
     Email = db.Column(db.String(100), nullable=False)
     Country = db.Column(db.String(100), nullable=False)
-    Dept = db.Column(db.String(100), nullable=False)
+    Dept = db.Column(db.String(100))
     Password = db.Column(db.String(100), nullable=False)
-    Role_ID = db.Column(db.Integer, db.ForeignKey('role.Role_ID'), nullable=False)
+    Role_ID = db.Column(db.Integer, db.ForeignKey('role.Role_ID'))
     Access_Rights = db.Column(db.Integer, db.ForeignKey('access_control.Access_ID'), nullable=False)
 
     skills = db.relationship('Staff_Skill', backref='staff')
-    
     
     def __init__(self, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights): 
         self.Staff_FName = Staff_FName
@@ -65,6 +64,91 @@ class Staff(db.Model):
             "Password": self.Password,
             "Role_ID": self.Role_ID,
             "Access_Rights": self.Access_Rights
+        }
+    
+## MANAGER ##
+class Manager(Staff):
+    __tablename__ = 'Manager'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Specify InnoDB engine for this table
+
+    Staff_ID = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'), primary_key=True)
+    Responsible_Team = db.Column(db.String(100), nullable=False)
+    Reporting_Manager = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID'))
+
+    #Reporting_Manager = db.relationship('Staff', foreign_keys=[Reporting_Manager], backref='reporting_managers', remote_side=[Staff_ID])
+
+    def __init__(self, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights, ResponsibleTeam, Reporting_Manager): 
+        super().__init__(Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights)
+        self.ResponsibleTeam = ResponsibleTeam
+        self.Reporting_Manager = Reporting_Manager
+        self.staff_id = Staff.Staff_ID  # Set the staff_id column to match Staff's Staff_ID
+    
+    __mapper_args__ = {
+        'polymorphic_identity': 'manager',
+        "inherit_condition": Staff_ID == Staff.Staff_ID
+    }
+
+    def get_manager_details(self):
+        return {
+            "Staff_ID": self.Staff_ID,
+            "Responsible_Team": self.ResponsibleTeam,
+            "Reporting_Manager": self.Reporting_Manager,
+        }
+
+
+## Director ##
+class Director(Staff):
+    __tablename__ = 'Director'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Specify InnoDB engine for this table
+
+    Staff_ID = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'), primary_key=True)
+    Responsible_Department = db.Column(db.String(100), nullable=False)
+    Reporting_Manager = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'))
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'director',
+        "inherit_condition": Staff_ID == Staff.Staff_ID
+    }
+    
+    #Reporting_Manager = db.relationship('Staff', foreign_keys=[Reporting_Manager], backref='reporting_managers', remote_side=[Staff_ID])
+
+    def __init__(self, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights, ResponsibelDept, Reporting_Manager): 
+        super().__init__(Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights)
+        self.ResponsibleDept = ResponsibelDept
+        self.Reporting_Manager = Reporting_Manager
+        self.staff_id = Staff.Staff_ID  # Set the staff_id column to match Staff's Staff_ID
+
+    def get_director_details(self):
+        return {
+            "Staff_ID": self.Staff_ID,
+            "Responsible_Department": self.Responsible_Department,
+            "Reporting_Manager": self.Reporting_Manager,
+        }
+
+## Normal Staff ##
+class NormalStaff(Staff):
+    __tablename__ = 'NormalStaff'
+    __table_args__ = {'mysql_engine': 'InnoDB'}  # Specify InnoDB engine for this table
+
+    Staff_ID = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'), primary_key=True)
+    Reporting_Manager = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'))
+
+    __mapper_args__ = {
+        'polymorphic_identity': 'normal_staff',
+        "inherit_condition": Staff_ID == Staff.Staff_ID
+    }
+
+    #Reporting_Manager = db.relationship('Staff', foreign_keys=[Reporting_Manager], backref='reporting_managers', remote_side=[Staff_ID])
+
+    def __init__(self, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights, Reporting_Manager): 
+        super().__init__(Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights)
+        self.Reporting_Manager = Reporting_Manager
+        self.staff_id = Staff.Staff_ID  # Set the staff_id column to match Staff's Staff_ID
+
+    def get_normal_staff_details(self):
+        return {
+            "Staff_ID": self.Staff_ID,
+            "Reporting_Manager": self.Reporting_Manager,
         }
 
 ## STAFF_SKILL ##
@@ -207,7 +291,6 @@ class RoleListing(db.Model):
     Deadline = db.Column(db.Date, nullable=False)
     Date_Posted = db.Column(db.Date, nullable=False)
     Country = db.Column(db.String(100), nullable=False)
-    Salary = db.Column(db.Integer, nullable=False)
     Hiring_Manager = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'), nullable=False)
     Role_ID = db.Column(db.Integer, db.ForeignKey('role.Role_ID', ondelete='CASCADE'), nullable=False)
 
@@ -215,11 +298,10 @@ class RoleListing(db.Model):
     #staff = db.relationship('Staff', backref='applications')
     #role = db.relationship("Role", back_populates="role_listing")
     
-    def __init__(self, Deadline, Date_Posted, Country, Salary, Hiring_Manager, Role_ID):
+    def __init__(self, Deadline, Date_Posted, Country, Hiring_Manager, Role_ID):
         self.Deadline = Deadline
         self.Date_Posted = Date_Posted
         self.Country = Country
-        self.Salary = Salary
         self.Hiring_Manager = Hiring_Manager
         self.Role_ID = Role_ID
 
@@ -229,7 +311,6 @@ class RoleListing(db.Model):
             "Deadline": self.Deadline, 
             "Date_Posted": self.Date_Posted,
             "Country" : self.Country,
-            "Salary" : self.Salary,
             "Hiring_Manager": self.Hiring_Manager,
             "Role_ID": self.Role_ID
         }
