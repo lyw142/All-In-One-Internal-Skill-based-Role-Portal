@@ -21,7 +21,7 @@
             </button>
             <h1 style="margin-bottom: 0; margin-left: 10px;">Create a new role listing</h1>
         </div>
-        {{ this.hiringmanagers[0] }}
+        <!--{{ this.hiringmanagers[0] }}-->
         <form @submit.prevent="formconfirmation">
 
             <!-- Role Name -->
@@ -54,7 +54,7 @@
             <!-- Role Responsibilities -->
             <div class="form-group mb-3">
                 <label for="roleResponsibilities">Role Responsibilities</label>
-                <textarea class="form-control" id="roleResponsibilities" v-model="Role_Responsibilities" required
+                <textarea class="form-control" id="roleResponsibilities" v-model="Role_Responsibilities"
                     maxlength="1000" pattern="[A-Za-z\s]+" title="(Use alphabets only)" rows="3"></textarea>
             </div>
 
@@ -164,7 +164,7 @@ export default {
             showConfirmModal: false,
             showSuccessModal: false,
             invalidcolor: "",
-            hiringmanagers: null,
+            hiringmanagers: [],
 
             // for form submission
             Role_Name: "",

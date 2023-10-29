@@ -342,32 +342,6 @@ def filterRoleListingBySkill(list_of_skill_id):
     # Return the JSON response
     return jsonify(role_listings_json)
 
-# @api.route("/filterRoleListingBySkills", methods=["POST"])
-# def filter_role_listing_by_skills():
-#     # Get the selected skills from the request
-#     selected_skills = request.json.get("selectedSkills", [])
-
-#     # Filter role listings based on selected skills
-#     filtered_listings = [listing for listing in role_listings if all(skill in listing["Skills"] for skill in selected_skills)]
-
-#     # Convert the filtered listings into a JSON format
-#     role_listings_json = []
-#     for listing in filtered_listings:
-#         role_listing_data = {
-#             "Listing_ID": listing["Listing_ID"],
-#             "Deadline": listing["Deadline"].strftime("%Y-%m-%d"),
-#             "Date_Posted": listing["Date_Posted"].strftime("%Y-%m-%d"),
-#             "Hiring_Manager": listing["Hiring_Manager"],
-#             "Role_Name": listing["Role_Name"],
-#             "Role_Responsibilities": listing["Role_Responsibilities"],
-#             "Role_Requirements": listing["Role_Requirements"],
-#             "Salary": listing["Salary"],
-#             "Skills": listing["Skills"],
-#         }
-#         role_listings_json.append(role_listing_data)
-
-#     return jsonify(role_listings_json)
-
 @api.route("/getStaffSkills/<int:staff_id>")
 def getStaffSkills(staff_id):
     try:
@@ -561,6 +535,38 @@ def get_applications_history(staffID):
         return jsonify(application_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+def getRoleListingByID(listing_id):
+        # Perform joins to retrieve role listings with Hiring Manager and Role Name for the specified Listing_ID
+        query = (
+            db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name, Role.Role_Responsibilities)
+            .join(Staff, RoleListing.Hiring_Manager == Staff.Staff_ID)
+            .join(Role, RoleListing.Role_ID == Role.Role_ID)
+            .filter(RoleListing.Listing_ID == listing_id)  # Filter by the specified Listing_ID
+            .order_by(desc(RoleListing.Date_Posted))
+        )
+
+        # Execute the query and retrieve the results
+        results = query.all()
+
+        # Convert the results into a JSON format
+        role_listings_json = []
+        for role_listing, hiring_manager_fname, hiring_manager_lname, role_name, role_responsibilities in results:
+            result1, result2 = retrieveAllSkillsFromRoleListing(role_listing.Role_ID)
+            role_listing_data = {
+                "Listing_ID": role_listing.Listing_ID,
+                "Deadline": str(role_listing.Deadline),
+                "Date_Posted": str(role_listing.Date_Posted),
+                "Hiring_Manager": hiring_manager_fname + " " + hiring_manager_lname,
+                "Role_Name": role_name,
+                "Role_Responsibilities": role_responsibilities,
+                "Role_Requirements": result2,
+                "Skills": result1,
+                "Country": role_listing.Country,
+            }
+            role_listings_json.append(role_listing_data)
+
+        return role_listings_json
     
 @api.route("/getApplicantsBySkillMatch/<int:listing_id>")
 def getApplicantsBySkillMatch(listing_id):
@@ -577,21 +583,27 @@ def getApplicantsBySkillMatch(listing_id):
 
     detailsdict = {}
 
-    if(results) :
-        for app,staff in results:
-            staffSkill = get_staff_skills(app.Staff_ID),
+    if results:
+        for app, staff in results:
+            staff_skills = get_staff_skills(app.Staff_ID)  # Retrieve skills for the staff member
+
             # Calculate the match score
-            match_score = sum(1 for skill_name in staffSkill[0] if skill_name in requiredSkill)
+            match_score = sum(1 for skill_id, skill_name in staff_skills if skill_name in requiredSkill)
+
             staff_data = {
                 "Application_ID": app.Application_ID,
                 "Application_Date": str(app.Application_Date),
                 "Application_Status": app.Application_Status,
-                "Staff_ID" : staff.Staff_ID,
-                "Staff_Name" : staff.Staff_FName + " " +staff.Staff_LName,
-                "Skill" : staffSkill[0],
-                "Score" : match_score
+                "Staff_ID": staff.Staff_ID,
+                "Staff_Current_Role": get_role_details(staff.Role_ID).Role_Name,
+                "Staff_FName": staff.Staff_FName,
+                "Staff_LName": staff.Staff_LName,
+                "Skills": [{"Skill_ID": skill_id, "Skill_Name": skill_name} for skill_id, skill_name in staff_skills],
+                "Score": match_score,
+                "roleListing": getRoleListingByID(listing_id)[0]
             }
             detailsdict[app.Application_ID] = staff_data
+
 
     # Sort the dictionary by the "Score" values in descending order
     sorted_data = dict(sorted(detailsdict.items(), key=lambda x: x[1]["Score"], reverse=True))
@@ -601,7 +613,6 @@ def getApplicantsBySkillMatch(listing_id):
 
     return sorted_json
 
-
 def get_staff_skills(staff_id):
     skills = (
         db.session.query(Staff_Skill.Skill_ID, Skill.Skill_Name)
@@ -610,7 +621,12 @@ def get_staff_skills(staff_id):
         .all()
     )
 
-    return [skill_name for skill,skill_name in skills]
+    return [(skill,skill_name) for skill,skill_name in skills]
+
+def get_role_details(role_id):
+    role = Role.query.get(role_id)
+
+    return role
 
 def get_required_skills_for_listing(listing_id):
     results = (

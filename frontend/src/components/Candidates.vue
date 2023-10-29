@@ -3,27 +3,11 @@
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
       <div class="navbar-left">
         <img src="../assets/logo.png" alt="Logo" class="logo" />
-        <router-link to="/hrnav" class="nav-link" style="color: white"
-          >Role listing management</router-link
-        >
-        <router-link to="/candidates" class="nav-link" style="color: white"
-          >Candidates</router-link
-        >
-        <router-link
-          to="/view-staff-skills"
-          class="nav-link"
-          style="color: white"
-          >View staff skills</router-link
-        >
-        <router-link to="/staffnav" class="nav-link" style="color: white"
-          >View roles</router-link
-        >
-        <router-link
-          to="/application-history"
-          class="nav-link"
-          style="color: white"
-          >Application History</router-link
-        >
+        <router-link to="/hrnav" class="nav-link" style="color: white">Role listing management</router-link>
+        <router-link to="/candidates" class="nav-link" style="color: white">Candidates</router-link>
+        <router-link to="/view-staff-skills" class="nav-link" style="color: white">View staff skills</router-link>
+        <router-link to="/staffnav" class="nav-link" style="color: white">View roles</router-link>
+        <router-link to="/application-history" class="nav-link" style="color: white">Application History</router-link>
       </div>
       <div class="navbar-right">
         <button class="btn btn-secondary" @click="clearUserSessionData()">
@@ -53,31 +37,16 @@
         <!-- Column for the "Order By" dropdown -->
         <div class="col-md-2">
           <div class="dropdown">
-            <button
-              class="btn btn-primary dropdown-toggle"
-              type="button"
-              id="skillsDropdown"
-              data-bs-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
+            <button class="btn btn-primary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
               Order By
             </button>
-            <div
-              class="dropdown-menu"
-              aria-labelledby="skillsDropdown"
-              @click.stop
-            >
+            <div class="dropdown-menu" aria-labelledby="skillsDropdown" @click.stop>
               <!-- Checklist of skills with checkboxes -->
               <div class="skills-scroll">
                 <label class="checkbox-label">
-                  <input
-                    type="checkbox"
-                    v-model="selectedOrderBy"
-                    value="SkillCount"
-                    class="checkbox-input"
-                    @click="showTable"
-                  />
+                  <input type="checkbox" v-model="selectedOrderBy" value="SkillCount" class="checkbox-input"
+                    @click="showTable" />
                   <span class="checkbox-text"> Skill Count</span>
                 </label>
               </div>
@@ -87,34 +56,16 @@
         <!-- skill filter  -->
         <div class="col-md-2">
           <div class="dropdown">
-            <button
-              class="btn btn-secondary dropdown-toggle"
-              type="button"
-              id="skillsDropdown"
-              data-bs-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
               Filter by Skills
             </button>
-            <div
-              class="dropdown-menu"
-              aria-labelledby="skillsDropdown"
-              @click.stop
-            >
+            <div class="dropdown-menu" aria-labelledby="skillsDropdown" @click.stop>
               <!-- Checklist of skills with checkboxes -->
               <div class="skills-scroll">
-                <div
-                  v-for="(skill, index) in availableSkills"
-                  :key="skill.Skill_ID"
-                >
+                <div v-for="(skill, index) in availableSkills" :key="skill.Skill_ID">
                   <label class="checkbox-label">
-                    <input
-                      type="checkbox"
-                      v-model="selectedSkills"
-                      :value="skill.Skill_Name"
-                      class="checkbox-input"
-                    />
+                    <input type="checkbox" v-model="selectedSkills" :value="skill.Skill_Name" class="checkbox-input" />
                     <span class="checkbox-text">{{ skill.Skill_Name }}</span>
                   </label>
                 </div>
@@ -134,63 +85,38 @@
         </thead>
         <tbody v-if="this.selectedSkills.length == 0">
           <!-- Use a computed property to sort candidates based on the selected order -->
-          <tr
-            v-if="sortOrder == true"
-            v-for="candidate in sortedCandidates"
-            :key="candidate.Staff_FName"
-            v-show="true"
-          >
+          <tr v-if="sortOrder == true" v-for="candidate in sortedCandidates" :key="candidate.Staff_FName" v-show="true">
             <td class="clickable" @click="openModal(candidate)">
               {{ candidate.Staff_FName }} {{ candidate.Staff_LName }}
             </td>
-            <td>Applied {{ formatDate(candidate.Application_Date) }}</td>
+            <td>{{ candidate.Application_Status }} {{ formatDate(candidate.Application_Date) }}</td>
             <td style="max-width: 300px">
-              <span
-                v-for="skill in candidate.Skills"
-                :key="skill.Skill_Name"
-                class="skill-box"
-              >
+              <span v-for="skill in candidate.Skills" :key="skill.Skill_Name" class="skill-box">
                 {{ skill.Skill_Name }}
               </span>
             </td>
           </tr>
-          <tr
-            v-if="sortCount == true"
-            v-for="(application, id) in applicationsforCount"
-            :key="id"
-          >
-            <td>{{ application.Staff_Name }}</td>
+          <tr v-if="sortCount == true" v-for="(application, id) in applicationsforCount" :key="application.Staff_FName">
+            <td class="clickable" @click="openModal(application)">{{ application.Staff_FName }} {{ application.Staff_LName }}</td>
             <td>
               {{ application.Application_Status }}
               {{ formatDate(application.Application_Date) }}
             </td>
             <td style="max-width: 300px">
-              <span
-                v-for="skill in application.Skill"
-                :key="skill.Staff_ID"
-                class="skill-box"
-              >
-                {{ skill }}
+              <span v-for="skill in application.Skills" :key="skill.Staff_ID" class="skill-box">
+                {{ skill.Skill_Name }}
               </span>
             </td>
           </tr>
         </tbody>
         <tbody v-else>
-          <tr
-            v-for="candidate in filteredCandidates"
-            :key="candidate.Staff_FName"
-            v-show="true"
-          >
+          <tr v-for="candidate in filteredCandidates" :key="candidate.Staff_FName" v-show="true">
             <td class="clickable" @click="openModal(candidate)">
               {{ candidate.Staff_FName }} {{ candidate.Staff_LName }}
             </td>
-            <td>Applied {{ formatDate(candidate.Application_Date) }}</td>
+            <td>{{ candidate.Application_Status }} {{ formatDate(candidate.Application_Date) }}</td>
             <td style="max-width: 300px">
-              <span
-                v-for="skill in candidate.Skills"
-                :key="skill.Skill_Name"
-                class="skill-box"
-              >
+              <span v-for="skill in candidate.Skills" :key="skill.Skill_Name" class="skill-box">
                 {{ skill.Skill_Name }}
               </span>
             </td>
@@ -216,12 +142,8 @@
       </p>
       <p>
         <strong>Dynamic Match to Skills:</strong>
-        <span
-          v-for="skill in selectedCandidate.roleListing.Skills"
-          :key="skill"
-          class="skill-box"
-          :class="{ disabled: !checkMatch(selectedCandidate, skill) }"
-        >
+        <span v-for="skill in selectedCandidate.roleListing.Skills" :key="skill" class="skill-box"
+          :class="{ disabled: !checkMatch(selectedCandidate, skill) }">
           {{ checkSkillMatch(selectedCandidate, skill) }} {{ skill }}
         </span>
       </p>
@@ -242,7 +164,6 @@ export default {
       selectedRole: "", // Selected role from the dropdown
       applicationCount: 0, // Number of applications for the selected role
       selectedOrderBy: false,
-      Listing_ID: 0,
       sortOrder: true,
       sortCount: false,
       availableSkills: null,
@@ -256,11 +177,13 @@ export default {
     sortedCandidates() {
       this.rolecandidates = this.applications
         .filter(
-          (app) => !this.selectedRole || app.Role_Name === this.selectedRole.Role_Name
+          (app) => !this.selectedRole || app.Listing_ID === this.selectedRole.Listing_ID
         )
         .sort(
           (a, b) => new Date(a.Application_Date) - new Date(b.Application_Date)
         );
+      this.getApplicantBySkillCount();
+      this.countApplications();
       return this.rolecandidates;
     },
     filteredCandidates() {
@@ -310,17 +233,17 @@ export default {
         this.applications = applications;
         // Extract unique roles from applications and store them in the roles array
         const uniqueRoles = Array.from(
-          new Set(applications.map((app) => app.Role_Name))
+          new Set(applications.map((app) => app.Listing_ID))
         );
 
         // Create a roles array with listing ID information
-        this.roles = uniqueRoles.map((roleName) => {
+        this.roles = uniqueRoles.map((Listing_ID) => {
           const matchingApp = applications.find(
-            (app) => app.Role_Name === roleName
+            (app) => app.Listing_ID === Listing_ID
           );
           return {
-            Role_Name: roleName,
-            Listing_ID: matchingApp.Listing_ID,
+            Role_Name: matchingApp.Role_Name,
+            Listing_ID: Listing_ID,
           };
         });
         applications.forEach((application) => {
@@ -349,9 +272,9 @@ export default {
     countApplications() {
       // Count the number of applications for the selected role
       if (this.selectedRole) {
-        const selectedRole = this.selectedRole.Role_Name;
+        const selectedRole = this.selectedRole.Listing_ID;
         const filteredApplications = this.applications.filter(
-          (app) => app.Role_Name === selectedRole
+          (app) => app.Listing_ID === selectedRole
         );
         this.applicationCount = filteredApplications.length;
       } else {
@@ -382,7 +305,7 @@ export default {
     },
 
     getApplicantBySkillCount() {
-      const apiUrl = `http://127.0.0.1:5000/api/getApplicantsBySkillMatch/${this.Listing_ID}`;
+      const apiUrl = `http://127.0.0.1:5000/api/getApplicantsBySkillMatch/${this.selectedRole.Listing_ID}`;
 
       axios
         .get(apiUrl)
@@ -391,7 +314,7 @@ export default {
           //this.candidates = response.data; // Update your data property with the fetched applicants
           console.log(response.data);
           const applicationsArray = Object.values(response.data);
-          this.applicationsforCount = applicationsArray.reverse();
+          this.applicationsforCount = applicationsArray;
         })
         .catch((error) => {
           // Handle any error that may occur during the request
@@ -656,14 +579,17 @@ export default {
   text-decoration: none;
   cursor: pointer;
 }
+
 .disabled {
   background-color: #6c757d;
   color: white;
 }
+
 .clickable {
   color: rgba(25, 135, 84, 1);
   text-decoration: underline;
 }
+
 .clickable:hover {
   cursor: pointer;
 }
