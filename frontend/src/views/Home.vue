@@ -1,18 +1,27 @@
 <template>
     <!-- form starts here -->
     <div class="container">
-        <div>
-            <h2>Login</h2>
-            <form @submit.prevent="loginAttempt()">
+        <div class="image-section">
+            <img src="../assets/hiring-login.jpg" alt="Image" class="image" />
+        </div>
+        <div class="login-section">
+            <div class="logo">
+                <img src="../assets/logo.png" alt="Logo" class="logo" />
+            </div>
+            <h3>Login</h3>
+            <form class="login-form" @submit.prevent="loginAttempt()">
                 <div class="form-group">
                     <label for="email">Email:</label>
                     <input type="email" id="email" v-model="formData.email" class="form-control" required>
                 </div>
+                &nbsp;
                 <div class="form-group">
                     <label for="password">Password:</label>
                     <input type="password" id="password" v-model="formData.password" class="form-control" required>
                 </div>
-                <button type="submit" class="btn btn-primary">Login</button>
+                <p></p>
+                <button type="submit" class="btn btn-primary center-button">Sign in</button>
+                &nbsp;
             </form>
             <div id="errorMessage" v-show="showError" class="color:red;">
                 {{ errMsg }}
@@ -115,39 +124,44 @@ export default {
 </script>
   
 <style scoped>
-.navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    color: #333;
-    padding: 10px 20px;
+.container {
+  display: flex;
+  height: 100vh;
 }
 
+.image-section {
+  flex: 60%; /* 70% of the width */
+  background-color: #f0f0f0; /* Optional background color for the image section */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-.navbar-left {
-    display: flex;
-    align-items: center;
+.image {
+  max-width: 100%; /* To make sure the image fits within its container */
+  max-height: 100%;
+}
+
+.login-section {
+  flex: 40%; /* 30% of the width */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .logo {
-    width: 40px;
-    height: 40px;
-    margin-right: 20px;
+  /* Style for the logo image */
+  background-color: black;
 }
 
-.nav-link {
-    text-decoration: none;
-    margin-right: 20px;
-    color: #333;
-    font-size: 16px;
+.login-form {
+  /* Style for the login form */
+    width:90%;
 }
 
-.nav-link:last-child {
-    margin-right: 0;
-}
-
-.btn {
-    margin-top: 10px;
-    margin-bottom: 40px;
+.center-button {
+  display: block;
+  margin: 0 auto;
 }
 </style>
