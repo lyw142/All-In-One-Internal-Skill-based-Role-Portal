@@ -602,8 +602,7 @@ def getApplicantsBySkillMatch(listing_id):
                 "Score": match_score,
                 "roleListing": getRoleListingByID(listing_id)[0]
             }
-            detailsdict[app.Application_ID] = staff_data
-
+            detailsdict["Application Number: " + str(app.Application_ID)] = staff_data
 
     # Sort the dictionary by the "Score" values in descending order
     sorted_data = dict(sorted(detailsdict.items(), key=lambda x: x[1]["Score"], reverse=True))
