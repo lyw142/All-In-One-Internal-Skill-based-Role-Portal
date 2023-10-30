@@ -685,4 +685,28 @@ def getAllStaffDetails():
         return jsonify(staff_data)
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+
+@api.route("/getAllRoles", methods=["GET"])
+def get_all_roles():
+    try:
+        # Query the Role database to get Role_ID and Role_Name
+        roles = (
+            db.session.query(
+                Role.Role_ID,
+                Role.Role_Name
+            )
+            .all()
+        )
+        role_data = [
+            {
+                "Role_ID": role.Role_ID,
+                "Role_Name": role.Role_Name,
+            }
+            for role in roles
+        ]
+
+        return jsonify(role_data)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
