@@ -104,7 +104,7 @@ def createListing():
 
 @api.route("/openjoblistings")
 def findAllOpenJobListings():
-    current_date = datetime.now()
+    current_date = datetime.now().date()
 
     # Perform joins to retrieve role listings with Hiring Manager and Role Name
     query = (
@@ -240,7 +240,7 @@ def updateRoleListing(listing_id):
 # filter and show closed listings
 @api.route("/closedjoblistings")
 def findClosedJobListings():
-    current_date = datetime.now()
+    current_date = datetime.now().date()
 
     # Perform joins to retrieve role listings with Hiring Manager and Role Name
     query = (
