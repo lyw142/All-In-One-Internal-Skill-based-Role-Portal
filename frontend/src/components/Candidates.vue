@@ -3,11 +3,21 @@
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
       <div class="navbar-left">
         <img src="../assets/logo.png" alt="Logo" class="logo" />
-        <router-link to="/hrnav" class="nav-link" style="color: white">Role listing management</router-link>
-        <router-link to="/candidates" class="nav-link" style="color: white">Candidates</router-link>
-        <router-link to="/view-staff-skills" class="nav-link" style="color: white">View staff skills</router-link>
-        <router-link to="/staffnav" class="nav-link" style="color: white">View roles</router-link>
-        <router-link to="/application-history" class="nav-link" style="color: white">Application History</router-link>
+        <router-link v-if="userPrivileges != 4" to="/staffnav" class="nav-link" style="color: white;">View
+          roles</router-link>
+        <router-link v-if="userPrivileges != 4" to="/application-history" class="nav-link"
+          style="color: white;">Application History</router-link>
+        <!-- New link -->
+        <router-link v-if="userPrivileges == 4" to="/hrnav" class="nav-link" style="color: white;">Role listing
+          management</router-link>
+        <router-link v-if="userPrivileges == 4 || userPrivileges == 3" to="/candidates" class="nav-link"
+          style="color: white;">Candidates</router-link>
+        <router-link v-if="userPrivileges == 4" to="/view-staff-skills" class="nav-link" style="color: white;">View staff
+          skills</router-link>
+        <router-link v-if="userPrivileges == 4" to="/staffnav" class="nav-link" style="color: white;">View
+          roles</router-link>
+        <router-link v-if="userPrivileges == 4" to="/application-history" class="nav-link"
+          style="color: white;">Application History</router-link>
       </div>
       <div class="navbar-right">
         <button class="btn btn-secondary" @click="clearUserSessionData()">
@@ -97,7 +107,8 @@
             </td>
           </tr>
           <tr v-if="sortCount == true" v-for="(application, id) in applicationsforCount" :key="application.Staff_FName">
-            <td class="clickable" @click="openModal(application)">{{ application.Staff_FName }} {{ application.Staff_LName }}</td>
+            <td class="clickable" @click="openModal(application)">{{ application.Staff_FName }} {{ application.Staff_LName
+            }}</td>
             <td>
               {{ application.Application_Status }}
               {{ formatDate(application.Application_Date) }}
@@ -169,7 +180,8 @@ export default {
       availableSkills: null,
       selectedSkills: [],
       rolecandidates: null,
-      selectedCandidate: null
+      selectedCandidate: null,
+      userPrivileges: null,
     };
   },
   computed: {
@@ -291,7 +303,8 @@ export default {
       if (serializedUser) {
         const data = JSON.parse(serializedUser);
         this.staff_id = data.Staff_ID;
-        if (!(data.Access_Rights == 4)) {
+        this.userPrivileges = data.Access_Rights;
+        if (!(data.Access_Rights == 4 || data.Access_Rights == 3)) {
           this.$router.push("/staffnav");
         }
       } else {

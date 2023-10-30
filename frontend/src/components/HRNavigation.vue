@@ -60,8 +60,9 @@
                   </li>
                 </ul>
                 <p class="card-text">
-                  <strong>Application Deadline:</strong> {{ this.calculateDeadline(role.deadline) < 0 ? role.deadline + ('(Closed)') : (role.deadline) + ' (' +
-                    this.calculateDeadline(role.deadline) + ' days remaining)' }} </p>
+                  <strong>Application Deadline:</strong> {{ this.calculateDeadline(role.deadline) < 0 ? role.deadline +
+                    ('(Closed)') : (role.deadline) + ' (' + this.calculateDeadline(role.deadline) + ' days remaining)' }}
+                    </p>
                     <p class="card-text">
                       <strong>Application Date Posted:</strong>
                       {{ role.dateposted }}
@@ -99,11 +100,11 @@
                 <!-- Role Requirements -->
                 <div v-if="selectedRole.Skills && selectedRole.Skills.length > 0" class="role-requirements">
                   <strong>Role Requirements</strong>
-                  <ol>
+                  <ul>
                     <li v-for="(requirement, index) in selectedRole.Role_Requirements" :key="index">
                       {{ requirement }}
                     </li>
-                  </ol>
+                  </ul>
                 </div>
                 <div v-else>
                   <strong>Role requirements</strong>

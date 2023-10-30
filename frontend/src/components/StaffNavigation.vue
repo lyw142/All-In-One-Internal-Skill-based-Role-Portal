@@ -11,7 +11,7 @@
         <!-- New link -->
         <router-link v-if="userPrivileges == 4" to="/hrnav" class="nav-link" style="color: white;">Role listing
           management</router-link>
-        <router-link v-if="userPrivileges == 4" to="/candidates" class="nav-link"
+        <router-link v-if="userPrivileges == 4 || userPrivileges == 3" to="/candidates" class="nav-link"
           style="color: white;">Candidates</router-link>
         <router-link v-if="userPrivileges == 4" to="/view-staff-skills" class="nav-link" style="color: white;">View staff
           skills</router-link>
