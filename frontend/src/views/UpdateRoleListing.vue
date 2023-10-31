@@ -79,11 +79,9 @@
             <!-- Salary -->
             <div class="form-group">
                 <div class="row">
-                    <div class="col-6">
-                        <label for="minSalary">Salary ($ per year)</label>
-                        <input type="number" class="form-control" id="roleSalary"
-                            @input="Salary = $event.target.value.toString()" v-model="this.Salary" required
-                            pattern="[0-9]{1,11}" title="(Use numbers only)" />
+                    <div class="form-group mb-3 col-6">
+                        <label for="roleDatePosted">Date Posted</label>
+                        <input type="date" class="form-control" id="roleDatePosted" v-model="Date_Posted" required />
                     </div>
                     <div class="form-group mb-3 col-6">
                         <label for="roleDeadline">Deadline</label>
@@ -125,11 +123,10 @@ export default {
             showSuccessModal: false,
 
             Role_Responsibilities: "",
-            Salary: "",
             Skills: [],
             Deadline: "",
             Country: "",
-            Date_created: "",
+            Date_Posted: "",
 
         };
     },
@@ -188,10 +185,10 @@ export default {
             const url = `http://127.0.0.1:5000/api/updateRoleListing/${this.Listing_ID}`;
 
             // Check if the deadline is after the date_created
-            if (this.Deadline > this.Date_created) {
+            if (this.Deadline > this.Date_Posted) {
                 axios.post(url, {
                     Role_Responsibilities: this.Role_Responsibilities,
-                    Salary: this.Salary,
+                    Date_Posted: this.Date_Posted,
                     AddedSkills: this.addedSkills_ID,
                     RemovedSkills: this.removedSkills_ID,
                     Deadline: this.Deadline,
@@ -209,7 +206,7 @@ export default {
         },
         checkDatevalid() {
             let invaliddatetext = document.getElementById("invaliddate");
-            invaliddatetext.innerText = "Deadline cannot be before or on the date that this role listing was created. (" + this.Date_created + ")"
+            invaliddatetext.innerText = "Deadline cannot be before or on the date that this role listing was created."
             this.invalidcolor = 'red'
 
         },
@@ -243,11 +240,10 @@ export default {
         const apiUrl = `http://127.0.0.1:5000/api/getRoleListing/${this.Listing_ID}`;
         axios.get(apiUrl).then(response => {
             this.Role_Responsibilities = response.data[0].Role_Responsibilities;
-            this.Salary = response.data[0].Salary;
             this.Deadline = response.data[0].Deadline;
             this.Country = response.data[0].Country;
             this.selectedSkills = response.data[0].Skills;
-            this.Date_created = response.data[0].Date_Posted;
+            this.Date_Posted = response.data[0].Date_Posted;
             // this.originalSkills = response.data[0].Skills;
         });
         axios.get('http://127.0.0.1:5000/api/skills').then(response => this.availableSkills = response.data)
