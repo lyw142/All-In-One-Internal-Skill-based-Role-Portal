@@ -2,8 +2,9 @@ import unittest
 from models import Staff_Skill, db, Staff, Role, Staff, Staff_Skill, Skill, RoleSkillMapping, RoleListing, Application, Access_Control, Manager, Director, NormalStaff, Application, RoleListing
 # To run code: 
 # python -m unittest tests_unit.py 
-
-
+'''
+This document is a compilation of unit tests for our models.
+'''
 
 
 class TestAccessControl(unittest.TestCase): 
