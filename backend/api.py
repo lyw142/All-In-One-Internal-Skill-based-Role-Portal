@@ -723,18 +723,6 @@ def get_role_details(role_id):
         if not role_responsibilities:
             return jsonify({"error": "Role not found"}), 404
 
-        role_listing_data = (
-            db.session.query(
-                RoleListing.Country,
-                RoleListing.Hiring_Manager
-            )
-            .filter(RoleListing.Role_ID == role_id)
-            .first()
-        )
-
-        if not role_listing_data:
-            return jsonify({"error": "Role data not found"}), 404
-
         skill_ids = (
             db.session.query(RoleSkillMapping.Skill_ID)
             .filter(RoleSkillMapping.Role_ID == role_id)
@@ -761,16 +749,26 @@ def get_role_details(role_id):
         if not dept:
             return jsonify({"error": "Dept not found for this role"}), 404
 
+        staff_country = (
+            db.session.query(Staff.Country)
+            .filter(Staff.Role_ID == role_id)
+            .first()
+        )
+
+        if not staff_country:
+            return jsonify({"error": "Country not found for this role"}), 404
+
         response_data = {
             "Role_Responsibilities": role_responsibilities[0],
-            "Country": role_listing_data[0],
-            "Hiring_Manager": role_listing_data[1],
             "Skills": [{"Skill_ID": skill[0], "Skill_Name": skill[1]} for skill in skill_data],
-            "Dept": dept[0] 
+            "Dept": dept[0],
+            "Staff_Country": staff_country[0]
         }
 
         return jsonify(response_data)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
 
