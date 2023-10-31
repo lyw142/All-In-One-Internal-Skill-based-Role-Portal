@@ -711,10 +711,9 @@ def get_all_roles():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-@api.route("", methods=["GET"])
+@api.route("/getRoleDetails/<int:role_id>", methods=["GET"])
 def get_role_details(role_id):
     try:
-        # Get Role Responsibilities
         role_responsibilities = (
             db.session.query(Role.Role_Responsibilities)
             .filter(Role.Role_ID == role_id)
@@ -724,7 +723,6 @@ def get_role_details(role_id):
         if not role_responsibilities:
             return jsonify({"error": "Role not found"}), 404
 
-        # Get Role Listing Data
         role_listing_data = (
             db.session.query(
                 RoleListing.Country,
@@ -737,7 +735,6 @@ def get_role_details(role_id):
         if not role_listing_data:
             return jsonify({"error": "Role data not found"}), 404
 
-        # Get Skill_IDs for the given Role_ID from RoleSkillMapping
         skill_ids = (
             db.session.query(RoleSkillMapping.Skill_ID)
             .filter(RoleSkillMapping.Role_ID == role_id)
@@ -749,22 +746,31 @@ def get_role_details(role_id):
 
         skill_id_list = [skill_id[0] for skill_id in skill_ids]
 
-        # Get Skill data for each Skill_ID
         skill_data = (
             db.session.query(Skill.Skill_ID, Skill.Skill_Name)
             .filter(Skill.Skill_ID.in_(skill_id_list))
             .all()
         )
 
-        # Prepare the response data
+        dept = (
+            db.session.query(Staff.Dept)
+            .filter(Staff.Role_ID == role_id)
+            .first()
+        )
+
+        if not dept:
+            return jsonify({"error": "Dept not found for this role"}), 404
+
         response_data = {
-            "Role_Responsibilities": role_responsibilities[0], 
+            "Role_Responsibilities": role_responsibilities[0],
             "Country": role_listing_data[0],
             "Hiring_Manager": role_listing_data[1],
-            "Skills": [{"Skill_ID": skill[0], "Skill_Name": skill[1]} for skill in skill_data]
+            "Skills": [{"Skill_ID": skill[0], "Skill_Name": skill[1]} for skill in skill_data],
+            "Dept": dept[0] 
         }
 
         return jsonify(response_data)
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
