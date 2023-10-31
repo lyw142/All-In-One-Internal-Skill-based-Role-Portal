@@ -121,7 +121,7 @@ class Director(Staff):
     def get_director_details(self):
         return {
             "Staff_ID": self.Staff_ID,
-            "Responsible_Department": self.Responsible_Department,
+            "Responsible_Department": self.ResponsibleDept,
             "Reporting_Manager": self.Reporting_Manager,
         }
 
@@ -216,9 +216,8 @@ class Role(db.Model):
 
     def get_role_details(self):
         return {
-            "Role_ID": self.Role_ID,
             "Role_Name": self.Role_Name,
-            "Role_Responsibilties": self.Role_Responsibilities
+            "Role_Responsibilities": self.Role_Responsibilities
         }
 
 ## Role_skill_mapping #
@@ -264,6 +263,14 @@ class Application(db.Model):
         self.Staff_ID = Staff_ID
         self.Listing_ID = Listing_ID
 
+    def get_application_details(self):
+        return {
+            "Application_ID": self.Application_ID,
+            "Application_Date": self.Application_Date,
+            "Application_Status": self.Application_Status,
+            "Staff_ID": self.Staff_ID,
+            "Listing_ID": self.Listing_ID
+        }
     # specify how to represent our book object as a JSON string
     def get_all_application_details(self):
         current_role = Role.query.get(self.staff.Role_ID)
@@ -296,7 +303,7 @@ class RoleListing(db.Model):
 
     role = db.relationship('Role')
     #staff = db.relationship('Staff', backref='applications')
-    #role = db.relationship("Role", back_populates="role_listing")
+    #role = db.relationship("Role",back_populates="role_listing")
     
     def __init__(self, Deadline, Date_Posted, Country, Hiring_Manager, Role_ID):
         self.Deadline = Deadline
