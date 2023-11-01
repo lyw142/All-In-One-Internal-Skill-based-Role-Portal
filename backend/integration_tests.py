@@ -7,7 +7,7 @@ from application import create_app
 
 '''
 To run test cases - the command is:
-python -m unittest tests_integration.py 
+python -m unittest integration_tests.py 
 '''
 
 app = create_app()
