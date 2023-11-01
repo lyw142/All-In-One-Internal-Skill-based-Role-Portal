@@ -43,7 +43,8 @@ class Staff(db.Model):
 
     skills = db.relationship('Staff_Skill', backref='staff')
     
-    def __init__(self, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights): 
+    def __init__(self, Staff_ID,Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights): 
+        self.Staff_ID = Staff_ID
         self.Staff_FName = Staff_FName
         self.Staff_LName = Staff_LName
         self.Email = Email
@@ -209,7 +210,8 @@ class Role(db.Model):
     Role_Name = db.Column(db.String(100), nullable=False)
     Role_Responsibilities = db.Column(db.String(2000), nullable=False)
 
-    def __init__(self, Role_Name, Role_Responsibilities):
+    def __init__(self, Role_ID,Role_Name, Role_Responsibilities):
+        self.Role_ID= Role_ID
         self.Role_Name = Role_Name
         self.Role_Responsibilities = Role_Responsibilities
         

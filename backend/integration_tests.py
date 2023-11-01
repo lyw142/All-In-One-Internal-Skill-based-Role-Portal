@@ -33,9 +33,12 @@ class TestApp(TestCase):
     def tearDown(self):
         pass
 
+
 class TestCreateApplication(TestApp):
     
     def test_create_application(self):
+        
+   
         # Prepare data for the POST request
         data = {
         "Staff_ID": 140036,
