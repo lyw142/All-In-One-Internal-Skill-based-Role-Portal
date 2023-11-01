@@ -420,7 +420,7 @@ def create_application():
         # Check if Staff_ID already exists in the Application table
         existing_application = Application.query.filter_by(Staff_ID=staff_id,Listing_ID=listing_id).first()
         if existing_application:
-            error_message = "You have `already applied for this job role."
+            error_message = "You have already applied for this job role."
             return jsonify({"error": error_message}), 400
         
         # If its a new applcation, then create a new Application object

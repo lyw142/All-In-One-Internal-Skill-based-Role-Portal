@@ -16,13 +16,6 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
-
---
--- Database: `spm`
---
-
--- --------------------------------------------------------
-
 --
 -- Table structure for table `access_control`
 --
@@ -84,9 +77,7 @@ CREATE TABLE IF NOT EXISTS `role` (
   PRIMARY KEY (`Role_ID`)
 );
 
---
--- Dumping data for table `role`
---
+
 
 INSERT INTO `role` (`Role_ID`, `Role_Name`, `Role_Responsibilities`) VALUES
 (1, 'Account Manager', 'The Account Manager acts as a key point of contact between an organisation and its clients. He/She possesses thorough product knowledge and oversees product and/or service sales. He works with customers to identify their wants and prepares reports by collecting, analysing, and summarising sales information. He contacts existing customers to discuss and give recommendations on how specific products or services can meet their needs. He maintains customer relationships to strategically place new products and drive sales for long-term growth. He works in a fast-paced and dynamic environment, and travels frequently to clients\' premises for meetings.'),
@@ -116,11 +107,6 @@ INSERT INTO `role` (`Role_ID`, `Role_Name`, `Role_Responsibilities`) VALUES
 (25, 'Assistant Sales Manager', 'An Assistant Sales Manager typically involve supporting the sales team in achieving targets, monitoring sales metrics, assisting with sales strategies, and training and mentoring sales staff.'),
 (26, 'Executive Assistant', 'As an Executive Assistant, your role responsibilities include managing the executive\'s schedule, handling correspondence, organizing meetings and events, and providing administrative support to ensure the smooth functioning of the executive\'s office.');
 
--- --------------------------------------------------------
-
---
--- Table structure for table `role_listing`
---
 
 DROP TABLE IF EXISTS `role_listing`;
 CREATE TABLE IF NOT EXISTS `role_listing` (
@@ -136,9 +122,6 @@ CREATE TABLE IF NOT EXISTS `role_listing` (
   KEY `Role_ID` (`Role_ID`)
 );
 
---
--- Dumping data for table `role_listing`
---
 
 INSERT INTO `role_listing` (`Listing_ID`, `Deadline`, `Date_Posted`, `Country`, `Salary`, `Hiring_Manager`, `Role_ID`) VALUES
 (1, '2023-10-02', '2023-09-18', 'Singapore', 57000, 180001, 7),
