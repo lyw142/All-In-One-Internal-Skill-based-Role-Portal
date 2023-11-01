@@ -64,3 +64,7 @@ class TestRoleListing(unittest.TestCase):
     def test(self):
         rl1 = RoleListing(Deadline="2021-01-01", Date_Posted="2021-01-01", Country="Singapore", Hiring_Manager=1, Role_ID=1)
         self.assertEqual(rl1.get_role_listing_details(), {"Listing_ID":rl1.Listing_ID, "Deadline":rl1.Deadline, "Date_Posted":rl1.Date_Posted, "Country":rl1.Country, "Hiring_Manager":rl1.Hiring_Manager, "Role_ID":rl1.Role_ID})
+
+
+if __name__ == '__main__':
+    unittest.main()

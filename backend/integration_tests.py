@@ -67,3 +67,5 @@ class TestCreateApplication(TestApp):
         self.assertEqual(response.json, {"error": "You have already applied for this job role."})
     
 
+if __name__ == '__main__':
+    unittest.main()
