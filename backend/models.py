@@ -2,12 +2,23 @@
 models.py
 - Data classes for the application
 """
+from sqlalchemy import types
+import datetime
 
 from email.policy import default
 from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
+class MyDateTime(types.TypeDecorator):
+    impl = types.Date  # Use the Date type for Y-M-D
+
+    def process_bind_param(self, value, dialect):
+        if isinstance(value, str):
+            date_parts = value.split('T')[0]  # Split the string and keep only Y-M-D part
+            return datetime.datetime.strptime(date_parts, '%Y-%m-%d').date()  # Convert to date
+        return value
+    
 ## ACCESS_RIGHTS ##
 class Access_Control(db.Model):
     __tablename__ = 'access_control'
@@ -247,7 +258,7 @@ class Application(db.Model):
     __table_args__ = {'mysql_engine': 'InnoDB'}  # Specify InnoDB engine for this table
 
     Application_ID = db.Column(db.Integer, primary_key=True)
-    Application_Date = db.Column(db.Date, nullable=False)
+    Application_Date = db.Column(MyDateTime, nullable=False)
     Application_Status = db.Column(db.String(50), nullable=False)
     Staff_ID = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'))
     Listing_ID = db.Column(db.Integer, db.ForeignKey('role_listing.Listing_ID', ondelete='CASCADE'))
@@ -259,7 +270,8 @@ class Application(db.Model):
     #staff = db.relationship('Staff', backref='applications')
     #role = db.relationship('Role', backref='applications')
     
-    def __init__(self, Application_Date, Application_Status, Staff_ID, Listing_ID):
+    def __init__(self,Application_Date, Application_Status, Staff_ID, Listing_ID):
+        # self.Application_ID = Application_ID
         self.Application_Date = Application_Date
         self.Application_Status = Application_Status
         self.Staff_ID = Staff_ID
@@ -297,8 +309,8 @@ class RoleListing(db.Model):
     __table_args__ = {'mysql_engine': 'InnoDB'}  # Specify InnoDB engine for this table
 
     Listing_ID = db.Column(db.Integer, primary_key=True)
-    Deadline = db.Column(db.Date, nullable=False)
-    Date_Posted = db.Column(db.Date, nullable=False)
+    Deadline = db.Column(MyDateTime, nullable=False)
+    Date_Posted = db.Column(MyDateTime, nullable=False)
     Country = db.Column(db.String(100), nullable=False)
     Hiring_Manager = db.Column(db.Integer, db.ForeignKey('staff.Staff_ID', ondelete='CASCADE'), nullable=False)
     Role_ID = db.Column(db.Integer, db.ForeignKey('role.Role_ID', ondelete='CASCADE'), nullable=False)
