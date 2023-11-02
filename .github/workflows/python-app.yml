@@ -39,7 +39,7 @@ jobs:
         python backend/unit_tests.py
 
     #  Commented this for now so that people can push into github without having to run the integration tests
-    # - name: Run integration tests
-    #   run: |
-    #     python backend/integration_tests.py
+    - name: Run integration tests
+     run: |
+        python backend/integration_tests.py
 
