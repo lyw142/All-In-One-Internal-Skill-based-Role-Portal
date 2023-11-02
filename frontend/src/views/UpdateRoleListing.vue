@@ -108,7 +108,6 @@ export default {
     props: ['Listing_ID'],
     data() {
         return {
-            // variables that i used 
             selectedSkill: '',
             selectedSkills: [],
             availableSkills: [],
@@ -207,7 +206,6 @@ export default {
             let invaliddatetext = document.getElementById("invaliddate");
             invaliddatetext.innerText = "Deadline cannot be before or on the date that this role listing was created."
             this.invalidcolor = 'red'
-
         },
         // Retrieve user session data from a cookie
         getUserSessionData() {
