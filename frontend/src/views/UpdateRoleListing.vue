@@ -202,7 +202,6 @@ export default {
                 this.checkDatevalid();
                 this.showConfirmModal = false;
             }
-
         },
         checkDatevalid() {
             let invaliddatetext = document.getElementById("invaliddate");
