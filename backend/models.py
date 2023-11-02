@@ -78,8 +78,8 @@ class Manager(Staff):
 
     #Reporting_Manager = db.relationship('Staff', foreign_keys=[Reporting_Manager], backref='reporting_managers', remote_side=[Staff_ID])
 
-    def __init__(self, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights, ResponsibleTeam, Reporting_Manager): 
-        super().__init__(Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights)
+    def __init__(self, Staff_ID, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights, ResponsibleTeam, Reporting_Manager): 
+        super().__init__(Staff_ID, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights)
         self.ResponsibleTeam = ResponsibleTeam
         self.Reporting_Manager = Reporting_Manager
         self.staff_id = Staff.Staff_ID  # Set the staff_id column to match Staff's Staff_ID
@@ -113,8 +113,8 @@ class Director(Staff):
     
     #Reporting_Manager = db.relationship('Staff', foreign_keys=[Reporting_Manager], backref='reporting_managers', remote_side=[Staff_ID])
 
-    def __init__(self, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights, ResponsibelDept, Reporting_Manager): 
-        super().__init__(Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights)
+    def __init__(self, Staff_ID, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights, ResponsibelDept, Reporting_Manager): 
+        super().__init__(Staff_ID,Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights)
         self.ResponsibleDept = ResponsibelDept
         self.Reporting_Manager = Reporting_Manager
         self.staff_id = Staff.Staff_ID  # Set the staff_id column to match Staff's Staff_ID
@@ -141,8 +141,8 @@ class NormalStaff(Staff):
 
     #Reporting_Manager = db.relationship('Staff', foreign_keys=[Reporting_Manager], backref='reporting_managers', remote_side=[Staff_ID])
 
-    def __init__(self, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights, Reporting_Manager): 
-        super().__init__(Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights)
+    def __init__(self, Staff_ID, Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights, Reporting_Manager): 
+        super().__init__(Staff_ID,Staff_FName, Staff_LName, Email, Country, Dept, Password, Role_ID, Access_Rights)
         self.Reporting_Manager = Reporting_Manager
         self.staff_id = Staff.Staff_ID  # Set the staff_id column to match Staff's Staff_ID
 
