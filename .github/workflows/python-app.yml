@@ -36,7 +36,7 @@ jobs:
     - name: Run unit tests
       run: |
         python backend/unit_tests.py
-
+# it works now
     - name: Run integration tests
       run: |
        python backend/integration_tests.py
