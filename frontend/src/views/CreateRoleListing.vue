@@ -4,7 +4,6 @@
             <img src="../assets/logo.png" alt="Logo" class="logo" />
             <router-link to="/hrnav" class="nav-link" style="color: white;">Role listing management</router-link>
             <router-link to="/candidates" class="nav-link" style="color: white;">Candidates</router-link>
-            <router-link to="/view-staff-skills" class="nav-link" style="color: white;">View staff skills</router-link>
             <router-link to="/staffnav" class="nav-link" style="color: white;">View roles</router-link>
             <router-link to="/application-history" class="nav-link" style="color: white;">Application History</router-link>
         </div>
@@ -54,8 +53,8 @@
             <!-- Role Responsibilities -->
             <div class="form-group mb-3">
                 <label for="roleResponsibilities">Role Responsibilities</label>
-                <textarea class="form-control" id="roleResponsibilities" v-model="Role_Responsibilities"
-                    maxlength="1000" pattern="[A-Za-z\s]+" title="(Use alphabets only)" rows="3"></textarea>
+                <textarea class="form-control" id="roleResponsibilities" v-model="Role_Responsibilities" maxlength="1000"
+                    pattern="[A-Za-z\s]+" title="(Use alphabets only)" rows="3"></textarea>
             </div>
 
             <!-- Confirmation modal (initially hidden) -->

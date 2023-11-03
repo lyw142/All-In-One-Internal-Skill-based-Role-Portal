@@ -3,27 +3,10 @@
     <div class="navbar bg-dark border-bottom border-body" data-bs-theme="dark">
       <div class="navbar-left">
         <img src="../assets/logo.png" alt="Logo" class="logo" />
-        <router-link to="/hrnav" class="nav-link" style="color: white"
-          >Role listing management</router-link
-        >
-        <router-link to="/candidates" class="nav-link" style="color: white"
-          >Candidates</router-link
-        >
-        <router-link
-          to="/view-staff-skills"
-          class="nav-link"
-          style="color: white"
-          >View staff skills</router-link
-        >
-        <router-link to="/staffnav" class="nav-link" style="color: white"
-          >View roles</router-link
-        >
-        <router-link
-          to="/application-history"
-          class="nav-link"
-          style="color: white"
-          >Application History</router-link
-        >
+        <router-link to="/hrnav" class="nav-link" style="color: white">Role listing management</router-link>
+        <router-link to="/candidates" class="nav-link" style="color: white">Candidates</router-link>
+        <router-link to="/staffnav" class="nav-link" style="color: white">View roles</router-link>
+        <router-link to="/application-history" class="nav-link" style="color: white">Application History</router-link>
       </div>
       <div class="navbar-right">
         <button class="btn btn-secondary" @click="clearUserSessionData()">
@@ -43,86 +26,63 @@
         </div>
       </div>
       <div class="row mb-4">
-        <!-- Column for the button -->
+        <!-- Column for the "Applicants" button on the left -->
         <div class="col-md-8">
           <button v-if="selectedRole" class="btn btn-success">
             Applicants ({{ applicationCount }})
           </button>
         </div>
 
-        <!-- Column for the "Order By" dropdown -->
-        <div class="col-md-2">
+        <!-- Column for the "Order By" dropdown on the right -->
+        <div class="col-md-2 text-end" style="padding-right: 0;">
           <div class="dropdown">
-            <button
-              class="btn btn-primary dropdown-toggle"
-              type="button"
-              id="skillsDropdown"
-              data-bs-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
+            <button class="btn btn-primary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
               Order By
             </button>
-            <div
-              class="dropdown-menu"
-              aria-labelledby="skillsDropdown"
-              @click.stop
-            >
+            <div class="dropdown-menu" aria-labelledby="skillsDropdown" @click.stop>
               <!-- Checklist of skills with checkboxes -->
               <div class="skills-scroll">
                 <label class="checkbox-label">
-                  <input
-                    type="checkbox"
-                    v-model="selectedOrderBy"
-                    value="SkillCount"
-                    class="checkbox-input"
-                    @click="showTable"
-                  />
+                  <input type="checkbox" v-model="selectedOrderBy" value="SkillCount" class="checkbox-input"
+                    @click="showTable" />
                   <span class="checkbox-text"> Skill Count</span>
                 </label>
               </div>
             </div>
           </div>
         </div>
-        <!-- skill filter  -->
-        <div class="col-md-2">
+
+        <!-- Column for the "Filter by Skills" dropdown on the right -->
+        <div class="col-md-2 text-end">
           <div class="dropdown">
-            <button
-              class="btn btn-secondary dropdown-toggle"
-              type="button"
-              id="skillsDropdown"
-              data-bs-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
-            >
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="skillsDropdown" data-bs-toggle="dropdown"
+              aria-haspopup="true" aria-expanded="false">
               Filter by Skills
             </button>
-            <div
-              class="dropdown-menu"
-              aria-labelledby="skillsDropdown"
-              @click.stop
-            >
+            <div class="dropdown-menu" aria-labelledby="skillsDropdown" @click.stop>
               <!-- Checklist of skills with checkboxes -->
               <div class="skills-scroll">
-                <div
-                  v-for="(skill, index) in availableSkills"
-                  :key="skill.Skill_ID"
-                >
+                <div v-for="(skill, index) in availableSkills" :key="skill.Skill_ID">
                   <label class="checkbox-label">
-                    <input
-                      type="checkbox"
-                      v-model="selectedSkills"
-                      :value="skill.Skill_Name"
-                      class="checkbox-input"
-                    />
+                    <input type="checkbox" v-model="selectedSkillstemp" :value="skill.Skill_Name"
+                      class="checkbox-input" />
                     <span class="checkbox-text">{{ skill.Skill_Name }}</span>
                   </label>
                 </div>
+              </div>
+              <div class="filter-buttons">
+                <button class="btn btn-primary" @click="applyFilter">Show Results</button>
+                <button class="btn btn-secondary" @click="clearFilter">Clear Filter</button>
+              </div>
+              <div class="filter-message" v-if="showNoSkillsMessage">
+                {{ showNoSkillsMessage }}
               </div>
             </div>
           </div>
         </div>
       </div>
+
       <!-- Table to display candidate information -->
       <table class="table table-bordered">
         <thead>
@@ -134,65 +94,41 @@
         </thead>
         <tbody v-if="this.selectedSkills.length == 0">
           <!-- Use a computed property to sort candidates based on the selected order -->
-          <tr
-            v-if="sortOrder == true"
-            v-for="candidate in sortedCandidates"
-            :key="candidate.Staff_FName"
-            v-show="true"
-          >
+          <tr v-if="sortOrder == true" v-for="candidate in sortedCandidates" :key="candidate.Staff_FName" v-show="true">
             <td class="clickable" @click="openModal(candidate)">
               {{ candidate.Staff_FName }} {{ candidate.Staff_LName }}
             </td>
             <td>Applied {{ formatDate(candidate.Application_Date) }}</td>
             <td style="max-width: 300px" v-if="candidate.roleListing">
-              <span
-                v-for="skill in candidate.roleListing.Skills"
-                :key="skill"
-                class="skill-box"
-                :class="{ disabled: !checkMatch(candidate, skill) }"
-              >
+              <span v-for="skill in candidate.roleListing.Skills" :key="skill" class="skill-box"
+                :class="{ disabled: !checkMatch(candidate, skill) }">
                 {{ checkSkillMatch(candidate, skill) }} {{ skill }}
               </span>
             </td>
           </tr>
-          <tr
-            v-if="sortCount == true"
-            v-for="(application, id) in applicationsforCount"
-            :key="id"
-          >
+          <tr v-if="sortCount == true" v-for="(application, id) in applicationsforCount" :key="id">
             <td>{{ application.Staff_Name }}</td>
             <td>
               {{ application.Application_Status }}
               {{ formatDate(application.Application_Date) }}
             </td>
             <td style="max-width: 300px">
-              <span
-                v-for="skill in application.Skill"
-                :key="skill.Staff_ID"
-                class="skill-box"
-              >
+              <span v-for="skill in application.Skill" :key="skill.Staff_ID" class="skill-box">
                 {{ skill }}
               </span>
             </td>
           </tr>
         </tbody>
         <tbody v-else>
-          <tr
-            v-for="candidate in filteredCandidates"
-            :key="candidate.Staff_FName"
-            v-show="true"
-          >
+          <tr v-for="candidate in filteredCandidates" :key="candidate.Staff_FName" v-show="true">
             <td class="clickable" @click="openModal(candidate)">
               {{ candidate.Staff_FName }} {{ candidate.Staff_LName }}
             </td>
             <td>Applied {{ formatDate(candidate.Application_Date) }}</td>
             <td style="max-width: 300px">
-              <span
-                v-for="skill in candidate.Skills"
-                :key="skill.Skill_Name"
-                class="skill-box"
-              >
-                {{ skill.Skill_Name }}
+              <span v-for="skill in candidate.roleListing.Skills" :key="skill" class="skill-box"
+                :class="{ disabled: !checkMatch(candidate, skill) }">
+                {{ checkSkillMatch(candidate, skill) }} {{ skill }}
               </span>
             </td>
           </tr>
@@ -217,24 +153,16 @@
       </p>
       <p>
         <strong>Skills:</strong>
-        <span
-          v-for="skill in selectedCandidate.Skills"
-          :key="skill.Skill_Name"
-          class="skill-box"
-        >
+        <span v-for="skill in selectedCandidate.Skills" :key="skill.Skill_Name" class="skill-box">
           {{ skill.Skill_Name }}
         </span>
       </p>
       <p>
-      <strong>% of Skills matched</strong>
+        <strong>% of Skills matched</strong>
       <div class="progress">
-        <div
-          class="progress-bar"
-          role="progressbar"
-          :style="{
-            width: getPercentageSkillsMatched(selectedCandidate) + '%',
-          }"
-        >
+        <div class="progress-bar" role="progressbar" :style="{
+          width: getPercentageSkillsMatched(selectedCandidate) + '%',
+        }">
           {{ Math.round(getPercentageSkillsMatched(selectedCandidate)) }}%
         </div>
       </div>
@@ -261,6 +189,8 @@ export default {
       sortCount: false,
       availableSkills: null,
       selectedSkills: [],
+      selectedSkillstemp: [],
+      showNoSkillsMessage: "",
       rolecandidates: null,
       selectedCandidate: null,
     };
@@ -447,6 +377,25 @@ export default {
     closeModal() {
       this.selectedCandidate = null;
     },
+    applyFilter() {
+      if (this.selectedSkillstemp.length === 0) {
+        // Display a message indicating that at least one skill should be selected
+        this.showNoSkillsMessage = 'Please select at least one skill.';
+      } else {
+        this.selectedSkills = this.selectedSkillstemp;
+        this.showNoSkillsMessage = "";
+      }
+    },
+    clearFilter() {
+      if (this.selectedSkillstemp.length === 0) {
+        // Display a message indicating that at least one skill should be selected
+        this.showNoSkillsMessage = 'No skills selected.';
+      } else {
+        this.selectedSkills = [];
+        this.selectedSkillstemp = [];
+        this.showNoSkillsMessage = "";
+      }
+    }
   },
 };
 </script>
@@ -680,32 +629,46 @@ export default {
   text-decoration: none;
   cursor: pointer;
 }
+
 .disabled {
   background-color: #6c757d;
   color: white;
 }
+
 .clickable {
   color: rgba(25, 135, 84, 1);
   text-decoration: underline;
 }
+
 .clickable:hover {
   cursor: pointer;
 }
+
 /* Define the progress bar container */
 .progress {
-  height: 20px; /* Set the height of the progress bar */
-  background-color: #ccc; /* Set a background color for the progress bar container */
-  border-radius: 10px; /* Add some border radius for rounded corners */
+  height: 20px;
+  /* Set the height of the progress bar */
+  background-color: #ccc;
+  /* Set a background color for the progress bar container */
+  border-radius: 10px;
+  /* Add some border radius for rounded corners */
 }
 
 /* Define the filled part of the progress bar with the specified color */
 .progress-bar {
-  background-color: rgb(0, 158, 96); /* Set the filled color */
-  border-radius: 10px; /* Match the border radius to the container */
-  transition: width 0.3s ease-in-out; /* Add a smooth transition for width changes */
-  text-align: center; /* Center text within the progress bar */
-  color: #fff; /* Set text color to white for visibility */
-  font-weight: bold; /* Make the text bold */
-  line-height: 20px; /* Vertical centering for text */
+  background-color: rgb(0, 158, 96);
+  /* Set the filled color */
+  border-radius: 10px;
+  /* Match the border radius to the container */
+  transition: width 0.3s ease-in-out;
+  /* Add a smooth transition for width changes */
+  text-align: center;
+  /* Center text within the progress bar */
+  color: #fff;
+  /* Set text color to white for visibility */
+  font-weight: bold;
+  /* Make the text bold */
+  line-height: 20px;
+  /* Vertical centering for text */
 }
 </style>

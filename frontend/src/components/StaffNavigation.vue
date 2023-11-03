@@ -13,8 +13,6 @@
           management</router-link>
         <router-link v-if="userPrivileges == 4 || userPrivileges == 3" to="/candidates" class="nav-link"
           style="color: white;">Candidates</router-link>
-        <router-link v-if="userPrivileges == 4" to="/view-staff-skills" class="nav-link" style="color: white;">View staff
-          skills</router-link>
         <router-link v-if="userPrivileges == 4" to="/staffnav" class="nav-link" style="color: white;">View
           roles</router-link>
         <router-link v-if="userPrivileges == 4" to="/application-history" class="nav-link"
@@ -31,7 +29,6 @@
       <!-- Search and Filter bar -->
       <div class="row mb-4">
         <div class="col-md-10">
-          <input type="text" class="form-control" placeholder="Search for a role..." v-model="searchQuery" />
         </div>
 
         <!-- Filter dropdown for skills selection -->
