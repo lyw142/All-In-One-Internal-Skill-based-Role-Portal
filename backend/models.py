@@ -217,7 +217,7 @@ class Role(db.Model):
     __tablename__ = 'role'
     __table_args__ = {'mysql_engine': 'InnoDB'}  # Specify InnoDB engine for this table
 
-    Role_ID = db.Column(db.Integer, primary_key=True)
+    Role_ID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Role_Name = db.Column(db.String(100), nullable=False)
     Role_Responsibilities = db.Column(db.String(2000), nullable=False)
 

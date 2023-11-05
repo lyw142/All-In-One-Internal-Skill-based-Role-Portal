@@ -791,3 +791,33 @@ def get_created_role_details():
         return jsonify(role_details)
     except Exception as e:
         return jsonify({"error": "An error occurred"}), 500
+    
+@api.route('/getUniqueDept', methods=['GET'])
+def get_unique_dept():
+    try:
+        # Query the Staff table to get distinct Dept values
+        unique_dept = db.session.query(Staff.Dept).distinct().all()
+
+        if not unique_dept:
+            return jsonify({"error": "No unique Dept values found"}), 404
+
+        dept_details = [dept[0] for dept in unique_dept]
+
+        return jsonify(dept_details)
+    except Exception as e:
+        return jsonify({"error": "An error occurred"}), 500
+
+@api.route('/getUniqueCountry', methods=['GET'])
+def get_unique_country():
+    try:
+        # Query the Staff table to get distinct Country values
+        unique_country = db.session.query(Staff.Country).distinct().all()
+
+        if not unique_country:
+            return jsonify({"error": "No unique Country values found"}), 404
+
+        country_details = [country[0] for country in unique_country]
+
+        return jsonify(country_details)
+    except Exception as e:
+        return jsonify({"error": "An error occurred"}), 500
