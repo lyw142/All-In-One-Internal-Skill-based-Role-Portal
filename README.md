@@ -1,6 +1,6 @@
 # All-In-One Internal Skill-based Role Portal (SPM_G5_T2)
 
-This template should help get you started with Vue 3 in Vite and Python.
+This template should help you get started and running the project using Vue 3 in Vite and Python.
 
 ## Recommended IDE Setup
 
@@ -80,8 +80,8 @@ To run this project, follow these steps:
 
 5. Run the frontend of the project by typing the following:
 
-```sh
-npm run dev
-```
+   ```sh
+   npm run dev
+   ```
 
 These steps will allow you to run the application and connect it to your local database.
