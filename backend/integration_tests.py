@@ -1,6 +1,7 @@
 import unittest
 import json
 import sqlite3
+import random
 from flask_testing import TestCase
 from datetime import datetime, date
 from models import Staff_Skill, db, Staff, Role, Staff, Staff_Skill, Skill, RoleSkillMapping, RoleListing, Application, Access_Control, Manager, Director, NormalStaff, Application, RoleListing
@@ -34,26 +35,6 @@ app = create_app()
 
 
 class TestApp(TestCase):
-
-    # def create_app(self):
-    #     # pass in test configuration
-    #     return app
-
-    # def setUp(self):
-    #     # Delete application entry in case it already exists. This is to pass the create application endpoint success case
-    #     application_to_delete = db.session.query(Application).filter_by(
-    #         Staff_ID=140036,
-    #         Listing_ID=1
-    #     ).first()
-
-    #     # Delete the selected record if it exists
-    #     if application_to_delete:
-    #         db.session.delete(application_to_delete)
-    #         db.session.commit()
-
-    # def tearDown(self):
-    #     pass
-
     def create_app(self):
         # pass in test configuration
         return app
@@ -208,6 +189,84 @@ class TestCreateApplication(TestApp):
 
         # Check if the response JSON contains the expected error message
         self.assertEqual(response.json, {"error": "You have already applied for this job role."})
+
+class TestCreateJobListing(TestApp):
+
+    def test_create_job_listing(self):
+        # Prepare data for the POST request
+        data = {
+            "Role_ID": random.randint(1, 100000),
+            "Role_Name": "Software Engineer",
+            "Role_Responsibilities": "Develop and maintain software applications",
+            "Deadline": "2023-12-31",
+            "Date_Posted": "2023-10-01",
+            "Country": "USA",
+            "Hiring_Manager": 140036,
+            "Skills": ["Python", "JavaScript"]
+        }
+
+        response = self.client.post("/api/createjoblisting", json=data)
+
+        # Check if the response has a status code of 201 (created) indicating success
+        self.assertEqual(response.status_code, 201)
+
+        # Check if the response JSON contains the expected message
+        self.assertEqual(response.json, {"message": "Role created successfully, Role_SKill mapped and New Listing created."})
+
+    def test_create_existing_job_listing(self):
+        ac = Access_Control(
+            Access_ID=1,
+            Access_Control_Name="Admin"
+        )
+        staff = Staff(
+            Staff_ID = 140036,
+            Staff_FName="John",
+            Staff_LName="Doe",
+            Dept="IT",
+            Email="john@example.com",
+            Country="USA",
+            Password="password",
+            Role_ID=1,  
+            Access_Rights=1  
+        )
+        staff1 = Staff(
+            Staff_ID = 140879,
+            Staff_FName="Jane",
+            Staff_LName="Doe",
+            Dept="IT",
+            Email="sdf",
+            Country="USA",
+            Password="password",
+            Role_ID=1,
+            Access_Rights=1  
+        )
+
+        # Creating a Role instance
+        role = Role(
+            Role_Name="Engineer",
+            Role_Responsibilities="Design and develop software",
+            Role_ID=1
+        )
+    #     # Prepare data for the POST request with an existing Role_Name
+        data = {
+            "Role_ID": 1,
+            "Role_Name": "Engineer",  
+            "Role_Responsibilities": "Design and develop software",
+            "Deadline": "2023-12-31",
+            "Date_Posted": "2023-10-01",
+            "Country": "USA",
+            "Hiring_Manager": 140036,
+            "Skills": "Python"  
+        }
+        db.session.add_all([ac,staff,staff1, role])
+        db.session.commit()
+        response = self.client.post("/api/createjoblisting", json=data)
+
+        # Check if the response has a status code of 200 (OK) indicating success
+        self.assertEqual(response.status_code, 200)
+
+        # Check if the response JSON contains the expected message
+        self.assertEqual(response.json, {"message": "Role already exists, new listing created."})
 
 class TestUpdateRoleListing(TestApp):
 

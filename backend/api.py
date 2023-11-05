@@ -4,6 +4,7 @@ api.py
   REST requests and responses
 """
 import json
+import random
 from flask import Blueprint, request, jsonify
 from datetime import datetime
 # from models import db, 
@@ -43,6 +44,7 @@ def createListing():
         return jsonify({"message": "Role already exists, new listing created."}), 200  # HTTP 200 OK status code
     else:
         new_role = Role(
+            Role_ID=random.randint(1, 1000),
             Role_Name=data['Role_Name'],
             Role_Responsibilities=data['Role_Responsibilities']
         )
