@@ -208,7 +208,7 @@ def updateRoleListing(listing_id):
         data = request.get_json()
 
         role_listing.Deadline = data["Deadline"]
-        role_listing.Date_Posted = data["Dead_Posted"]
+        role_listing.Date_Posted = data["Date_Posted"]
         role_listing.Country = data["Country"]
         skill_ids = data["AddedSkills"]
         remove_skill = data["RemovedSkills"] # array of skills id
@@ -771,3 +771,21 @@ def get_role_details(role_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+@api.route('/getCreatedRoleDetails', methods=['GET'])
+def get_created_role_details():
+    try:
+        role_ids = db.session.query(RoleListing.Role_ID).distinct().all()
+        
+        if not role_ids:
+            return jsonify({"error": "No roles found"}), 404
+
+        role_details = []
+        for role_id in role_ids:
+            role = Role.query.filter(Role.Role_ID == role_id[0]).first()
+            if role:
+                role_details.append({"Role_ID": role.Role_ID, "Role_Name": role.Role_Name})
+
+        return jsonify(role_details)
+    except Exception as e:
+        return jsonify({"error": "An error occurred"}), 500

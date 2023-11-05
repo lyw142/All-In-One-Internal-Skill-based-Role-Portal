@@ -208,7 +208,7 @@ class TestCreateApplication(TestApp):
 
         # Check if the response JSON contains the expected error message
         self.assertEqual(response.json, {"error": "You have already applied for this job role."})
-    
+
 
 if __name__ == '__main__':
     unittest.main()
