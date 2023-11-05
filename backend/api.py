@@ -578,8 +578,9 @@ def getApplicantsBySkillMatch(listing_id):
 
     requiredSkill = get_required_skills_for_listing(listing_id)
     results = (
-        db.session.query(Application, Staff)
+        db.session.query(Application, Staff, Role)
         .join(Staff, Application.Staff_ID == Staff.Staff_ID)
+        .join(Role, Staff.Role_ID == Role.Role_ID)
         .filter(Application.Listing_ID == listing_id)
         .all()
     )
@@ -587,9 +588,8 @@ def getApplicantsBySkillMatch(listing_id):
     detailsdict = {}
 
     if results:
-        for app, staff in results:
+        for app, staff, role in results:
             staff_skills = get_staff_skills(app.Staff_ID)  # Retrieve skills for the staff member
-
             # Calculate the match score
             match_score = sum(1 for skill_id, skill_name in staff_skills if skill_name in requiredSkill)
 
@@ -598,7 +598,7 @@ def getApplicantsBySkillMatch(listing_id):
                 "Application_Date": str(app.Application_Date),
                 "Application_Status": app.Application_Status,
                 "Staff_ID": staff.Staff_ID,
-                "Staff_Current_Role": get_role_details(staff.Role_ID).Role_Name,
+                "Staff_Current_Role": role.Role_Name,
                 "Staff_FName": staff.Staff_FName,
                 "Staff_LName": staff.Staff_LName,
                 "Skills": [{"Skill_ID": skill_id, "Skill_Name": skill_name} for skill_id, skill_name in staff_skills],
@@ -624,11 +624,6 @@ def get_staff_skills(staff_id):
     )
 
     return [(skill,skill_name) for skill,skill_name in skills]
-
-def get_role_details(role_id):
-    role = Role.query.get(role_id)
-
-    return role
 
 def get_required_skills_for_listing(listing_id):
     results = (

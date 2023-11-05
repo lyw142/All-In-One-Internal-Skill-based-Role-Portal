@@ -89,7 +89,7 @@
           <tr>
             <th>Name</th>
             <th>Date of Application</th>
-            <th>Dynamic Match to Skills</th>
+            <th>Skills</th>
           </tr>
         </thead>
         <tbody v-if="this.selectedSkills.length == 0">
@@ -107,14 +107,15 @@
             </td>
           </tr>
           <tr v-if="sortCount == true" v-for="(application, id) in applicationsforCount" :key="id">
-            <td>{{ application.Staff_Name }}</td>
+            <td class="clickable" @click="openModal(application)">{{ application.Staff_FName }} {{ application.Staff_LName }}</td>
             <td>
-              {{ application.Application_Status }}
+              Applied
               {{ formatDate(application.Application_Date) }}
             </td>
             <td style="max-width: 300px">
-              <span v-for="skill in application.Skill" :key="skill.Staff_ID" class="skill-box">
-                {{ skill }}
+              <span v-for="skill in application.roleListing.Skills" :key="skill" class="skill-box"
+                :class="{ disabled: !checkMatch(application, skill) }">
+                {{ checkSkillMatch(application, skill) }} {{ skill }}
               </span>
             </td>
           </tr>
@@ -201,11 +202,13 @@ export default {
       this.rolecandidates = this.applications
         .filter(
           (app) =>
-            !this.selectedRole || app.Role_Name === this.selectedRole.Role_Name
+            !this.selectedRole || app.Listing_ID === this.selectedRole.Listing_ID
         )
         .sort(
           (a, b) => new Date(a.Application_Date) - new Date(b.Application_Date)
         );
+        this.getApplicantBySkillCount();
+        this.countApplications();
       return this.rolecandidates;
     },
     filteredCandidates() {
@@ -264,17 +267,17 @@ export default {
         this.applications = applications;
         // Extract unique roles from applications and store them in the roles array
         const uniqueRoles = Array.from(
-          new Set(applications.map((app) => app.Role_Name))
+          new Set(applications.map((app) => app.Listing_ID))
         );
 
         // Create a roles array with listing ID information
-        this.roles = uniqueRoles.map((roleName) => {
+        this.roles = uniqueRoles.map((Listing_ID) => {
           const matchingApp = applications.find(
-            (app) => app.Role_Name === roleName
+            (app) => app.Listing_ID === Listing_ID
           );
           return {
-            Role_Name: roleName,
-            Listing_ID: matchingApp.Listing_ID,
+            Role_Name: matchingApp.Role_Name,
+            Listing_ID: Listing_ID,
           };
         });
         applications.forEach((application) => {
@@ -303,9 +306,9 @@ export default {
     countApplications() {
       // Count the number of applications for the selected role
       if (this.selectedRole) {
-        const selectedRole = this.selectedRole.Role_Name;
+        const selectedRole = this.selectedRole.Listing_ID;
         const filteredApplications = this.applications.filter(
-          (app) => app.Role_Name === selectedRole
+          (app) => app.Listing_ID === selectedRole
         );
         this.applicationCount = filteredApplications.length;
       } else {
@@ -336,16 +339,15 @@ export default {
     },
 
     getApplicantBySkillCount() {
-      const apiUrl = `http://127.0.0.1:5000/api/getApplicantsBySkillMatch/${this.Listing_ID}`;
+      const apiUrl = `http://127.0.0.1:5000/api/getApplicantsBySkillMatch/${this.selectedRole.Listing_ID}`;
 
       axios
         .get(apiUrl)
         .then((response) => {
           // Handle the response here
           //this.candidates = response.data; // Update your data property with the fetched applicants
-          console.log(response.data);
           const applicationsArray = Object.values(response.data);
-          this.applicationsforCount = applicationsArray.reverse();
+          this.applicationsforCount = applicationsArray;
         })
         .catch((error) => {
           // Handle any error that may occur during the request
