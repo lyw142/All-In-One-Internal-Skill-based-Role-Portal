@@ -209,6 +209,102 @@ class TestCreateApplication(TestApp):
         # Check if the response JSON contains the expected error message
         self.assertEqual(response.json, {"error": "You have already applied for this job role."})
 
+class TestUpdateRoleListing(TestApp):
+
+    def setUp(self):
+        super().setUp()  # Call the parent class's setUp method
+        self.app = self.create_app()
+
+    def test_update_role_listing(self):
+
+        role = Role(
+            Role_Name="Consultant",
+            Role_Responsibilities="The Account Manager acts as a key point of contact between an organisation and its clients. He/She possesses thorough product knowledge and oversees product and/or service sales. He works with customers to identify their wants and prepares reports by collecting, analysing, and summarising sales information. He contacts existing customers to discuss and give recommendations on how specific products or services can meet their needs. He maintains customer relationships to strategically place new products and drive sales for long-term growth. He works in a fast-paced and dynamic environment, and travels frequently to clients' premises for meetings.",
+            Role_ID=7
+        )
+        
+        # Creating a RoleListing instance
+        role_listing = RoleListing(
+            Deadline=date(2023,11,9), 
+            Date_Posted=date(2023,10,30),  
+            Country="Indonesia",
+            Hiring_Manager=180001, 
+            Role_ID=7
+        )
+        
+        db.session.add_all([role, role_listing])
+        db.session.commit()
+
+        # 
+        # Prepare data for the POST request
+        data = {
+            "Deadline": "2023-12-31",
+            "Date_Posted": "2023-10-1",
+            "Role_Responsibilities": "The Account Manager acts as a key point of contact between an organisation and its clients. He/She possesses thorough product knowledge and oversees product and/or service sales. He works with customers to identify their wants and prepares reports by collecting, analysing, and summarising sales information. He contacts existing customers to discuss and give recommendations on how specific products or services can meet their needs. He maintains customer relationships to strategically place new products and drive sales for long-term growth. He works in a fast-paced and dynamic environment, and travels frequently to clients' premises for meetings.",
+            "Salary": 59001,
+            "Country": "Indonesia",
+            "AddedSkills": [5],
+            "RemovedSkills": [11, 12]
+        }
+
+        response = self.client.put("/api/updateRoleListing/1", json=data)
+
+        self.assertEqual(response.status_code, 200)
+
+        self.assertEqual(response.json, {"message": "Role listing updated successfully"})
+
+        # Check if skills are correctly added or removed in the role_skill_mapping table
+        added_skills = RoleSkillMapping.query.filter(RoleSkillMapping.Role_ID == 7, RoleSkillMapping.Skill_ID == 5).first()
+        removed_skills = RoleSkillMapping.query.filter(RoleSkillMapping.Role_ID == 7, RoleSkillMapping.Skill_ID.in_([11, 12])).all()
+
+        # Assert that the skill is added
+        self.assertIsNotNone(added_skills)
+
+        # Assert that the skills are removed
+        for skill in removed_skills:
+            self.assertIsNone(skill)
+    
+    def test_update_non_existent_role_listing(self):
+        data = {
+            "Deadline": "2023-12-31",
+            "Date_Posted": "2023-10-1",
+            "Role_Responsibilities": "Updated role responsibilities...",
+            "Salary": 59001,
+            "Country": "Indonesia",
+            "AddedSkills": [5],
+            "RemovedSkills": [11, 12]
+        }
+
+        response = self.client.put("/api/updateRoleListing/999", json=data)
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.json, {"message": "Role listing not found"})
+
+    def test_update_role_listing_with_invalid_data(self):
+        data = {
+            "Deadline": "2023-12-31",
+            "Date_Posted": "2023-10-1",
+            "Role_Responsibilities": "Updated role responsibilities...",
+            "Salary": 59001,
+            "Country": "Indonesia",
+            "AddedSkills": [5, "invalid_skill_id"],  # Invalid skill ID
+            "RemovedSkills": [11, 12]
+        }
+
+        response = self.client.put("/api/updateRoleListing/1", json=data)
+        self.assertEqual(response.status_code, 404) 
+
+    def test_update_role_listing_with_missing_data(self):
+        data = {
+            "Deadline": "2023-12-31",
+            "Date_Posted": "2023-10-1",
+            # Missing "Role_Responsibilities" and "Country"
+            "Salary": 59001,
+            "AddedSkills": [5],
+            "RemovedSkills": [11, 12]
+        }
+
+        response = self.client.put("/api/updateRoleListing/1", json=data)
+        self.assertEqual(response.status_code, 404)  
 
 if __name__ == '__main__':
     unittest.main()

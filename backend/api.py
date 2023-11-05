@@ -195,11 +195,12 @@ def getRoleListing(listing_id):
     except Exception as e:
         return jsonify({"message": "Error retrieving specific role listing", "error": str(e)}), 500
 
-@api.route("/updateRoleListing/<int:listing_id>", methods=["POST"])
+@api.route("/updateRoleListing/<int:listing_id>", methods=["PUT"])
 def updateRoleListing(listing_id):
     try:
         # Retrieve the role listing based on listing_id
-        role_listing = RoleListing.query.get(listing_id)
+        # role_listing = RoleListing.query.get(listing_id)
+        role_listing = db.session.get(RoleListing, listing_id)
 
         if not role_listing:
             return jsonify({"message": "Role listing not found"}), 404
@@ -213,7 +214,8 @@ def updateRoleListing(listing_id):
         skill_ids = data["AddedSkills"]
         remove_skill = data["RemovedSkills"] # array of skills id
 
-        role = Role.query.get(role_listing.Role_ID)
+        #role = Role.query.get(role_listing.Role_ID)
+        role = db.session.get(Role, role_listing.Role_ID)
 
         if role:
             role.Role_Responsibilities = data["Role_Responsibilities"]
