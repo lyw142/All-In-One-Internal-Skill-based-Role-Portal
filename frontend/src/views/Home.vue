@@ -1,6 +1,6 @@
 <template>
     <!-- form starts here -->
-    <div class="container">
+    <!-- <div class="container">
         <div class="image-section">
             <img src="../assets/hiring-login.jpg" alt="Image" class="image" />
         </div>
@@ -27,7 +27,40 @@
                 {{ errMsg }}
             </div>
         </div>
-    </div>
+    </div> -->
+    <section class="vh-100">
+        <div class="container-fluid h-custom">
+            <div class="row d-flex justify-content-center align-items-center h-100">
+                <div class="col-md-9 col-lg-6 col-xl-5">
+                    <img src="../assets/login.png" class="img-fluid" alt="Login image">
+                </div>
+                <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+                    <h2 class="form-title">Log in</h2>
+                    <form @submit.prevent="loginAttempt()">
+                        <!-- Email input -->
+                        <div class="form-outline mb-4">
+                            <input type="email" id="email" class="form-control form-control-lg" v-model="formData.email"
+                                required />
+                            <label class="form-label" for="email">Email address</label>
+                        </div>
+                        <!-- Password input -->
+                        <div class="form-outline mb-3">
+                            <input type="password" id="password" class="form-control form-control-lg"
+                                v-model="formData.password" required />
+                            <label class="form-label" for="password">Password</label>
+                        </div>
+                        <div class="text-center text-lg-start pt-2">
+                            <button type="submit" class="btn btn-secondary btn-lg"
+                                style="padding-left: 2.5rem; padding-right: 2.5rem;">Login</button>
+                        </div>
+                        <div id="errorMessage" v-show="showError" class="color:red;">
+                            {{ errMsg }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
 </template>
 
 <script>
@@ -41,7 +74,7 @@ export default {
                 email: '',
                 password: '',
             },
-            errMsg:'',
+            errMsg: '',
             showError: false
         };
     },
@@ -124,44 +157,30 @@ export default {
 </script>
   
 <style scoped>
-.container {
-  display: flex;
-  height: 100vh;
+.divider:after,
+.divider:before {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #eee;
 }
 
-.image-section {
-  flex: 60%; /* 70% of the width */
-  background-color: #f0f0f0; /* Optional background color for the image section */
-  display: flex;
-  justify-content: center;
-  align-items: center;
+.h-custom {
+    height: calc(100% - 73px);
 }
 
-.image {
-  max-width: 100%; /* To make sure the image fits within its container */
-  max-height: 100%;
+@media (max-width: 450px) {
+    .h-custom {
+        height: 100%;
+    }
 }
 
-.login-section {
-  flex: 40%; /* 30% of the width */
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.logo {
-  /* Style for the logo image */
-  background-color: black;
-}
-
-.login-form {
-  /* Style for the login form */
-    width:90%;
-}
-
-.center-button {
-  display: block;
-  margin: 0 auto;
+h2 {
+    line-height: 1.66;
+    margin: 0;
+    padding: 0;
+    font-weight: 700;
+    color: #222;
+    font-size: 36px;
 }
 </style>

@@ -4,7 +4,7 @@ export default {
   name: 'App',
   data() {
     return {
-      title: 'SPM Sprint 1'
+      title: 'SPM'
     }
   },
 }
