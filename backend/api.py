@@ -712,13 +712,13 @@ def get_all_roles():
 @api.route("/getRoleDetails/<int:role_id>", methods=["GET"])
 def get_role_details(role_id):
     try:
-        role_responsibilities = (
-            db.session.query(Role.Role_Responsibilities)
+        role_data = (
+            db.session.query(Role.Role_ID, Role.Role_Responsibilities)
             .filter(Role.Role_ID == role_id)
             .first()
         )
 
-        if not role_responsibilities:
+        if not role_data:
             return jsonify({"error": "Role not found"}), 404
 
         role_listing_data = (
@@ -759,7 +759,8 @@ def get_role_details(role_id):
         )
 
         response_data = {
-            "Role_Responsibilities": role_responsibilities[0],
+            "Role_ID": role_data[0],  # Include the Role_ID
+            "Role_Responsibilities": role_data[1],
             "Hiring_Manager": hiring_manager,
             "Staff_FName": staff_data[0],
             "Staff_LName": staff_data[1],
@@ -770,6 +771,7 @@ def get_role_details(role_id):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
 
 @api.route('/getCreatedRoleDetails', methods=['GET'])
 def get_created_role_details():
