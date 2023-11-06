@@ -109,18 +109,6 @@
                 </div>
             </div>
 
-
-            <!-- Salary -->
-            <div class="form-group mb-3">
-                <div class="row">
-                    <div class="col-6">
-                        <label for="roleSalary">Salary ($ per year)</label>
-                        <input type="number" class="form-control" id="roleSalary" :value="Salary"
-                            @input="Salary = $event.target.value.toString()" required pattern="[0-9]{1,11}"
-                            title="(Use numbers only)" />
-                    </div>
-                </div>
-            </div>
             <div class="row">
                 <!-- Date Posted -->
                 <div class="form-group mb-3 col-6">
@@ -170,7 +158,6 @@ export default {
             Role_Responsibilities: "",
             Role_Requirements: "",
             Dept: "",
-            Salary: "",
             Skills: [],
             Deadline: "",
             Date_Posted: "",
@@ -187,7 +174,6 @@ export default {
                     Role_Responsibilities: this.Role_Responsibilities,
                     // Role_Requirements: this.Role_Requirements,
                     Dept: this.Dept,
-                    Salary: this.Salary,
                     Skills: this.selectedSkills,
                     Deadline: this.Deadline,
                     Date_Posted: this.Date_Posted,
