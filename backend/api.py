@@ -818,3 +818,24 @@ def get_unique_country():
         return jsonify(country_details)
     except Exception as e:
         return jsonify({"error": "An error occurred"}), 500
+
+@api.route('/createjoblistingAnother', methods=['POST'])
+def create_new_job_listing():
+    data = request.get_json()
+    
+    if data:
+        # Create a new RoleListing entry for the existing role
+        role_listing = RoleListing(
+            Deadline=data['Deadline'],
+            Date_Posted=data['Date_Posted'],
+            Country=data['Country'],
+            Hiring_Manager=data['Hiring_Manager'],
+            Role_ID=data['Role_ID']  # Use the existing role's ID
+        )
+        db.session.add(role_listing)
+        db.session.commit()
+        
+        # After the entry is created, you can access its role_listing_id
+        role_listing_id = role_listing.Listing_ID  # Assuming you have an id field in your RoleListing model
+        
+        return jsonify({"message": "New listing created.", "role_listing_id": role_listing_id}), 200  # Return the role_listing_id along with a success message
