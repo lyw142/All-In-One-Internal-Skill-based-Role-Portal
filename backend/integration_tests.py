@@ -406,5 +406,46 @@ class TestUpdateRoleListing(TestApp):
         response = self.client.put("/api/updateRoleListing/1", json=data)
         self.assertEqual(response.status_code, 200)
 
+    def test_invalid_role_listing_id(self):
+        role = Role(
+            Role_Name="Consultant",
+            Role_Responsibilities="The Account Manager acts as a key point of contact between an organisation and its clients. He/She possesses thorough product knowledge and oversees product and/or service sales. He works with customers to identify their wants and prepares reports by collecting, analysing, and summarising sales information. He contacts existing customers to discuss and give recommendations on how specific products or services can meet their needs. He maintains customer relationships to strategically place new products and drive sales for long-term growth. He works in a fast-paced and dynamic environment, and travels frequently to clients' premises for meetings.",
+            Role_ID=7
+        )
+        
+        # Creating a RoleListing instance
+        role_listing = RoleListing(
+            Deadline=date(2023,11,9), 
+            Date_Posted=date(2023,10,30),  
+            Country="Indonesia",
+            Hiring_Manager=180001, 
+            Role_ID=7
+        )
+
+        role_skill_mapping_entries = [
+            RoleSkillMapping(Role_ID=7, Skill_ID=1),
+            RoleSkillMapping(Role_ID=7, Skill_ID=4),
+            RoleSkillMapping(Role_ID=7, Skill_ID=12)
+        ]
+        db.session.add_all(role_skill_mapping_entries)
+        db.session.add_all([role, role_listing])
+        db.session.commit()
+
+        invalid_id = 100 
+        data = {
+            "Deadline": "2023-11-9",
+            "Date_Posted": "2023-10-30",
+            "Role_Responsibilities": "Updated responsibilities",
+            "Salary": 59001,
+            "Country": "Indonesia",
+            "AddedSkills": [5],
+            "RemovedSkills": [1, 12]
+        }
+        response = self.client.put(f"/api/updateRoleListing/{invalid_id}", json=data)
+
+        self.assertEqual(response.status_code, 404)
+
+        self.assertEqual(response.json, {"message": "Role listing not found"})
+
 if __name__ == '__main__':
     unittest.main()
