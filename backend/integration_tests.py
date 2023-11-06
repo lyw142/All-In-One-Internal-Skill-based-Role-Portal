@@ -566,5 +566,44 @@ class TestUpdateRoleListing(TestApp):
         expected_result = ["USA", "Singapore"]
         self.assertEqual(response.json, expected_result)
 
+    def test_get_unique_dept(self):
+        # Insert some sample data into the Staff table
+        staff_entries = [
+            Staff(
+            Staff_ID = 140036,
+            Staff_FName="John",
+            Staff_LName="Doe",
+            Dept="IT",
+            Email="john@example.com",
+            Country="USA",
+            Password="password",
+            Role_ID=1,  
+            Access_Rights=1  
+        ),
+            Staff(
+            Staff_ID = 140879,
+            Staff_FName="Jane",
+            Staff_LName="Doe",
+            Dept="Finance",
+            Email="sdf",
+            Country="Singapore",
+            Password="password",
+            Role_ID=1,
+            Access_Rights=1  
+        )
+        ]
+
+        db.session.add_all(staff_entries)
+        db.session.commit()
+
+        # Send a GET request to retrieve unique country values
+        response = self.client.get("/api/getUniqueDept")
+
+        self.assertEqual(response.status_code, 200)
+
+        # Check if the response JSON contains the unique country values
+        expected_result = ["IT", "Finance"]
+        self.assertEqual(response.json, expected_result)
+
 if __name__ == '__main__':
     unittest.main()
