@@ -329,5 +329,19 @@ class TestUpdateRoleListing(TestApp):
         for skill in removed_skills:
             self.assertIsNone(skill)
 
+    def test_invalid_role_id(self):
+        data = {
+            "Deadline": "2023-12-31",
+            "Date_Posted": "2023-10-1",
+            "Role_Responsibilities": "Updated responsibilities",
+            "Salary": 59001,
+            "Country": "Indonesia",
+            "AddedSkills": [5],
+            "RemovedSkills": [1, 12]
+        }
+
+        response = self.client.put("/api/updateRoleListing/999", json=data)
+        self.assertEqual(response.status_code, 404)
+
 if __name__ == '__main__':
     unittest.main()
