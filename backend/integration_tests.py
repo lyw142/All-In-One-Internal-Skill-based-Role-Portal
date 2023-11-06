@@ -605,5 +605,34 @@ class TestUpdateRoleListing(TestApp):
         expected_result = ["IT", "Finance"]
         self.assertEqual(response.json, expected_result)
 
+    def test_get_created_role_details(self):
+        role = Role(
+            Role_Name="Consultant",
+            Role_Responsibilities="The Account Manager acts as a key point of contact between an organisation and its clients. He/She possesses thorough product knowledge and oversees product and/or service sales. He works with customers to identify their wants and prepares reports by collecting, analysing, and summarising sales information. He contacts existing customers to discuss and give recommendations on how specific products or services can meet their needs. He maintains customer relationships to strategically place new products and drive sales for long-term growth. He works in a fast-paced and dynamic environment, and travels frequently to clients' premises for meetings.",
+            Role_ID=7
+        )
+        
+        # Creating a RoleListing instance
+        role_listing = RoleListing(
+            Deadline=date(2023,11,9), 
+            Date_Posted=date(2023,10,30),  
+            Country="Indonesia",
+            Hiring_Manager=180001, 
+            Role_ID=7
+        )
+        db.session.add_all([role, role_listing])
+        db.session.commit()
+
+        response = self.client.get("/api/getCreatedRoleDetails")
+
+        self.assertEqual(response.status_code, 200)
+
+        # Check if the response JSON contains the expected role details
+        expected_result = [
+            {"Role_ID": 7, "Role_Name": "Consultant"}
+        ]
+        self.assertEqual(response.json, expected_result)
+
+
 if __name__ == '__main__':
     unittest.main()
