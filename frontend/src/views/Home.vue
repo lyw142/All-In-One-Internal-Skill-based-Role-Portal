@@ -40,18 +40,18 @@
                     <form @submit.prevent="loginAttempt()">
                         <!-- Email input -->
                         <div class="form-outline mb-4">
-                            <input type="email" id="email" class="form-control form-control-lg"
-                                placeholder="Enter a valid email address" v-model="formData.email" required />
-                            <label class="form-label" for="form3Example3">Email address</label>
+                            <input type="email" id="email" class="form-control form-control-lg" v-model="formData.email"
+                                required />
+                            <label class="form-label" for="email">Email address</label>
                         </div>
                         <!-- Password input -->
                         <div class="form-outline mb-3">
                             <input type="password" id="password" class="form-control form-control-lg"
-                                placeholder="Enter password" v-model="formData.password" required />
-                            <label class="form-label" for="form3Example4">Password</label>
+                                v-model="formData.password" required />
+                            <label class="form-label" for="password">Password</label>
                         </div>
                         <div class="text-center text-lg-start pt-2">
-                            <button type="submit" class="btn btn-primary btn-lg"
+                            <button type="submit" class="btn btn-secondary btn-lg"
                                 style="padding-left: 2.5rem; padding-right: 2.5rem;">Login</button>
                         </div>
                         <div id="errorMessage" v-show="showError" class="color:red;">
