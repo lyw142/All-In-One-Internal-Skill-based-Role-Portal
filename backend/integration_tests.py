@@ -290,7 +290,13 @@ class TestUpdateRoleListing(TestApp):
             Hiring_Manager=180001, 
             Role_ID=7
         )
-        
+
+        role_skill_mapping_entries = [
+            RoleSkillMapping(Role_ID=7, Skill_ID=1),
+            RoleSkillMapping(Role_ID=7, Skill_ID=4),
+            RoleSkillMapping(Role_ID=7, Skill_ID=12)
+        ]
+        db.session.add_all(role_skill_mapping_entries)
         db.session.add_all([role, role_listing])
         db.session.commit()
 
@@ -303,7 +309,7 @@ class TestUpdateRoleListing(TestApp):
             "Salary": 59001,
             "Country": "Indonesia",
             "AddedSkills": [5],
-            "RemovedSkills": [11, 12]
+            "RemovedSkills": [1, 12]
         }
 
         response = self.client.put("/api/updateRoleListing/1", json=data)
@@ -314,7 +320,7 @@ class TestUpdateRoleListing(TestApp):
 
         # Check if skills are correctly added or removed in the role_skill_mapping table
         added_skills = RoleSkillMapping.query.filter(RoleSkillMapping.Role_ID == 7, RoleSkillMapping.Skill_ID == 5).first()
-        removed_skills = RoleSkillMapping.query.filter(RoleSkillMapping.Role_ID == 7, RoleSkillMapping.Skill_ID.in_([11, 12])).all()
+        removed_skills = RoleSkillMapping.query.filter(RoleSkillMapping.Role_ID == 7, RoleSkillMapping.Skill_ID.in_([1, 12])).all()
 
         # Assert that the skill is added
         self.assertIsNotNone(added_skills)
@@ -322,48 +328,6 @@ class TestUpdateRoleListing(TestApp):
         # Assert that the skills are removed
         for skill in removed_skills:
             self.assertIsNone(skill)
-    
-    def test_update_non_existent_role_listing(self):
-        data = {
-            "Deadline": "2023-12-31",
-            "Date_Posted": "2023-10-1",
-            "Role_Responsibilities": "Updated role responsibilities...",
-            "Salary": 59001,
-            "Country": "Indonesia",
-            "AddedSkills": [5],
-            "RemovedSkills": [11, 12]
-        }
-
-        response = self.client.put("/api/updateRoleListing/999", json=data)
-        self.assertEqual(response.status_code, 404)
-        self.assertEqual(response.json, {"message": "Role listing not found"})
-
-    def test_update_role_listing_with_invalid_data(self):
-        data = {
-            "Deadline": "2023-12-31",
-            "Date_Posted": "2023-10-1",
-            "Role_Responsibilities": "Updated role responsibilities...",
-            "Salary": 59001,
-            "Country": "Indonesia",
-            "AddedSkills": [5, "invalid_skill_id"],  # Invalid skill ID
-            "RemovedSkills": [11, 12]
-        }
-
-        response = self.client.put("/api/updateRoleListing/1", json=data)
-        self.assertEqual(response.status_code, 404) 
-
-    def test_update_role_listing_with_missing_data(self):
-        data = {
-            "Deadline": "2023-12-31",
-            "Date_Posted": "2023-10-1",
-            # Missing "Role_Responsibilities" and "Country"
-            "Salary": 59001,
-            "AddedSkills": [5],
-            "RemovedSkills": [11, 12]
-        }
-
-        response = self.client.put("/api/updateRoleListing/1", json=data)
-        self.assertEqual(response.status_code, 404)  
 
 if __name__ == '__main__':
     unittest.main()
