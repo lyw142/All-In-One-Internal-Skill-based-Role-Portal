@@ -191,11 +191,11 @@
           <label for="roleSkills">Skills required</label>
           <select class="form-select" v-model="existingRoleFormData.selectedSkill" @change="addExistingRoleSkill" id="roleSkills">
             <option value="" disabled>Select a skill</option>
-            <option v-for="skill in availableSkills" :key="skill.Skill_ID" :value="skill.Skill_Name">{{ skill.Skill_Name }}</option>
+            <option v-for="skill in availableSkills" :key="skill.Skill_ID" :value="skill.Skill_ID">{{ skill.Skill_Name }}</option>
           </select>
           <ul style="margin-top: 5px;">
-            <li class="skill-box mb-2" v-for="(skill, index) in existingRoleFormData.selectedSkills" :key="index">{{ skill }}
-                <button @click="removeExistingRoleSkill(index)" style="border: none; background: none; cursor: pointer;">
+            <li class="skill-box mb-2" v-for="skill in existingRoleFormData.selectedSkills" :key="skill.Skill_ID">{{ skill.Skill_Name }}
+              <button @click="removeExistingRoleSkill(skill.Skill_ID)" style="border: none; background: none; cursor: pointer;">
                 <img src="../assets/images/closeicon.png" alt="Remove" style="border-radius: 5px; width: 15px; height: 15px;">
               </button>
             </li>
@@ -268,6 +268,8 @@
       Hiring_Manager: "",
       Country: "",
       selectedSkills: [],
+      removedSkills: [],
+      addSkills: [],
       selectedSkill: '',
       Role_ID: '', // Add a property for storing the listing ID
     },
@@ -301,10 +303,10 @@
       },
 
       submitexistingroleform() {
-  console.log("Submitting existingRoleForm");
-  console.log("role_id before API call: " + this.existingRoleFormData.Role_ID);
-  console.log("role_id before API call: " + this.existingRoleFormData.Country);
-  console.log("role_id before API call: " + this.existingRoleFormData.Hiring_Manager);
+  // console.log("Submitting existingRoleForm");
+  // console.log("role_id before API call: " + this.existingRoleFormData.Role_ID);
+  // console.log("role_id before API call: " + this.existingRoleFormData.Country);
+  // console.log("role_id before API call: " + this.existingRoleFormData.Hiring_Manager);
   if (this.existingRoleFormData.Deadline > this.existingRoleFormData.Date_Posted) {
     axios.post('http://127.0.0.1:5000/api/createjoblistingAnother', {
       Deadline: this.existingRoleFormData.Deadline,
@@ -347,9 +349,9 @@
     Deadline: this.existingRoleFormData.Deadline,
     Date_Posted: this.existingRoleFormData.Date_Posted,
     Country: this.existingRoleFormData.Country,
-    AddedSkills: this.existingRoleFormData.selectedSkills,
+    AddedSkills: this.existingRoleFormData.addSkills,
     RemovedSkills: this.existingRoleFormData.removedSkills,
-    // Role_Responsibilities: this.existingRoleFormData.Role_Responsibilities
+    Role_Responsibilities: this.existingRoleFormData.Role_Responsibilities
   })
   .then(response => {
     console.log(response);
@@ -375,14 +377,44 @@
     },
 
     addExistingRoleSkill() {
+
         if (this.existingRoleFormData.selectedSkill && !this.existingRoleFormData.selectedSkills.includes(this.existingRoleFormData.selectedSkill)) {
-        this.existingRoleFormData.selectedSkills.push(this.existingRoleFormData.selectedSkill);
-        this.existingRoleFormData.selectedSkill = ''; // Clear the selected skill after adding
-        }
+          const selectedSkill = this.availableSkills.find(skill => skill.Skill_ID === this.existingRoleFormData.selectedSkill);
+          const selectedSkillObj = {
+            Skill_ID: this.existingRoleFormData.selectedSkill,
+            Skill_Name: selectedSkill.Skill_Name,
+          };
+          this.existingRoleFormData.addSkills.push(selectedSkill.Skill_ID);
+          this.existingRoleFormData.selectedSkills.push(selectedSkillObj);
+          
+          this.availableSkills = this.availableSkills.filter(skill => skill.Skill_ID !== this.existingRoleFormData.selectedSkill);
+          this.existingRoleFormData.selectedSkill = ''; // Clear the selected skill after adding
+          // console.log('addSkills array:', this.existingRoleFormData.selectedSkills);
+          // console.log('new skills id', this.existingRoleFormData.addSkills)
+      }
     },
 
-    removeExistingRoleSkill(index) {
+    removeExistingRoleSkill(skillId) {
+      // Find the index of the skill with the matching Skill_ID
+      const index = this.existingRoleFormData.selectedSkills.findIndex(skill => skill.Skill_ID === skillId);
+
+      if (index !== -1) {
+        // Get the Skill_ID of the skill
+        const removedSkillId = this.existingRoleFormData.selectedSkills[index].Skill_ID;
+        
+        // // Log to the console
+        // console.log(`Removed skill with Skill_ID ${removedSkillId}`);
+
+        // Remove the skill at the found index
         this.existingRoleFormData.selectedSkills.splice(index, 1);
+        
+        // Append the removed skill's Skill_ID to the removedSkills array
+        this.existingRoleFormData.removedSkills.push(removedSkillId);
+
+        // // Log to the console
+        // console.log('Updated selectedSkills array:', this.existingRoleFormData.selectedSkills);
+        // console.log('Removed Skill_ID appended to removedSkills array:', this.existingRoleFormData.removedSkills);
+      }
     },
         
       // Retrieve user session data from a cookie
@@ -436,7 +468,7 @@ fetchRoleDetails() {
       this.existingRoleFormData.Date_Posted = response.data.Date_Posted;
       this.existingRoleFormData.Hiring_Manager = response.data.Hiring_Manager;
       this.existingRoleFormData.Country = response.data.Country;
-      this.existingRoleFormData.selectedSkills = response.data.Skills.map((skill) => skill.Skill_Name);
+      this.existingRoleFormData.selectedSkills = response.data.Skills;
       this.existingRoleFormData.Role_ID = response.data.Role_ID;
     });
   }
