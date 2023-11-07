@@ -39,15 +39,15 @@
                     <form @submit.prevent="loginAttempt()">
                         <!-- Email input -->
                         <div class="form-outline mb-4">
+                            <label class="form-label" for="email">Email address</label>
                             <input type="email" id="email" class="form-control form-control-lg" v-model="formData.email"
                                 required />
-                            <label class="form-label" for="email">Email address</label>
                         </div>
                         <!-- Password input -->
                         <div class="form-outline mb-3">
+                            <label class="form-label" for="password">Password</label>
                             <input type="password" id="password" class="form-control form-control-lg"
                                 v-model="formData.password" required />
-                            <label class="form-label" for="password">Password</label>
                         </div>
                         <div class="text-center text-lg-start pt-2">
                             <button type="submit" class="btn btn-secondary btn-lg"

@@ -50,7 +50,7 @@
             <label for="roleHiringManager">Hiring Manager</label>
             <select class="form-select" v-model="newRoleFormData.Hiring_Manager" style="margin-left: 10px;" id="roleHiringManager" required>
               <option value="" disabled>Select a Hiring Manager</option>
-              <option v-for="person in hiringmanagers" :value="person.Staff_ID">{{ person.Staff_FName }} {{ person.Staff_LName }}</option>
+              <option v-for="person in hiringmanagers" :value="person.Staff_ID">{{ person.Staff_FName }} {{ person.Staff_LName }} [{{ person.Dept }}, {{ person.Country }}]</option>
             </select>
           </div>
           <!-- Department -->
@@ -144,7 +144,7 @@
           <label for="roleHiringManager">Hiring Manager</label>
           <select class="form-select" v-model="existingRoleFormData.Hiring_Manager" id="roleHiringManager" required>
             <option value="" disabled>Select a Hiring Manager</option>
-            <option v-for="person in hiringmanagers" :value="person.Staff_ID">{{ person.Staff_FName }} {{ person.Staff_LName }}</option>
+            <option v-for="person in hiringmanagers" :value="person.Staff_ID">{{ person.Staff_FName }} {{ person.Staff_LName }} [{{ person.Dept }}, {{ person.Country }}]</option>
           </select>
         </div>
         <!-- Department -->
@@ -493,10 +493,22 @@ fetchRoleDetails() {
       axios.get('http://127.0.0.1:5000/api/skills').then(response => this.availableSkills = response.data)
       axios.get('http://127.0.0.1:5000/api/getstaffwithaccess>3').then(response => this.hiringmanagers = response.data)
       axios.get('http://127.0.0.1:5000/api/getAllRoles').then(response => this.allRoles = response.data)
-      axios.get('http://127.0.0.1:5000/api/getCreatedRoleDetails').then(response => this.availableRoles = response.data)
+      axios.get('http://127.0.0.1:5000/api/getAllRoles').then(response => this.availableRoles = response.data)
+      //axios.get('http://127.0.0.1:5000/api/getCreatedRoleDetails').then(response => this.availableRoles = response.data)
       axios.get('http://127.0.0.1:5000/api/getUniqueCountry').then(response => this.countries = response.data)
-      axios.get('http://127.0.0.1:5000/api/getUniqueDept').then(response => this.departments = response.data)
-      this.fetchCreatedRoleDetails(); // Fetch created role details
+      //axios.get('http://127.0.0.1:5000/api/getUniqueDept').then(response => this.departments = response.data)
+      axios.get('http://127.0.0.1:5000/api/getUniqueDept')
+        .then(response => {
+          const excludedDepartments = ['CEO', 'Chairman']; // Add the names you want to exclude
+
+          this.departments = response.data.filter(department => !excludedDepartments.includes(department));
+        })
+        .catch(error => {
+          // Handle errors here
+          this.departments = response.data
+        });
+
+      //this.fetchCreatedRoleDetails(); // Fetch created role details
 
     }
   };
