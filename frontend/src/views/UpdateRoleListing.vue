@@ -69,8 +69,10 @@
 
                 <div class="form-group col-6">
                     <label for="department">Country</label>
-                    <input type="text" class="form-control" id="country" v-model="this.Country" required maxlength="20"
-                        pattern="[A-Za-z\s]+" title="(Use alphabets only)" />
+                    <select class="form-select" v-model="this.Country" id="country" required>
+                        <option value="" disabled>Select a Country</option>
+                        <option v-for="countryName in this.CountryList" :value="countryName">{{ countryName }}</option>
+                    </select>
                 </div>
             </div>
 
@@ -125,6 +127,7 @@ export default {
             Deadline: "",
             Country: "",
             Date_Posted: "",
+            countryList: []
 
         };
     },
@@ -184,7 +187,7 @@ export default {
 
             // Check if the deadline is after the date_created
             if (this.Deadline > this.Date_Posted) {
-                axios.post(url, {
+                axios.put(url, {
                     Role_Responsibilities: this.Role_Responsibilities,
                     Date_Posted: this.Date_Posted,
                     AddedSkills: this.addedSkills_ID,
@@ -233,6 +236,7 @@ export default {
     },
     mounted() {
         this.getUserSessionData();
+        axios.get('http://127.0.0.1:5000/api/getUniqueCountry').then(response => this.CountryList = response.data)
         const apiUrl = `http://127.0.0.1:5000/api/getRoleListing/${this.Listing_ID}`;
         axios.get(apiUrl).then(response => {
             this.Role_Responsibilities = response.data[0].Role_Responsibilities;

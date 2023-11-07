@@ -277,6 +277,40 @@ def findClosedJobListings():
 
     return jsonify(role_listings_json)
 
+@api.route("/HRopenpendingjoblistings")
+def findAllOpenPendingJobListings():
+    current_date = datetime.now().date()
+
+    # Perform joins to retrieve role listings with Hiring Manager and Role Name
+    query = (
+        db.session.query(RoleListing, Staff.Staff_FName, Staff.Staff_LName, Role.Role_Name, Role.Role_Responsibilities)
+        .join(Staff, RoleListing.Hiring_Manager == Staff.Staff_ID)
+        .join(Role, RoleListing.Role_ID == Role.Role_ID)
+        .filter(RoleListing.Deadline >= current_date)
+        .order_by(desc(RoleListing.Date_Posted))
+    )
+
+    # Execute the query and retrieve the results
+    results = query.all()
+
+    # Convert the results into a JSON format
+    role_listings_json = []
+    for role_listing, hiring_manager_fname, hiring_manager_lname, role_name, role_responsibilities in results:
+        result1, result2 = retrieveAllSkillsFromRoleListing(role_listing.Role_ID)
+        role_listing_data = {
+            "Listing_ID": role_listing.Listing_ID,
+            "Deadline": str(role_listing.Deadline),
+            "Date_Posted": str(role_listing.Date_Posted),
+            "Hiring_Manager": hiring_manager_fname + " " + hiring_manager_lname,
+            "Role_Name": role_name,
+            "Role_Responsibilities": role_responsibilities,
+            "Role_Requirements": result2,
+            "Skills": result1
+        }
+        role_listings_json.append(role_listing_data)
+
+    return jsonify(role_listings_json)
+
 #skills api endpoint (clement)
 @api.route("/skills", methods=['GET'])  # Define a new endpoint for retrieving skills
 def getSkills():
@@ -287,8 +321,11 @@ def getSkills():
         # Convert the skills to a list of dictionaries
         skills_data = [{"Skill_ID": skill.Skill_ID, "Skill_Name": skill.Skill_Name, "Skill_Desc" : skill.Skill_Desc, "Skill_Status": skill.Skill_Status} for skill in skills]
 
-        # Return the skills as JSON response
-        return jsonify(skills_data), 200
+        # Sort skills_data by 'Skill_Name'
+        skills_data_sorted = sorted(skills_data, key=lambda skill: skill['Skill_Name'])
+
+        # Return the sorted skills_data as a JSON response
+        return jsonify(skills_data_sorted), 200
 
     except Exception as e:
         return jsonify({"message": "Error retrieving list of skills", "error": str(e)}), 500
@@ -650,7 +687,9 @@ def get_staff_information_above_access_3():
     if not staff_above_access_3:
         return jsonify({"message": "No staff with access rights greater than or equal to 3 found."}), 404
 
-    staff_list = [staff.get_staff_details() for staff in staff_above_access_3]
+    # Sort staff_list by 'Role_Name'
+    staff_list = sorted([staff.get_staff_details() for staff in staff_above_access_3], key=lambda x: x.get('Staff_FName'))
+
     return jsonify(staff_list), 200
 
 @api.route("/getAllStaffDetails", methods=["GET"])
@@ -690,19 +729,20 @@ def getAllStaffDetails():
 @api.route("/getAllRoles", methods=["GET"])
 def get_all_roles():
     try:
-        roles = (
-            db.session.query(
-                Role.Role_ID,
-                Role.Role_Name
-            )
-            .all()
-        )
+        roles = db.session.query(
+            Role.Role_ID,
+            Role.Role_Name
+        ).all()
+
+        # Sort the roles by 'Role_Name'
+        sorted_roles = sorted(roles, key=lambda role: role.Role_Name)
+
         role_data = [
             {
                 "Role_ID": role.Role_ID,
                 "Role_Name": role.Role_Name,
             }
-            for role in roles
+            for role in sorted_roles
         ]
 
         return jsonify(role_data)
@@ -727,19 +767,18 @@ def get_role_details(role_id):
             .first()
         )
 
+        staff_data = [{"Staff_FName" : ""}, {"Staff_LName" : ""}]
+        if role_listing_data:
+            hiring_manager = role_listing_data[0]
+            staff_data = (
+                db.session.query(Staff.Staff_FName, Staff.Staff_LName)
+                .filter(Staff.Staff_ID == hiring_manager)
+                .first()
+            )
+
         if not role_listing_data:
-            return jsonify({"error": "Role data not found"}), 404
-
-        hiring_manager = role_listing_data[0]
-
-        staff_data = (
-            db.session.query(Staff.Staff_FName, Staff.Staff_LName)
-            .filter(Staff.Staff_ID == hiring_manager)
-            .first()
-        )
-
-        if not staff_data:
-            return jsonify({"error": "Staff data not found for this Hiring_Manager"}), 404
+        #    return jsonify({"error": "Role data not found"}), 404
+            hiring_manager = ""
 
         skill_ids = (
             db.session.query(RoleSkillMapping.Skill_ID)
@@ -794,15 +833,20 @@ def get_created_role_details():
 @api.route('/getUniqueDept', methods=['GET'])
 def get_unique_dept():
     try:
-        # Query the Staff table to get distinct Dept values
+       # Query the Staff table to get distinct Dept values
         unique_dept = db.session.query(Staff.Dept).distinct().all()
 
         if not unique_dept:
             return jsonify({"error": "No unique Dept values found"}), 404
 
+        # Extract the 'Dept' values from the list
         dept_details = [dept[0] for dept in unique_dept]
 
-        return jsonify(dept_details)
+        # Sort the 'dept_details' list by 'Dept' values
+        sorted_dept_details = sorted(dept_details)
+
+        return jsonify(sorted_dept_details)
+
     except Exception as e:
         return jsonify({"error": "An error occurred"}), 500
 
@@ -817,7 +861,11 @@ def get_unique_country():
 
         country_details = [country[0] for country in unique_country]
 
-        return jsonify(country_details)
+         # Sort the 'dept_details' list by 'Dept' values
+        sorted_country_details = sorted(country_details)
+
+        return jsonify(sorted_country_details)
+    
     except Exception as e:
         return jsonify({"error": "An error occurred"}), 500
 

@@ -19,7 +19,7 @@
           'btn-secondary': selectedStatus === 'open',
           'btn-outline-secondary': selectedStatus !== 'open',
         }" class="btn btn-sm btn pr-2" @click="toggleStatus('open')">
-          Open and paused <span v-if="openCount !== null">({{ openCount }})</span>
+          Open and pending <span v-if="openCount !== null">({{ openCount }})</span>
         </button>
         <button :class="{
           'btn-secondary': selectedStatus === 'closed',
@@ -172,7 +172,7 @@ export default {
       return daysRemaining;
     },
     loadJobListings() {
-      const apiUrl = `http://127.0.0.1:5000/api/${this.selectedStatus === "open" ? "open" : "closed"
+      const apiUrl = `http://127.0.0.1:5000/api/${this.selectedStatus === "open" ? "HRopenpending" : "closed"
         }joblistings`;
 
       axios
