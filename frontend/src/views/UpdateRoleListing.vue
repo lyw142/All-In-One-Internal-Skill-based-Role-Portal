@@ -127,7 +127,7 @@ export default {
             Deadline: "",
             Country: "",
             Date_Posted: "",
-            countryList: []
+            CountryList: []
 
         };
     },
