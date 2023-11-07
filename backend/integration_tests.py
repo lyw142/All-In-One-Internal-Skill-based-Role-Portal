@@ -563,7 +563,7 @@ class TestUpdateRoleListing(TestApp):
         self.assertEqual(response.status_code, 200)
 
         # Check if the response JSON contains the unique country values
-        expected_result = ["USA", "Singapore"]
+        expected_result = ["Singapore", "USA"]
         self.assertEqual(response.json, expected_result)
 
     def test_get_unique_dept(self):
@@ -602,7 +602,7 @@ class TestUpdateRoleListing(TestApp):
         self.assertEqual(response.status_code, 200)
 
         # Check if the response JSON contains the unique country values
-        expected_result = ["IT", "Finance"]
+        expected_result = ["Finance", "IT"]
         self.assertEqual(response.json, expected_result)
 
     def test_get_created_role_details(self):
