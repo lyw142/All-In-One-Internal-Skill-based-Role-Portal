@@ -647,12 +647,20 @@ def getApplicantsBySkillMatch(listing_id):
             detailsdict["Application Number: " + str(app.Application_ID)] = staff_data
 
     # Sort the dictionary by the "Score" values in descending order
-    sorted_data = dict(sorted(detailsdict.items(), key=lambda x: x[1]["Score"], reverse=True))
+    #sorted_data = dict(sorted(detailsdict.items(), key=lambda x: (x[1]["Score"], x[1]["Staff_FName"]), reverse=True))
+
+    # Convert the sorted dictionary back to JSON format
+    #sorted_json = json.dumps(sorted_data, indent=4)
+
+    #return sorted_json
+    # Sort the dictionary by "Score" values in descending order, and then by "Staff_FName" in ascending order
+    sorted_data = dict(sorted(detailsdict.items(), key=lambda x: (x[1]["Score"], x[1]["Staff_FName"]), reverse=True))
 
     # Convert the sorted dictionary back to JSON format
     sorted_json = json.dumps(sorted_data, indent=4)
 
     return sorted_json
+
 
 def get_staff_skills(staff_id):
     skills = (
