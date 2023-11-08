@@ -456,7 +456,9 @@ def create_application():
         application_status = "Received"
         staff_id = request.json["Staff_ID"]
         listing_id = request.json["Listing_ID"]
-
+        # Check if Staff_ID and Listing_ID are valid integers
+        if not (isinstance(staff_id, int) and isinstance(listing_id, int)):
+            raise ValueError("Staff_ID and Listing_ID must be integers")
 
         # Check if Staff_ID already exists in the Application table
         existing_application = Application.query.filter_by(Staff_ID=staff_id,Listing_ID=listing_id).first()

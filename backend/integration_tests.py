@@ -190,6 +190,27 @@ class TestCreateApplication(TestApp):
         # Check if the response JSON contains the expected error message
         self.assertEqual(response.json, {"error": "You have already applied for this job role."})
 
+    def test_create_application_missing_key(self):
+        # Test when a required key is missing in the JSON data
+        data = {
+            "Listing_ID": 1  # Missing the "Staff_ID" key
+        }
+        response = self.client.post("/api/applyforopenrole", json=data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, {"error": "Missing required key: 'Staff_ID'"})
+    
+    def test_create_application_invalid_value(self):
+        # Test when the Staff_ID value is not an integer
+        data = {
+            "Staff_ID": "invalid_staff_id",
+            "Listing_ID": 1
+        }
+        response = self.client.post("/api/applyforopenrole", json=data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, {"error": "Invalid value: Staff_ID and Listing_ID must be integers"})
+
+
+
 class TestCreateJobListing(TestApp):
 
     def test_create_job_listing(self):
@@ -267,6 +288,39 @@ class TestCreateJobListing(TestApp):
 
         # Check if the response JSON contains the expected message
         self.assertEqual(response.json, {"message": "Role already exists, new listing created."})
+
+
+    def test_create_job_listing_missing_required_field(self):
+        # Test when a required field is missing in the JSON data
+        data = {
+            "Role_ID": random.randint(1, 100000),
+            "Role_Responsibilities": "Develop and maintain software applications",
+            "Deadline": "2023-12-31",
+            "Date_Posted": "2023-10-01",
+            "Country": "USA",
+            "Hiring_Manager": 140036,
+            "Skills": ["Python", "JavaScript"]
+        }
+        response = self.client.post("/api/createjoblisting", json=data)
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.json, {"error": "Role_Name must be a string"})
+    
+    
+    def test_create_job_listing_no_skills(self):
+        # Test when no skills are provided in the "Skills" list
+        data = {
+            "Role_ID": random.randint(1, 100000),
+            "Role_Name": "Software Engineer",
+            "Role_Responsibilities": "Develop and maintain software applications",
+            "Deadline": "2023-12-31",
+            "Date_Posted": "2023-10-01",
+            "Country": "USA",
+            "Hiring_Manager": 140036,
+            "Skills": []  # Empty skills list
+        }
+        response = self.client.post("/api/createjoblisting", json=data)
+        self.assertEqual(response.status_code, 201)  # It should succeed even without skills
+        self.assertEqual(response.json, {"message": "Role created successfully, Role_SKill mapped and New Listing created."})
 
 class TestUpdateRoleListing(TestApp):
 
