@@ -28,7 +28,9 @@ jobs:
         working-directory: ./frontend
       - name: Test
         run: npm run test
-        # working-directory: ./frontend
+        working-directory: ./frontend/src/components/Candidates.test.js
+
+
         
   build:
     runs-on: ubuntu-latest
