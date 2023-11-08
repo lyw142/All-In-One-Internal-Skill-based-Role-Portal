@@ -26,7 +26,6 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Test
-        working-directory: /home/runner/work/SPM_G5_T2/frontend
         run: npm run test
         
   build:
