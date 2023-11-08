@@ -25,11 +25,9 @@ jobs:
           node-version: 14
       - name: Install dependencies
         run: npm install
-        # working-directory: ./frontend
+
       - name: Test
         run: npm run test
-        # working-directory: ./frontend
-          npm run frontend/src/components/Candidates.test.js
         
         
   build:
