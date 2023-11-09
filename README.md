@@ -1,6 +1,7 @@
 # All-In-One Internal Skill-based Role Portal (SPM_G5_T2)
+<img width="949" alt="image" src="https://github.com/lyw142/SPM_G5_T2/assets/111484155/47978018-2322-4d4d-8e94-35887db63791">
 
-This template should help you get started and running the project using Vue 3 in Vite and Python.
+Our new system is a portal for staff to apply for roles and match their skill sets from LJPS with job requirements, facilitating HR and recruiting managers in assessing applicants and enhancing the hiring process within the organization.
 
 ## Recommended IDE Setup
 
