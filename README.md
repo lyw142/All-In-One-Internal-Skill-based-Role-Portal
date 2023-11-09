@@ -68,7 +68,9 @@ npm install js-cookie
 ### Usage
 To run this project, follow these steps:
 
-1. Import the SQL(spm.sql) file to your local phpMyAdmin. 
+1. Create database named 'spm' on your local phpMyAdmin.
+
+2. Import the SQL(spm.sql) file to the database. 
 
 2. Next, you'll need to configure the database settings in the 'config.py' file. Open the 'config.py' file which is located at backend and update the database connection details to match your local setup.
 
