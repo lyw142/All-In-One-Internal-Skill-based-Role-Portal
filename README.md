@@ -10,12 +10,16 @@ To work on this project, we recommend using the following VS Code extensions:
 
 ## Table of Contents
 
+- [Github Link](#github-link)
 - [Installation](#installation)
 - [Dependencies](#dependencies)
 - [Editor Setup](#editor-setup)
 - [Project Setup](#project-setup)
 - [Cookie Installation](#cookie-installation)
 - [Usage](#usage)
+
+## Github Link
+https://github.com/lyw142/SPM_G5_T2
 
 ## Installation
 
