@@ -7,7 +7,7 @@ from models import db
 app = Flask('api_app')
 
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root:root@localhost:3306/SPM'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+mysqlconnector://root@localhost:3306/spmnewdata'
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {'pool_size': 100,
                                                'pool_recycle': 280}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
